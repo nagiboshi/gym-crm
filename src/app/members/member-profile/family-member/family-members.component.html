@@ -1,0 +1,15 @@
+<div>
+  <app-find-member [clearAfterSelection]="true" labelColor="rgba(0,0,0,.54)" (memberSelected)="addMemberToFamily($event)" placeholder="Add to family"></app-find-member>
+</div>
+<ng-container *ngFor="let member of members; let index=index;">
+  <div fxLayout="row" class="family-member">
+    <div fxFlex="180px" class="family-member-row" fxLayout="column" fxLayoutAlign="start">
+        <div>{{member.firstName}} &nbsp; {{member.lastName}}</div>
+        <div class="phone-number">mob: {{member.phoneNumber}}</div></div>
+    <button mat-icon-button>
+      <mat-icon (click)="removeFamilyMember(member)">remove</mat-icon>
+    </button>
+  </div>
+</ng-container>
+
+

@@ -1,0 +1,10 @@
+<mat-form-field>
+  <mat-label [style.color]="labelColor" class="find-member-label">{{placeholder}}</mat-label>
+  <input [formControl]="searchFormControl" #searchField id="members-autocomplete" type="text" matInput [matAutocomplete]="auto">
+  <mat-autocomplete (optionSelected)="memberSelect($event)" [displayWith]="displayFn" #auto="matAutocomplete">
+    <mat-option *ngFor="let member of members$ | async" [value]="member">
+      <div class="member-auto-complete-item">{{member.firstName + " " + member.lastName}}</div>
+      <div class="member-auto-complete-item phone-number">{{'mob: ' + member.phoneNumber}}</div>
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

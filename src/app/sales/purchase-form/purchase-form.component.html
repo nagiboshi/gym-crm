@@ -1,0 +1,97 @@
+<mat-vertical-stepper #stepper [linear]="true">
+  <mat-step [stepControl]="serviceFormGroup">
+    <form [formGroup]="serviceFormGroup">
+      <ng-template matStepLabel>Select package</ng-template>
+      <mat-form-field>
+        <mat-select formControlName="service" [value]="selectedService"
+                    (selectionChange)="afterServiceFormGroupSelection($event.value)">
+          <mat-option [value]="primalService"
+                      *ngFor="let primalService of membershipServices">
+            {{primalService.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button [disabled]="!serviceFormGroup.valid" mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="serviceItemFormGroup">
+    <form [formGroup]="serviceItemFormGroup">
+      <ng-template matStepLabel>Select package item</ng-template>
+      <mat-form-field>
+        <mat-select formControlName="serviceItem" [value]="selectedServiceItem"
+                    (selectionChange)="afterServiceItemFormGroupSelection($event.value)">
+          <mat-option [value]="serviceItem" *ngFor="let serviceItem of serviceItems$ | async">
+            {{serviceItem.name + "  " + serviceItem.price + "  AED"}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button [disabled]="!serviceItemFormGroup.valid" mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="quantityFormGroup">
+    <form [formGroup]="quantityFormGroup">
+      <ng-template matStepLabel>Select Quantity</ng-template>
+      <mat-form-field>
+        <input formControlName="quantity" placeholder="Please select quantity" matInput type="number">
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="selectPaymentFormGroup">
+    <form [formGroup]="selectPaymentFormGroup">
+      <ng-template matStepLabel>Select Payment Method</ng-template>
+      <mat-form-field>
+        <mat-select formControlName="paymentMethod">
+          <mat-option [value]="paymentMethod" *ngFor="let paymentMethod of paymentMethods">
+            {{paymentMethod}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Summary</ng-template>
+    <div class="summary">
+      <div class="form-row">
+        <div class="form-label">Selected Package:</div>
+        <div class="form-value">{{selectedService.name}}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Selected Package Item:</div>
+        <div class="form-value">{{selectedServiceItem.name + " " + (selectedServiceItem.price | currency: 'AED')}}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Quantity:</div>
+        <div class="form-value">{{quantityFormGroup.value.quantity}}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Payment Method: </div>
+        <div class="form-value">{{selectPaymentFormGroup.value.paymentMethod}}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Subtotal:</div>
+        <div class="form-value">{{ getSubtotal()| currency:'AED' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Tax:</div>
+        <div class="form-value">{{ getTax() | currency:'AED'}}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Total:</div>
+        <div class="form-value">{{(getSubtotal() + getTax()) | currency: 'AED'}}</div>
+      </div>
+    </div>
+    <div>
+      <button [mat-dialog-close]="submitPurchase()" mat-button>Submit</button>
+    </div>
+  </mat-step>
+</mat-vertical-stepper>

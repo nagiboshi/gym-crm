@@ -1,0 +1,89 @@
+<div *ngIf="form" fxLayout="column" fxFlex fxLayoutAlign="start"
+     class="member-profile-container">
+  <h1>Profile of {{form.value.firstName + " " + form.value.lastName}}</h1>
+
+  <form [formGroup]="form" fxLayout="row" class="member">
+    <div class="member-photo">
+      <img height="250" [src]="loadedMember.photoLink"/>
+    </div>
+    <div class="member-info-right-part">
+      <div fxLayout="row" class="member-info">
+        <div fxFlex="33">
+          <div class="member-info-row">
+            <mat-form-field>
+              <input placeholder="First name" matInput formControlName="firstName"/>
+            </mat-form-field>
+          </div>
+          <div class="member-info-row">
+            <mat-form-field>
+              <input placeholder="Last name" matInput formControlName="lastName"/>
+            </mat-form-field>
+          </div>
+          <div class="member-info-row">
+            <mat-form-field>
+              <input placeholder="Email" matInput formControlName="email"/>
+            </mat-form-field>
+          </div>
+          <div fxLayout="row" class="member-info-row">
+            <mat-form-field>
+              <input matInput placeholder="Phone number" formControlName="phoneNumber"/>
+            </mat-form-field>
+          </div>
+        </div>
+        <div fxFlex="33">
+          <div class="member-info-row">
+            <mat-form-field>
+              <input matInput placeholder="Referal type" formControlName="referalType"/>
+            </mat-form-field>
+          </div>
+          <div fxLayout="row" class="member-info-row">
+            <mat-form-field>
+            <textarea matInput placeholder="Notes" formControlName="notes" matInput>
+            </textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div fxFlex="33">
+
+          <div class="member-info-row">
+            <family-members (afterFamilyMemberRemove)="removeFamilyMember($event)"
+                            (afterFamilyMemberSelected)="addMemberToFamily($event)"
+                            [members]="loadedMember.family"></family-members>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div fxLayoutAlign="start end" *ngIf="form.touched">
+      <button (click)="updateMember()" mat-mini-fab>
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+
+  </form>
+  <div fxLayoutAlign="start">
+    <div fxLayout="column" class="member-purchases">
+      <h2 fxLayoutAlign="start center" class="h2 primal-title">Purchase History
+        <button mat-icon-button color="primary" (click)="addNewPurchase()">
+          <mat-icon>add</mat-icon>
+          Sell
+        </button>
+      </h2>
+      <div fxLayout="row" class="purchase-column-header">
+        <div class="purchase-column column-header column-name">Item name</div>
+        <div class="purchase-column column-header column-qty">Qty</div>
+        <div class="purchase-column column-header column-price">Price</div>
+        <div class="purchase-column column-header column-discount">Discount</div>
+        <div class="purchase-column column-header column-total">Total</div>
+      </div>
+      <div class="purchase-row" fxLayout="row" *ngFor="let purchase of purchasesSubj | async">
+        <div class="purchase-column column-body column-name">{{purchase.item.name}}</div>
+        <div class="purchase-column column-body column-qty">{{purchase.qty}}</div>
+        <div class="purchase-column column-body column-price">{{purchase.item.price | currency: 'AED'}}</div>
+        <div class="purchase-column column-body column-discount">{{purchase.discountId}}</div>
+        <div
+          class="purchase-column column-body column-total">{{(purchase.qty * purchase.item.price) | currency: 'AED'}} </div>
+      </div>
+    </div>
+  </div>
+</div>

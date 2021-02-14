@@ -1,0 +1,10 @@
+.main-wrapper {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.primal-route{
+  &.active {
+    background-color: #0079a7;
+  }
+}

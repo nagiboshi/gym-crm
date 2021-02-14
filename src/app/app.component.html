@@ -1,0 +1,19 @@
+<div class="main-wrapper">
+  <header fxLayoutAlign="space-between center">
+    <nav mat-tab-nav-bar>
+      <a class="primal-route" routerLinkActive="active" *ngFor="let appRoute of appRoutes" mat-tab-link
+         [routerLink]="appRoute.path">{{appRoute.label}}</a>
+    </nav>
+    <app-find-member placeholder="Find member..." (memberSelected)="onMemberFound($event)"></app-find-member>
+    <div>
+      <button mat-button>
+        <mat-icon>settings</mat-icon>
+      </button>
+      <button mat-button>
+        <mat-icon>exit_to_app</mat-icon>
+      </button>
+
+    </div>
+  </header>
+  <router-outlet></router-outlet>
+</div>

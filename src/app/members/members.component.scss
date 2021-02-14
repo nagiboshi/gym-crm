@@ -1,0 +1,31 @@
+table {
+  width: 100%;
+
+    tr.mat-header-row:hover {
+      background-color: #FFF;
+    }
+
+  tr:hover {
+    background-color: rgba(0, 117, 169, 0.6);
+    cursor: pointer;
+    .mat-cell {
+      color: #FFF;
+    }
+    .edit-cell, .delete-cell {
+
+      mat-icon {
+        visibility: visible;
+      }
+    }
+  }
+
+  .edit-cell, .delete-cell {
+    width: 70px;
+
+    mat-icon {
+      visibility: hidden;
+    }
+  }
+
+
+}

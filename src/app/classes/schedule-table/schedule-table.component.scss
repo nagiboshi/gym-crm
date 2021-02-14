@@ -1,0 +1,77 @@
+.daily-schedule {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  padding-left: 30px;
+  padding-top: 20px;
+
+  .class-sign {
+    width: 120px;
+  }
+  &.highlighted-day {
+    background-color: rgba(0, 117, 169, 0.1);
+  }
+
+  .schedule-row {
+    height: 40px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 117, 169, 0.1);
+
+      .remove-schedule {
+        display: block;
+      }
+
+      .sign-in-button {
+        visibility: visible;
+      }
+
+    }
+
+    .remove-schedule {
+      display: none;
+    }
+
+    .sign-in-button {
+      min-width: 150px;
+      visibility: hidden;
+    }
+
+  }
+
+  .schedule-time {
+    width: 200px;
+  }
+
+  .class-name {
+    width: 20%;
+  }
+
+  .day-of-week {
+    font-size: 20px;
+    margin-bottom: 10px;
+    .day {
+      width: 40px;
+    }
+  }
+
+  .schedule-date {
+    font-size: 18px;
+    align-items: center;
+    display: flex;
+    margin-left: 21px;
+  }
+
+}
+
+
+#schedule-datepicker {
+  position: fixed;
+  width: 20%;
+  top: 50px;
+  height: calc(100% - 80px);
+  .mat-datepicker-content {
+    box-shadow: none;
+  }
+}
+

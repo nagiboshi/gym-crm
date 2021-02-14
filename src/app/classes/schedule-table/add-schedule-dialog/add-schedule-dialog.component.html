@@ -1,0 +1,45 @@
+<div class="schedule-row" fxLayout="column">
+  <mat-form-field>
+    <mat-select [placeholder]="'Select class'" [(ngModel)]="selectedClass">
+      <mat-option [value]="classSchedule"
+                  *ngFor="let classSchedule of existingClasses">{{classSchedule.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div class="schedule-row" fxLayout="column">
+  <div fxLayout="row" fxLayoutGap="10px">
+    <div [ngClass]="{'day': true, 'selected-day': isDaySelected(dayMapping.key)}" (click)="toggleDay(dayMapping.key)"
+         *ngFor="let dayMapping of dayMappings | keyvalue"> {{dayMapping.value}}</div>
+  </div>
+  <mat-error *ngIf="selectedDays.value.length == 0">Please select at least one day</mat-error>
+</div>
+
+<div class="schedule-row" fxLayout="column">
+  <mat-form-field>
+    <input type="number" matInput placeholder="Class capacity" [(ngModel)]="capacity"/>
+    <mat-error *ngIf="capacity <= 0">Capacity should be positive number</mat-error>
+  </mat-form-field>
+</div>
+
+<div class="schedule-row">
+  <time-range-selector (startTimeChanged)="setStartTime($event)"
+                       (endTimeChanged)="setEndTime($event)"></time-range-selector>
+  <mat-error *ngIf="startTime == -1">Plese pick start time</mat-error>
+  <mat-error *ngIf="endTime == -1">Please pick end time</mat-error>
+</div>
+<div class="schedule-row">
+  <mat-form-field class="schedule-until-datepicker">
+    <mat-label>Schedule Until</mat-label>
+    <input  [(ngModel)]="scheduleUntilDate" matInput  [matDatepicker]="picker">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+</div>
+<div class="schedule-row">
+  <button mat-dialog-close mat-button>Cancel</button>
+  <button [disabled]="!isValid()"
+          [matDialogClose]="{scheduleUntil: scheduleUntilDate.toDate().getTime(), capacity: capacity , days: selectedDays.getValue(), selectedClass: selectedClass, startTime: startTime, endTime: endTime}"
+          color="primary" mat-button>Save
+  </button>
+</div>
+

@@ -1,0 +1,27 @@
+.signed-member-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 117, 169, 0.1);
+  }
+  height: 24px;
+  .unsign-user-icon {
+    padding: 0;
+    display: none;
+  }
+
+
+  &:hover {
+    .unsign-user-icon {
+      display: block;
+    }
+  }
+}
+
+.control-buttons {
+  margin-top: 10px;
+}
+
+.sign-in-dialog-row {
+  height: 24px;
+}
