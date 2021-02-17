@@ -1,9 +1,9 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {PrimalClassModel} from '../primal-class.model';
 import {ClassSchedule, CommunicationService, DaySchedule, ScheduleWeekDay} from '../../shared/communication.service';
 import {MatDialog} from '@angular/material/dialog';
 import {AddScheduleDialogComponent, PrimalClassSchedule} from './add-schedule-dialog/add-schedule-dialog.component';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 import {SignInDialogComponent} from './sign-in-dialog/sign-in-dialog.component';
 import {Moment} from 'moment';
 import {forIn} from 'lodash';
@@ -11,13 +11,12 @@ import * as _moment from 'moment';
 import {
   DateRange,
   MAT_DATE_RANGE_SELECTION_STRATEGY,
-  MAT_RANGE_DATE_SELECTION_MODEL_PROVIDER,
+  MAT_RANGE_DATE_SELECTION_MODEL_PROVIDER, MatCalendar,
   MatDateRangePicker
 } from '@angular/material/datepicker';
 import {DateSelectionStrategy} from './schedule-calendar/date-selection.strategy';
 import {ScheduleCalendarHeaderComponent} from './schedule-calendar/schedule.calendar-header.component';
 import {SelectionStrategyEventEmitter} from './schedule-calendar/selection-strategy.event-emitter';
-
 
 const moment = _moment;
 
@@ -32,10 +31,13 @@ const moment = _moment;
 export class ScheduleTableComponent implements OnInit {
   classes: PrimalClassModel[];
   scheduleWeekDays: ScheduleWeekDay[];
-  todayDay: number = new Date().getDay();
+  today: Date = new Date();
   schedules$: BehaviorSubject<ClassSchedule[]> = new BehaviorSubject<ClassSchedule[]>([]);
   scheduleDate: DateRange<Moment>;
   scheduleCalendarHeader = ScheduleCalendarHeaderComponent;
+  selectMonthSub: Subscription;
+  @ViewChild(MatCalendar)
+  calendar;
   sortSchedulesFunction = (a: ClassSchedule, b: ClassSchedule): number => {
     if (a.timeStart > b.timeStart) {
       return 1;
@@ -54,10 +56,32 @@ export class ScheduleTableComponent implements OnInit {
   updateScheduleWeekDates(scheduleDate: DateRange<Moment>) {
     this.scheduleWeekDays = [];
     const startDate = scheduleDate.start.clone();
-    forIn(this.communicationService.getDayMappings(), (label, day) => {
-      const date = startDate.subtract(startDate.day(), 'days').add(day, 'days').toDate();
-      this.scheduleWeekDays.push({day, label, date});
-    });
+    const endDate = scheduleDate.end.clone();
+    const tmpMoment = moment();
+    // console.log("startMonth", startDate.month(), "endDateMonth ", endDate.month() );
+    let startDay; //  = startDate.date();
+    let endDay; //  =
+    if (startDate.month() != endDate.month()) {
+      startDay = startDate.date();
+      endDay = startDate.daysInMonth();
+      for (let day = startDay; day <= endDay; day++) {
+        const newMoment = tmpMoment.month(startDate.month()).date(day); // .month(startMonthIdx);
+        this.scheduleWeekDays.push({day: newMoment.date(), label: moment.weekdaysShort()[newMoment.day()], date: newMoment.toDate()});
+      }
+
+      startDay = 1;
+      endDay = endDate.date();
+      tmpMoment.month(endDate.month());
+    } else {
+      startDay = startDate.date();
+      endDay = endDate.date();
+    }
+
+    for (let day = startDay; day <= endDay; day++) {
+      const newMoment = tmpMoment.date(day); // .month(startMonthIdx);
+      this.scheduleWeekDays.push({day: newMoment.day(), label: moment.weekdaysShort()[newMoment.day()], date: newMoment.toDate()});
+    }
+
   }
 
 
@@ -74,23 +98,31 @@ export class ScheduleTableComponent implements OnInit {
     this.communicationService.getSchedules(from.toDate(), to.toDate()).subscribe((schedules) => {
       this.schedules$.next(schedules);
     });
+
+    this.selectMonthSub = this.selectionStrategyEventEmitter.selectMonth$.subscribe(() => {
+      this.filterScheduleDates(this.calendar.activeDate, 'month');
+    });
   }
 
 
-  filterScheduleDates(value: Moment) {
+  filterScheduleDates(value: Moment, strategy?: string) {
     const endDate = value.clone();
-    const strategy = this.selectionStrategyEventEmitter.strategyChanged$.getValue();
+    if (!strategy) {
+      strategy = this.selectionStrategyEventEmitter.strategyChanged$.getValue();
+    }
     let start: Moment;
     let end: Moment;
     switch (strategy) {
       case 'week': {
         start = value.startOf('week');
         end = endDate.endOf('week');
-      }            break;
+      }
+        break;
       case 'month': {
         start = value.startOf('month');
         end = endDate.endOf('month');
-      }             break;
+      }
+        break;
 
     }
 

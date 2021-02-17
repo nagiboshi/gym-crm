@@ -2,11 +2,11 @@
   <div fxFlex="60" class="schedule-list">
     <ng-container *ngIf="schedules$ | async as schedules">
       <div *ngFor="let scheduleWeekDay of scheduleWeekDays"
-           [ngClass]="{'daily-schedule':true, 'highlighted-day': scheduleWeekDay.day == todayDay}">
+           [ngClass]="{'daily-schedule':true}">
         <div fxLayoutAlign="start center" class="day-of-week">
           <div class="day" fxLayoutAlign="center center">{{scheduleWeekDay.label}}</div>
 
-          <div class="schedule-date">{{scheduleWeekDay.date | date}}</div>
+          <div [ngClass]="{'highlighted-day': scheduleWeekDay.date.getDate() == today.getDate() && scheduleWeekDay.date.getFullYear() == today.getFullYear() && scheduleWeekDay.date.getMonth() == scheduleWeekDay.date.getMonth(), 'schedule-date': true}">{{scheduleWeekDay.date | date}}</div>
         </div>
         <div class="class-schedules">
 

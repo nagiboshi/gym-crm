@@ -23,10 +23,11 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatMomentDateModule, MomentDateModule} from '@angular/material-moment-adapter';
 import {MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
 import {DomSanitizer} from '@angular/platform-browser';
+import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.component';
 
 
 @NgModule({
-  declarations: [TimeRangeSelectorComponent, FindMemberComponent, YearMonthSelectorComponent],
+  declarations: [TimeRangeSelectorComponent, AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent],
   providers: [fakeBackendProvider, MatIconRegistry],
   imports: [
     CommonModule,
@@ -37,6 +38,7 @@ import {DomSanitizer} from '@angular/platform-browser';
     MatInputModule,
     MatDialogModule,
     MatDatepickerModule,
+    MatButtonModule,
     MatMomentDateModule,
     // MomentDateModule,
     FormsModule
@@ -61,6 +63,7 @@ import {DomSanitizer} from '@angular/platform-browser';
     MatSortModule,
     MatDatepickerModule,
     MatPaginatorModule,
+    AddMemberDialogComponent,
     FindMemberComponent,
     YearMonthSelectorComponent,
   ]

@@ -1,12 +1,11 @@
-import {Component, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {DateAdapter} from '@angular/material/core';
 import {
   MatDateRangeSelectionStrategy,
-  DateRange,
-  MAT_DATE_RANGE_SELECTION_STRATEGY,
+  DateRange
 } from '@angular/material/datepicker';
-import {SelectionStrategyEventEmitter} from './selection-strategy.event-emitter';
 import {Moment} from 'moment';
+import {SelectionStrategyEventEmitter} from './selection-strategy.event-emitter';
 
 @Injectable()
 export class DateSelectionStrategy<D> implements MatDateRangeSelectionStrategy<D> {
@@ -14,12 +13,11 @@ export class DateSelectionStrategy<D> implements MatDateRangeSelectionStrategy<D
   }
 
   selectionFinished(date: D | null): DateRange<D> {
-    const dateRange = this._createRange(date, this.selectionStrategyEventEmitter.strategyChanged$.getValue());
-    return dateRange;
+    return this._createRange(date, this.selectionStrategyEventEmitter.strategyChanged$.getValue());
   }
 
   createPreview(activeDate: D | null): DateRange<D> {
-    return this._createRange(activeDate, this.selectionStrategyEventEmitter.strategyChanged$.getValue());
+    return this._createRange(activeDate, 'week'); // this.selectionStrategyEventEmitter.strategyChanged$.getValue());
   }
 
   private _createRange(date: D | null, selectionStrategy: string): DateRange<D> {

@@ -28,17 +28,20 @@
   <mat-error *ngIf="endTime == -1">Please pick end time</mat-error>
 </div>
 <div class="schedule-row">
-  <mat-form-field class="schedule-until-datepicker">
-    <mat-label>Schedule Until</mat-label>
-    <input  [(ngModel)]="scheduleUntilDate" matInput  [matDatepicker]="picker">
+  <mat-form-field fxFlex="100" class="schedule-until-datepicker">
+    <mat-label>Schedule From - Until</mat-label>
+    <mat-date-range-input [rangePicker]="picker">
+      <input [(ngModel)]="scheduleFromDate" matStartDate placeholder="Start date">
+      <input [(ngModel)]="scheduleUntilDate" matEndDate placeholder="End date">
+    </mat-date-range-input>
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
+    <mat-date-range-picker #picker></mat-date-range-picker>
   </mat-form-field>
 </div>
 <div class="schedule-row">
   <button mat-dialog-close mat-button>Cancel</button>
   <button [disabled]="!isValid()"
-          [matDialogClose]="{scheduleUntil: scheduleUntilDate.toDate().getTime(), capacity: capacity , days: selectedDays.getValue(), selectedClass: selectedClass, startTime: startTime, endTime: endTime}"
+          [matDialogClose]="{scheduleFrom: scheduleFromDate?.toDate().getTime(), scheduleUntil: scheduleUntilDate?.toDate().getTime(), capacity: capacity , days: selectedDays.getValue(), selectedClass: selectedClass, startTime: startTime, endTime: endTime}"
           color="primary" mat-button>Save
   </button>
 </div>

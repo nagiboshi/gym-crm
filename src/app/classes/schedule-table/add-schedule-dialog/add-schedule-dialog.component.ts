@@ -48,6 +48,7 @@ export class AddScheduleDialogComponent implements OnInit {
   endTime = -1;
   capacity = 10;
   scheduleUntilDate: Moment;
+  scheduleFromDate: Moment;
 
   // selectedDays: DaySelection[] = [];
   constructor(@Inject(MAT_DIALOG_DATA) public day: string, private fb: FormBuilder, private communicationService: CommunicationService) {
@@ -56,9 +57,10 @@ export class AddScheduleDialogComponent implements OnInit {
   ngOnInit(): void {
 
     // Setting first day of next month as a default end date of schedule.
-    const scheduleUntilDateMoment = moment(new Date());
+    const scheduleUntilDateMoment = moment();
     scheduleUntilDateMoment.add(1, 'month');
     scheduleUntilDateMoment.subtract(new Date().getDay(), 'days');
+    this.scheduleFromDate = moment();
     this.scheduleUntilDate = scheduleUntilDateMoment;
     this.dayMappings = this.communicationService.getDayMappings();
     this.existingClasses = this.communicationService.getClasses();

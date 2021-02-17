@@ -7,9 +7,6 @@
   .class-sign {
     width: 120px;
   }
-  &.highlighted-day {
-    background-color: rgba(0, 117, 169, 0.1);
-  }
 
   .schedule-row {
     height: 40px;
@@ -60,18 +57,26 @@
     align-items: center;
     display: flex;
     margin-left: 21px;
+
+  }
+
+  .highlighted-day {
+    background-color: rgba(0, 117, 169, 0.8);
+    color: #FFF;
   }
 
 }
 
 
+#add-schedule-container {
+  margin-bottom: 20px;
+}
+
 #schedule-datepicker {
   position: fixed;
   width: 20%;
-  top: 50px;
+  top: 75px;
   height: calc(100% - 80px);
-  .mat-datepicker-content {
-    box-shadow: none;
-  }
+
 }
 

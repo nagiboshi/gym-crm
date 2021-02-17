@@ -2,11 +2,11 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild} fr
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatDialog} from '@angular/material/dialog';
-import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.component';
 import {Router} from '@angular/router';
 import {CommunicationService} from '../shared/communication.service';
 import {MembersDataSource} from './members-data-source';
 import {Member} from '../models/member.model';
+import {AddMemberDialogComponent} from '../shared/add-member-dialog/add-member-dialog.component';
 
 
 @Component({
@@ -47,10 +47,12 @@ export class MembersComponent implements AfterViewInit, OnInit {
     this.dialog.open(AddMemberDialogComponent, {data: newUser})
       .afterClosed()
       .subscribe((newMember: Member) => {
-        this.memberService.newMember(newMember).toPromise().then((savedMember) => {
-          const memberSubj = this.dataSource.membersSubject;
-          memberSubj.next([...memberSubj.getValue(), savedMember]);
-        });
+        if ( newMember ) {
+          this.memberService.newMember(newMember).toPromise().then((savedMember) => {
+            const memberSubj = this.dataSource.membersSubject;
+            memberSubj.next([...memberSubj.getValue(), savedMember]);
+          });
+        }
       });
   }
 

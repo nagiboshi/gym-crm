@@ -15,6 +15,7 @@ export class AddMemberDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.memberForm = this.fb.group({
+      id: [0],
       firstName: [this.data.firstName, [Validators.required]],
       lastName: [this.data.lastName, [Validators.required]],
       email: [this.data.lastName, [Validators.email]],

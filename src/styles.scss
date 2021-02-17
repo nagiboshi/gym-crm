@@ -1,11 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+@import "colors";
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-$primaryColor8:rgba(0, 117, 169, 0.8);
-$primaryColor6:rgba(0, 117, 169, 0.6);
-$primaryColor1:rgba(0, 117, 169, 0.1);
+
 
 .form-row {
   margin: 10px 0;
@@ -29,8 +28,9 @@ header {
   }
 }
 
+
 .mat-calendar-body-selected {
-  background-color: transparent;
+  background-color: $primaryColor1;
 }
 
 .mat-calendar-body-cell-content {

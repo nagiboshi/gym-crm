@@ -6,6 +6,8 @@ import {Member} from '../../models/member.model';
 import {Router} from '@angular/router';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {FormControl} from '@angular/forms';
+import {AddMemberDialogComponent} from '../add-member-dialog/add-member-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-find-member',
@@ -27,7 +29,7 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
   members$: Observable<Member[]>;
   searchFormControl: FormControl;
 
-  constructor(private communicationService: CommunicationService, private router: Router) {
+  constructor(public dialog: MatDialog, private communicationService: CommunicationService, private router: Router) {
   }
 
   displayFn(member: Member) {
@@ -54,9 +56,11 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
   }
 
   memberSelect($event: MatAutocompleteSelectedEvent) {
-    this.memberSelected.emit(this.searchFormControl.value);
-    if (this.clearAfterSelection) {
-      this.searchFormControl.patchValue(null);
+    if (this.searchFormControl.value) {
+      this.memberSelected.emit(this.searchFormControl.value);
+      if (this.clearAfterSelection) {
+        this.searchFormControl.patchValue(null);
+      }
     }
   }
 
@@ -64,4 +68,16 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
     return this.communicationService.findMembers(search);
   }
 
+  openUserRegistrationForm() {
+    const newUser = {id: 0, firstName: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
+    this.dialog.open(AddMemberDialogComponent, {data: newUser})
+      .afterClosed()
+      .subscribe((newMember: Member) => {
+        if ( newMember ) {
+          this.communicationService.newMember(newMember).toPromise().then((savedMember) => {
+            this.memberSelected.emit(savedMember);
+          });
+        }
+      });
+  }
 }

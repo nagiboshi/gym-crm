@@ -36,6 +36,10 @@ export class SignInDialogComponent implements OnInit {
 
 
   addMemberToSchedule(member: Member) {
+    const isMemberAlreadyThere =  this.scheduleMembers.findIndex(scheduleMember => scheduleMember.member.id == member.id ) != -1;
+    if ( isMemberAlreadyThere ) {
+      return;
+    }
     this.scheduleMembers.push(this.memberToScheduleMember(this.signInDialogData.daySchedule, member, this.signInDialogData.signInDate));
   }
 }
