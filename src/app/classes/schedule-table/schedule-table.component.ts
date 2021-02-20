@@ -17,6 +17,7 @@ import {
 import {DateSelectionStrategy} from './schedule-calendar/date-selection.strategy';
 import {ScheduleCalendarHeaderComponent} from './schedule-calendar/schedule.calendar-header.component';
 import {SelectionStrategyEventEmitter} from './schedule-calendar/selection-strategy.event-emitter';
+import {ScheduleMember} from '../../models/schedule-member.model';
 
 const moment = _moment;
 
@@ -136,9 +137,12 @@ export class ScheduleTableComponent implements OnInit {
       .startOf('day')
       .add(daySchedule.timeStart, 'milliseconds');
 
-    this.dialog.open(SignInDialogComponent, {data: {daySchedule, signInDate}})
-      .afterClosed().subscribe(() => {
-      // this.communicationService.
+    this.dialog.open(SignInDialogComponent, {width: '300px', data: {daySchedule, signInDate}})
+      .afterClosed().subscribe((scheduleMembers: ScheduleMember[]) => {
+        if ( scheduleMembers ) {
+            // TODO:: add sign in logic here ::
+        }
+
     });
   }
 

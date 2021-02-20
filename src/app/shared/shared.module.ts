@@ -14,21 +14,37 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {TimeRangeSelectorComponent} from './time-range-selector/time-range-selector.component';
-import {CommonModule} from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import {fakeBackendProvider} from './fake-backend.service';
 import {HttpClientModule} from '@angular/common/http';
 import {FindMemberComponent} from './find-member/find-member.component';
 import {YearMonthSelectorComponent} from './year-month-selector/year-month-selector.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatMomentDateModule, MomentDateModule} from '@angular/material-moment-adapter';
-import {MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
+import {MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.component';
+import {MembershipExpirationPipe} from './pipes/membership-expiration.pipe';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import { FreezeMembershipDialogComponent } from './freeze-membership-dialog/freeze-membership-dialog.component';
+import { PurchaseRowComponent } from './purchase-row/purchase-row.component';
 
 
 @NgModule({
-  declarations: [TimeRangeSelectorComponent, AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent],
-  providers: [fakeBackendProvider, MatIconRegistry],
+  declarations: [TimeRangeSelectorComponent, AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent, MembershipExpirationPipe, FreezeMembershipDialogComponent, PurchaseRowComponent],
+  providers: [fakeBackendProvider, MatIconRegistry, DatePipe, {
+    provide: MAT_DATE_FORMATS, useValue: {
+      parse: {
+        dateInput: 'LL',
+      },
+      display: {
+        dateInput: 'LL',
+        monthYearLabel: 'MMM YYYY',
+        dateA11yLabel: 'LL',
+        monthYearA11yLabel: 'MMMM YYYY',
+      },
+    }
+  }],
   imports: [
     CommonModule,
     MatSelectModule,
@@ -38,6 +54,7 @@ import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.co
     MatInputModule,
     MatDialogModule,
     MatDatepickerModule,
+    MatTooltipModule,
     MatButtonModule,
     MatMomentDateModule,
     // MomentDateModule,
@@ -53,6 +70,7 @@ import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.co
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
+    MatTooltipModule,
     MatDialogModule,
     HttpClientModule,
     MatTableModule,
@@ -61,15 +79,17 @@ import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.co
     MatAutocompleteModule,
     TimeRangeSelectorComponent,
     MatSortModule,
+    FreezeMembershipDialogComponent,
     MatDatepickerModule,
     MatPaginatorModule,
     AddMemberDialogComponent,
     FindMemberComponent,
     YearMonthSelectorComponent,
+    MembershipExpirationPipe,
   ]
 })
 export class SharedModule {
   constructor(private iconRegistry: MatIconRegistry, private sanitizer: DomSanitizer) {
-    iconRegistry.addSvgIcon('schedule-icon', sanitizer.bypassSecurityTrustResourceUrl('/assets/schedule-icon.svg') );
+    iconRegistry.addSvgIcon('schedule-icon', sanitizer.bypassSecurityTrustResourceUrl('/assets/schedule-icon.svg'));
   }
 }

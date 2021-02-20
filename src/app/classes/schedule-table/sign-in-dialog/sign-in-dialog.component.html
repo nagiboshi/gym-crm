@@ -1,15 +1,22 @@
-<h1>Sign in to {{this.signInDialogData.daySchedule.primalClass.name}}: </h1>
-<div class="sign-in-dialog-row">Date: {{signInDialogData.signInDate.toDate() | date}}</div>
-<div class="sign-in-dialog-row">Time: {{this.signInDialogData.daySchedule.timeStart |  date: 'HH:mm': '+0000'}} - {{this.signInDialogData.daySchedule.timeEnd | date: 'HH:mm': '+0000'}}</div>
-<div class="sign-in-dialog-row">Capacity: <span [ngClass]="{warn: scheduleMembers.length > this.signInDialogData.daySchedule.capacity}">{{scheduleMembers.length}}</span> of {{this.signInDialogData.daySchedule.capacity}}</div>
-<app-find-member [clearAfterSelection]="true" (memberSelected)="addMemberToSchedule($event)" [labelColor]="000" [placeholder]="'First, Last name of phone number '"></app-find-member>
-<div fxLayoutAlign="space-between" fxLayout="row" class="signed-member-row"
-     *ngFor="let signedMember of scheduleMembers">
-  <div (click)="removeFromSchedule(signedMember)"
-       class="signed-member">{{signedMember.member.firstName + " " + signedMember.member.lastName}}</div>
-  <mat-icon class="unsign-user-icon">delete</mat-icon>
-</div>
-<div class="control-buttons">
-  <button color="primary" mat-raised-button>Save</button>
-  <button mat-button mat-dialog-close>Cancel</button>
+<div fxFill fxLayout="column" fxLayoutAlign="center center">
+  <div><h1>Sign in to {{this.signInDialogData.daySchedule.primalClass.name}}: </h1>
+    <div class="sign-in-dialog-row">Date: {{signInDialogData.signInDate.toDate() | date}}</div>
+    <div class="sign-in-dialog-row">Time: {{this.signInDialogData.daySchedule.timeStart |  date: 'HH:mm': '+0000'}}
+      - {{this.signInDialogData.daySchedule.timeEnd | date: 'HH:mm': '+0000'}}</div>
+    <div class="sign-in-dialog-row">Capacity: <span
+      [ngClass]="{warn: scheduleMembers.length > this.signInDialogData.daySchedule.capacity}">{{scheduleMembers.length}}</span>
+      of {{this.signInDialogData.daySchedule.capacity}}</div>
+    <app-find-member [clearAfterSelection]="true" (memberSelected)="addMemberToSchedule($event)" [labelColor]="000"
+                     [placeholder]="'First, Last name of phone number '"></app-find-member>
+    <div fxLayoutAlign="space-between" fxLayout="row" class="signed-member-row"
+         *ngFor="let signedMember of scheduleMembers">
+      <div (click)="removeFromSchedule(signedMember)"
+           class="signed-member">{{signedMember.member.firstName + " " + signedMember.member.lastName}}</div>
+      <mat-icon class="unsign-user-icon">delete</mat-icon>
+    </div>
+    <div class="control-buttons">
+      <button color="primary" [mat-dialog-close]="scheduleMembers" mat-raised-button>Save</button>
+      <button mat-button mat-dialog-close>Cancel</button>
+    </div>
+  </div>
 </div>

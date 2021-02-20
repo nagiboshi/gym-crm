@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {CommunicationService} from '../communication.service';
 import {fromEvent, Observable} from 'rxjs';
-import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Member} from '../../models/member.model';
 import {Router} from '@angular/router';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
@@ -28,6 +28,7 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
   memberSelected: EventEmitter<Member> = new EventEmitter<Member>();
   members$: Observable<Member[]>;
   searchFormControl: FormControl;
+  showNewMemberOption = false;
 
   constructor(public dialog: MatDialog, private communicationService: CommunicationService, private router: Router) {
   }
@@ -48,6 +49,7 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.members$ = fromEvent<any>(this.searchInput.nativeElement, 'keyup')
       .pipe(
+        tap(() => { this.showNewMemberOption = true; }),
         map(event => event.target.value),
         debounceTime(100),
         distinctUntilChanged(),
@@ -70,6 +72,8 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
 
   openUserRegistrationForm() {
     const newUser = {id: 0, firstName: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
+    this.searchInput.nativeElement.blur();
+    this.showNewMemberOption = false;
     this.dialog.open(AddMemberDialogComponent, {data: newUser})
       .afterClosed()
       .subscribe((newMember: Member) => {

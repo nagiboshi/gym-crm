@@ -10,4 +10,5 @@ export interface Member {
   referalType?: string;
   referalMember?: Member;
   family?: Member[];
+
 }

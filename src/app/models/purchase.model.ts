@@ -1,10 +1,13 @@
 import {MembershipItem} from './membership-item.model';
-import {Member} from './member.model';
+import {Freeze} from './freeze.model';
 
 export interface PurchaseItem {
   id: number;
   item: MembershipItem;
-  qty: number;
-  discountId?: number;
+  saleDate: number;
+  startDate: number;
+  price: number;
+  note: string;
+  freezes?: Freeze[];
   memberId: number;
 }

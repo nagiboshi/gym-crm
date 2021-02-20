@@ -6,6 +6,7 @@ import {MembersComponent} from './members.component';
 import {MemberProfileComponent} from './member-profile/member-profile.component';
 import {SharedModule} from '../shared/shared.module';
 import {FamilyMembersComponent} from './member-profile/family-member/family-members.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 @NgModule({
@@ -17,7 +18,7 @@ import {FamilyMembersComponent} from './member-profile/family-member/family-memb
   imports: [
     CommonModule,
     MembersRoutingModule,
-    SharedModule
+    SharedModule,
   ]
 })
 export class MembersModule {

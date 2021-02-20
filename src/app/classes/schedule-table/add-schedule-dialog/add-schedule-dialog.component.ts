@@ -23,21 +23,6 @@ export interface PrimalClassSchedule {
   selector: 'app-add-schedule-dialog',
   templateUrl: './add-schedule-dialog.component.html',
   styleUrls: ['./add-schedule-dialog.component.scss'],
-  providers: [
-    {
-      provide: MAT_DATE_FORMATS, useValue: {
-        parse: {
-          dateInput: 'LL',
-        },
-        display: {
-          dateInput: 'LL',
-          monthYearLabel: 'MMM YYYY',
-          dateA11yLabel: 'LL',
-          monthYearA11yLabel: 'MMMM YYYY',
-        },
-      }
-    }
-  ]
 })
 export class AddScheduleDialogComponent implements OnInit {
   existingClasses: PrimalClassModel[];

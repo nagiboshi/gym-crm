@@ -7,6 +7,7 @@ import {PrimalClassModel} from '../classes/primal-class.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {isEmpty} from 'lodash';
 import {ScheduleMember} from '../models/schedule-member.model';
+import {Freeze} from '../models/freeze.model';
 
 
 export interface ClassSchedule {
@@ -148,5 +149,9 @@ export class CommunicationService {
 
   updateMember(member: Member) {
    return this.httpClient.patch<Member>('/member', JSON.stringify(member) );
+  }
+
+  freezeMembership(freeze: Freeze): Observable<Freeze> {
+    return this.httpClient.post<Freeze>('/freeze', freeze);
   }
 }

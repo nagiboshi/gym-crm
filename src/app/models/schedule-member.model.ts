@@ -4,4 +4,5 @@ export interface ScheduleMember {
   id: number;
   member: Member;
   scheduleDate: number;
+
 }

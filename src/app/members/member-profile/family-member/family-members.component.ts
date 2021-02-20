@@ -1,8 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Member} from '../../../models/member.model';
-import {MembershipService} from '../../../models/membership-service.model';
 import {CommunicationService} from '../../../shared/communication.service';
-import {first} from 'lodash';
 
 @Component({
   selector: 'family-members',

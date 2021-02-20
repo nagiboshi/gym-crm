@@ -1,5 +1,5 @@
 <div *ngIf="form" fxLayout="column" fxFlex fxLayoutAlign="start"
-     class="member-profile-container">
+     class="main-wrapper member-profile-container">
   <h1>Profile of {{form.value.firstName + " " + form.value.lastName}}</h1>
 
   <form [formGroup]="form" fxLayout="row" class="member">
@@ -64,26 +64,27 @@
   <div fxLayoutAlign="start">
     <div fxLayout="column" class="member-purchases">
       <h2 fxLayoutAlign="start center" class="h2 primal-title">Purchase History
-        <button mat-icon-button color="primary" (click)="addNewPurchase()">
-          <mat-icon>add</mat-icon>
-          Sell
-        </button>
       </h2>
       <div fxLayout="row" class="purchase-column-header">
         <div class="purchase-column column-header column-name">Item name</div>
-        <div class="purchase-column column-header column-qty">Qty</div>
+        <div class="purchase-column column-header column-sale-date">Sale Date</div>
+        <div class="purchase-column column-header column-start-date">Start Date</div>
+        <div class="purchase-column column-header column-expiry-date">Expiry Date</div>
         <div class="purchase-column column-header column-price">Price</div>
-        <div class="purchase-column column-header column-discount">Discount</div>
-        <div class="purchase-column column-header column-total">Total</div>
+        <div class="purchase-column column-header column-note"></div>
+        <div class="purchase-column column-header column-freeze"></div>
       </div>
-      <div class="purchase-row" fxLayout="row" *ngFor="let purchase of purchasesSubj | async">
-        <div class="purchase-column column-body column-name">{{purchase.item.name}}</div>
-        <div class="purchase-column column-body column-qty">{{purchase.qty}}</div>
-        <div class="purchase-column column-body column-price">{{purchase.item.price | currency: 'AED'}}</div>
-        <div class="purchase-column column-body column-discount">{{purchase.discountId}}</div>
-        <div
-          class="purchase-column column-body column-total">{{(purchase.qty * purchase.item.price) | currency: 'AED'}} </div>
-      </div>
+      <div class="purchase-row" [ngClass]="{'freezed': isFreezed(purchase)}" fxLayout="row" *ngFor="let purchase of purchasesSubj | async">
+        <div fxLayoutAlign="start center" class="purchase-column column-body column-name">{{purchase.item.name}}</div>
+        <div fxLayoutAlign="start center" class="purchase-column column-body column-sale-date">{{purchase.saleDate | date}}</div>
+        <div fxLayoutAlign="start center" class="purchase-column column-body column-start-date">{{purchase.startDate | date}}</div>
+        <div fxLayoutAlign="start center" class="purchase-column column-body column-expiry-date">{{purchase.item | membershipExpiration:purchase.saleDate}}</div>
+        <div fxLayoutAlign="start center" class="purchase-column column-body column-price">{{purchase.price | currency: 'AED'}}</div>
+        <div fxLayoutAlign="start center" class="purchase-column column-body column-note"><mat-icon [matTooltip]="purchase.note">note_alt</mat-icon></div>
+        <div fxLayoutAlign="start center" class="purchase-column column-body column-freeze"><mat-icon (click)="freezePurchase(purchase)">ac_unit</mat-icon></div>
     </div>
   </div>
+  <button id="sell-icon" mat-fab color="primary" (click)="addNewPurchase()">
+    <mat-icon>attach_money</mat-icon>
+  </button>
 </div>

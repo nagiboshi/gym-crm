@@ -23,7 +23,7 @@
         <mat-select formControlName="serviceItem" [value]="selectedServiceItem"
                     (selectionChange)="afterServiceItemFormGroupSelection($event.value)">
           <mat-option [value]="serviceItem" *ngFor="let serviceItem of serviceItems$ | async">
-            {{serviceItem.name + "  " + serviceItem.price + "  AED"}}
+            {{serviceItem.name}}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -32,17 +32,48 @@
       </div>
     </form>
   </mat-step>
-  <mat-step [stepControl]="quantityFormGroup">
-    <form [formGroup]="quantityFormGroup">
-      <ng-template matStepLabel>Select Quantity</ng-template>
+
+  <mat-step [stepControl]="salePriceFormGroup">
+    <form [formGroup]="salePriceFormGroup">
+      <ng-template matStepLabel>Sale Price</ng-template>
       <mat-form-field>
-        <input formControlName="quantity" placeholder="Please select quantity" matInput type="number">
+        <mat-label>Input a price</mat-label>
+        <input type="number" formControlName="price" matInput>
       </mat-form-field>
       <div>
         <button mat-button matStepperNext>Next</button>
       </div>
     </form>
   </mat-step>
+
+  <mat-step [stepControl]="noteFormGroup">
+    <form [formGroup]="noteFormGroup">
+      <ng-template matStepLabel>Note</ng-template>
+      <mat-form-field>
+        <mat-label>Input a note</mat-label>
+        <textarea formControlName="note" matInput></textarea>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="startDateFormGroup">
+    <form [formGroup]="startDateFormGroup">
+      <ng-template matStepLabel>Select Membership Start Date</ng-template>
+      <mat-form-field>
+        <mat-label>Choose a date</mat-label>
+        <input formControlName="startDate"  matInput [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+
   <mat-step [stepControl]="selectPaymentFormGroup">
     <form [formGroup]="selectPaymentFormGroup">
       <ng-template matStepLabel>Select Payment Method</ng-template>
@@ -67,15 +98,15 @@
       </div>
       <div class="form-row">
         <div class="form-label">Selected Package Item:</div>
-        <div class="form-value">{{selectedServiceItem.name + " " + (selectedServiceItem.price | currency: 'AED')}}</div>
-      </div>
-      <div class="form-row">
-        <div class="form-label">Quantity:</div>
-        <div class="form-value">{{quantityFormGroup.value.quantity}}</div>
+        <div class="form-value">{{selectedServiceItem.name + " " + (salePriceFormGroup.value.price | currency: 'AED')}}</div>
       </div>
       <div class="form-row">
         <div class="form-label">Payment Method: </div>
         <div class="form-value">{{selectPaymentFormGroup.value.paymentMethod}}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Expiration Date: </div>
+        <div class="form-value">{{selectedServiceItem | membershipExpiration:startDateFormGroup.value.startDate}}</div>
       </div>
       <div class="form-row">
         <div class="form-label">Subtotal:</div>
@@ -91,7 +122,7 @@
       </div>
     </div>
     <div>
-      <button [mat-dialog-close]="submitPurchase()" mat-button>Submit</button>
+      <button (click)="submitPurchase()" mat-button>Submit</button>
     </div>
   </mat-step>
 </mat-vertical-stepper>
