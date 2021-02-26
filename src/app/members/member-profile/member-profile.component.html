@@ -62,29 +62,5 @@
 
   </form>
   <div fxLayoutAlign="start">
-    <div fxLayout="column" class="member-purchases">
-      <h2 fxLayoutAlign="start center" class="h2 primal-title">Purchase History
-      </h2>
-      <div fxLayout="row" class="purchase-column-header">
-        <div class="purchase-column column-header column-name">Item name</div>
-        <div class="purchase-column column-header column-sale-date">Sale Date</div>
-        <div class="purchase-column column-header column-start-date">Start Date</div>
-        <div class="purchase-column column-header column-expiry-date">Expiry Date</div>
-        <div class="purchase-column column-header column-price">Price</div>
-        <div class="purchase-column column-header column-note"></div>
-        <div class="purchase-column column-header column-freeze"></div>
-      </div>
-      <div class="purchase-row" [ngClass]="{'freezed': isFreezed(purchase)}" fxLayout="row" *ngFor="let purchase of purchasesSubj | async">
-        <div fxLayoutAlign="start center" class="purchase-column column-body column-name">{{purchase.item.name}}</div>
-        <div fxLayoutAlign="start center" class="purchase-column column-body column-sale-date">{{purchase.saleDate | date}}</div>
-        <div fxLayoutAlign="start center" class="purchase-column column-body column-start-date">{{purchase.startDate | date}}</div>
-        <div fxLayoutAlign="start center" class="purchase-column column-body column-expiry-date">{{purchase.item | membershipExpiration:purchase.saleDate}}</div>
-        <div fxLayoutAlign="start center" class="purchase-column column-body column-price">{{purchase.price | currency: 'AED'}}</div>
-        <div fxLayoutAlign="start center" class="purchase-column column-body column-note"><mat-icon [matTooltip]="purchase.note">note_alt</mat-icon></div>
-        <div fxLayoutAlign="start center" class="purchase-column column-body column-freeze"><mat-icon (click)="freezePurchase(purchase)">ac_unit</mat-icon></div>
-    </div>
-  </div>
-  <button id="sell-icon" mat-fab color="primary" (click)="addNewPurchase()">
-    <mat-icon>attach_money</mat-icon>
-  </button>
+  <app-purchase-history [memberId]="loadedMember.id"></app-purchase-history>
 </div>

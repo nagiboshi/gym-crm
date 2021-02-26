@@ -26,12 +26,14 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.component';
 import {MembershipExpirationPipe} from './pipes/membership-expiration.pipe';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import { FreezeMembershipDialogComponent } from './freeze-membership-dialog/freeze-membership-dialog.component';
-import { PurchaseRowComponent } from './purchase-row/purchase-row.component';
+import {FreezeMembershipDialogComponent} from './freeze-membership-dialog/freeze-membership-dialog.component';
+import {PurchaseHistoryComponent} from './purchase-history/purchase-history.component';
 
 
 @NgModule({
-  declarations: [TimeRangeSelectorComponent, AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent, MembershipExpirationPipe, FreezeMembershipDialogComponent, PurchaseRowComponent],
+  declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent,
+    AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent,
+    MembershipExpirationPipe, FreezeMembershipDialogComponent],
   providers: [fakeBackendProvider, MatIconRegistry, DatePipe, {
     provide: MAT_DATE_FORMATS, useValue: {
       parse: {
@@ -52,8 +54,10 @@ import { PurchaseRowComponent } from './purchase-row/purchase-row.component';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule,
     MatDialogModule,
     MatDatepickerModule,
+    FlexLayoutModule,
     MatTooltipModule,
     MatButtonModule,
     MatMomentDateModule,
@@ -83,9 +87,10 @@ import { PurchaseRowComponent } from './purchase-row/purchase-row.component';
     MatDatepickerModule,
     MatPaginatorModule,
     AddMemberDialogComponent,
+    PurchaseHistoryComponent,
     FindMemberComponent,
     YearMonthSelectorComponent,
-    MembershipExpirationPipe,
+    MembershipExpirationPipe
   ]
 })
 export class SharedModule {

@@ -11,31 +11,33 @@ import {PrimalClassModel} from './classes/primal-class.model';
 import {MembershipService} from './models/membership-service.model';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    PurchaseFormComponent
-  ],
-  imports: [
-    BrowserAnimationsModule,
-    BrowserModule,
-    AppRoutingModule,
-    SharedModule
-  ],
-  providers: [
-    CommunicationService,
-    {provide: APP_INITIALIZER, useFactory: (http: HttpClient, commService: CommunicationService) => {
+    declarations: [
+        AppComponent,
+        PurchaseFormComponent
+    ],
+    imports: [
+        BrowserAnimationsModule,
+        BrowserModule,
+        AppRoutingModule,
+        SharedModule
+    ],
+    providers: [
+        CommunicationService,
+        {
+            provide: APP_INITIALIZER, useFactory: (http: HttpClient, commService: CommunicationService) => {
 
-      return () => new Promise((resolve, _) => {
-        Promise.all([http.get<MembershipService[]>('/memberships').toPromise(),
-        http.get<PrimalClassModel[]>('/classes').toPromise()]).then(([memberships, classes]) => {
-          commService.primalClassSubj.next(classes);
-          commService.membershipServicesSubj.next(memberships);
-          resolve();
-        });
-      });
-      }, deps: [HttpClient, CommunicationService], multi: true}
-  ],
-  bootstrap: [AppComponent]
+                return () => new Promise((resolve, _) => {
+                    Promise.all([http.get<MembershipService[]>('/memberships').toPromise(),
+                        http.get<PrimalClassModel[]>('/classes').toPromise()]).then(([memberships, classes]) => {
+                        commService.primalClassSubj.next(classes);
+                        commService.membershipServicesSubj.next(memberships);
+                        resolve();
+                    });
+                });
+            }, deps: [HttpClient, CommunicationService], multi: true
+        }
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {
 }

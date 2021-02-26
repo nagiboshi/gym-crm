@@ -356,6 +356,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const {url, method, headers, body} = request;
     // wrap in delayed observable to simulate server api call
+    console.log('request: ', request, 'url:', url, 'method: ', method, 'headers: ', headers, 'body: ', body);
     return of(null)
       .pipe(mergeMap(handleRoute))
       .pipe(materialize()) // call materialize and dematerialize to ensure delay even if an error is thrown (https://github.com/Reactive-Extensions/RxJS/issues/648)
@@ -368,6 +369,8 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           return authenticate();
         case url.endsWith('/freeze') && method === 'POST':
           return freezePurchaseItem(request.body as Freeze);
+        case url.endsWith('/freeze') && method === 'GET':
+          return findFreeze(parseInt(request.params.get('purchaseId'), 10), parseInt(request.params.get('startDate'), 10));
         case url.endsWith('/users/register') && method === 'POST':
           return register();
         case url.endsWith('/users') && method === 'GET':
@@ -453,13 +456,25 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     }
 
 
+    function findFreeze(purchaseId: number, startDate: number )  {
+     return  ok(freezes.find( f => f.startDate == startDate && f.purchaseId == purchaseId ));
+    }
+
     function freezePurchaseItem(newFreeze: Freeze) {
       const ids = freezes.map( f => f.id);
       const maxId = Math.max(...ids) + 1;
       const savedFreeze = {...newFreeze};
       savedFreeze.id = maxId;
+      const existFreezeIndex = freezes.findIndex( f => f.id == newFreeze.id);
+      if ( existFreezeIndex != -1 ) {
+        freezes.splice(existFreezeIndex, 1, savedFreeze);
+      } else {
+        freezes.push(savedFreeze);
+      }
+
       return ok(savedFreeze);
     }
+
 
     function addPurchase(purchaseBody: any) {
       const maxId = Math.max(..._getRandomPurchases(purchaseBody.memberId).map(p => p.id)) + 1;
@@ -479,14 +494,15 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       const getRandomTime = () => {
         return new Date().getTime() - getRandomInt(0, 12 * 30 * 24 * 60 * 60 * 60 * 10);
       };
+      const startDate1 = getRandomTime();
+      const startDate2 = getRandomTime();
+      const startDate3 = getRandomTime();
       return [{
         id: 1,
         memberId,
-        saleDate: getRandomTime(),
-        startDate: getRandomTime(),
-        freezes: [
-          freezes[0], freezes[1]
-        ],
+        saleDate: startDate1 - getRandomInt(0 , 1000 * 60 * 60 * 24 ),
+        startDate: startDate1,
+        isFreezed: false,
         note: 'sell his house to buy a membership',
         price: getRandomInt(0, 10000),
         item: randomItem1
@@ -494,21 +510,23 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         {
           id: 2,
           memberId,
-          saleDate: getRandomTime(),
-          startDate: getRandomTime(),
+          saleDate: startDate2 - getRandomInt(0 , 1000 * 60 * 60 * 24 ),
+          startDate: startDate2,
           note: 'bought with a credit payment',
           price: getRandomInt(0, 10000),
           item: randomItem2,
-          freezes: [freezes[2]]
+          isFreezed: true,
+          lastFreezeTs: freezes[2].startDate
         },
         {
           id: 3,
           memberId,
-          saleDate: getRandomTime(),
-          startDate: getRandomTime(),
+          saleDate: startDate3 - getRandomInt(0 , 1000 * 60 * 60 * 24 ),
+          startDate: startDate3,
           note: 'bought with a credit payment',
           price: getRandomInt(0, 10000),
-          item: randomItem3
+          item: randomItem3,
+          isFreezed: false,
         }];
     }
 

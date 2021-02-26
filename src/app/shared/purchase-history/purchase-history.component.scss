@@ -1,0 +1,71 @@
+.member-purchases {
+  width: 100%;
+
+  .column-header {
+    font-weight: bold;
+    color: rgba(0, 0, 0, .54);
+    margin: 10px 0;
+  }
+
+  .purchase-column {
+    padding: 10px 0;
+    border-bottom: solid 1px rgba(0, 0, 0, .12);
+
+    &.column-name {
+      width: 40%;
+      padding-left: 20px;
+    }
+
+    &.column-sale-date {
+      width: 15%;
+    }
+
+    &.column-start-date {
+      width: 15%;
+    }
+
+    &.column-expiry-date {
+      width: 15%;
+    }
+
+    &.column-price {
+      width: 10%;
+    }
+
+    &.column-note {
+      width: 24px;
+      cursor: context-menu;
+    }
+
+    &.column-freeze {
+      width: 24px;
+      cursor: pointer;
+    }
+
+    &.column-discount {
+      width: 5%;
+      min-width: 60px;
+    }
+
+    &.column-total {
+      width: 10%;
+    }
+  }
+
+
+  .purchase-row {
+    &.freezed {
+      background-color: rgba(0, 117, 169, 0.1);
+
+      .column-freeze {
+        color: rgba(0, 117, 169, 0.6);
+      }
+    }
+  }
+}
+
+#sell-icon {
+  position: fixed;
+  bottom: 40px;
+  right: 500px;
+}

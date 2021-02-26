@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {PurchaseItem} from '../../models/purchase.model';
 
 @Component({
@@ -9,9 +9,14 @@ import {PurchaseItem} from '../../models/purchase.model';
 })
 export class FreezeMembershipDialogComponent implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) public purchaseItem: PurchaseItem) { }
+  constructor(public dialog: MatDialogRef<FreezeMembershipDialogComponent>, @Inject(MAT_DIALOG_DATA) public purchase: PurchaseItem) { }
 
   ngOnInit(): void {
   }
 
+  toggleFreeze() {
+    const toggledPurchase = {...this.purchase};
+    toggledPurchase.isFreezed = !toggledPurchase.isFreezed;
+    this.dialog.close(toggledPurchase);
+  }
 }

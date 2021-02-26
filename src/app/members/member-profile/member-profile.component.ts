@@ -1,10 +1,9 @@
-import {ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {MatTableDataSource} from '@angular/material/table';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {PurchaseItem} from '../../models/purchase.model';
 import {ActivatedRoute} from '@angular/router';
 import {PurchaseFormComponent} from '../../sales/purchase-form/purchase-form.component';
-import {BehaviorSubject, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 import {CommunicationService} from '../../shared/communication.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Member} from '../../models/member.model';
@@ -18,17 +17,17 @@ const moment = _moment;
   selector: 'app-member-profile',
   templateUrl: './member-profile.component.html',
   styleUrls: ['./member-profile.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberProfileComponent implements OnDestroy, OnInit {
-  purchasesSubj: BehaviorSubject<PurchaseItem[]> = new BehaviorSubject(null);
-  dataSource: MatTableDataSource<PurchaseItem>;
   loadedMember: Member;
   private routeChangeSub: Subscription;
   form: FormGroup;
 
   constructor(public dialog: MatDialog, private fb: FormBuilder,
               private communicationService: CommunicationService,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private cd: ChangeDetectorRef) {
   }
 
 
@@ -61,20 +60,8 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
   loadProfile(memberId: number) {
     this.communicationService.getMember(memberId.toString()).toPromise().then((member) => {
       this.loadedMember = member;
-      // this.loadedProfile.referalType
       this.form = this.initForm();
-    });
-    this.communicationService.getMemberPurchases(memberId)
-      .toPromise()
-      .then(purchaseItems => this.purchasesSubj.next(purchaseItems));
-  }
-
-  addNewPurchase() {
-    this.dialog.open(PurchaseFormComponent, {data: this.loadedMember}).afterClosed().subscribe((purchase: PurchaseItem) => {
-      const savedPurchaseItem = this.communicationService.savePurchase(purchase);
-      savedPurchaseItem.toPromise().then((purchaseItem) => {
-        this.purchasesSubj.next([purchaseItem, ...this.purchasesSubj.getValue()]);
-      });
+      this.cd.markForCheck();
     });
   }
 
@@ -93,6 +80,7 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
       this.loadedMember = Object.assign(this.loadedMember, this.form.value);
       this.communicationService.updateMember(this.loadedMember);
       this.form = this.initForm();
+      this.cd.markForCheck();
     }
   }
 
@@ -112,32 +100,6 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
     }
   }
 
-  freezePurchase(purchase: PurchaseItem) {
-    this.dialog.open(FreezeMembershipDialogComponent, {data: purchase}).afterClosed().subscribe((purchaseItem) => {
-      if (purchaseItem) {
-        const freeze: Freeze = {id: 0, startDate: moment().toDate().getTime(), purchaseId: purchaseItem.id};
-        this.communicationService.freezeMembership(freeze).toPromise().then((savedFreeze) => {
-          const purchases = [...this.purchasesSubj.getValue()];
-          const foundPurchaseIndex = purchases.findIndex(purchaseToFind => purchaseToFind.id == purchaseItem.id);
-          const foundPurchase = purchases[foundPurchaseIndex];
 
-          if (foundPurchaseIndex != -1) {
-            if (!foundPurchase.freezes) {
-              foundPurchase.freezes = [];
-            }
-            // }
-            foundPurchase.freezes.push(savedFreeze);
-            purchases.splice(foundPurchaseIndex, 1, foundPurchase);
-            this.purchasesSubj.next([...purchases]);
-          }
-        // const allPurchases = [...this.purchasesSubj.getValue()];
-        // allPurchases.splice( allPurchases)
-      });
-    }});
-  }
 
-  isFreezed(purchase: PurchaseItem): boolean {
-    console.log("is Freezed ");
-    return purchase.freezes && purchase.freezes.findIndex(freeze => !freeze.endDate) != -1;
-  }
 }

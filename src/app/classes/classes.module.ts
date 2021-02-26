@@ -11,15 +11,15 @@ import {NgxDaterangepickerMd} from 'ngx-daterangepicker-material';
 import {ScheduleCalendarHeaderComponent} from './schedule-table/schedule-calendar/schedule.calendar-header.component';
 import {SelectionStrategyEventEmitter} from './schedule-table/schedule-calendar/selection-strategy.event-emitter';
 @NgModule({
-  declarations: [ScheduleTableComponent, ScheduleCalendarHeaderComponent, AddScheduleDialogComponent, SignInDialogComponent],
-  providers: [SelectionStrategyEventEmitter],
-  imports: [
-    CommonModule,
-    SharedModule,
-    NgxDaterangepickerMd.forRoot(),
-    ClassesRoutingModule,
-    FormsModule
-  ]
+    declarations: [ScheduleTableComponent, ScheduleCalendarHeaderComponent, AddScheduleDialogComponent, SignInDialogComponent],
+    providers: [SelectionStrategyEventEmitter],
+    imports: [
+        CommonModule,
+        SharedModule,
+        NgxDaterangepickerMd.forRoot(),
+        ClassesRoutingModule,
+        FormsModule
+    ]
 })
 export class ClassesModule {
 }

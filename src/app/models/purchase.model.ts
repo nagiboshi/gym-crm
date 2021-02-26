@@ -8,6 +8,7 @@ export interface PurchaseItem {
   startDate: number;
   price: number;
   note: string;
-  freezes?: Freeze[];
+  isFreezed: boolean;
+  lastFreezeTs?: number;
   memberId: number;
 }

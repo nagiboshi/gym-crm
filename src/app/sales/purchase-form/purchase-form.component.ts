@@ -37,7 +37,7 @@ export class PurchaseFormComponent implements OnInit {
   constructor(private dialogRef: MatDialogRef<PurchaseFormComponent>,
               private fb: FormBuilder,
               public memberService: CommunicationService,
-              @Inject(MAT_DIALOG_DATA) private member: Member) {
+              @Inject(MAT_DIALOG_DATA) private memberId: number) {
   }
 
   ngOnInit(): void {
@@ -98,7 +98,7 @@ export class PurchaseFormComponent implements OnInit {
     this.dialogRef.close({
       id: 0,
       price: this.salePriceFormGroup.value.price,
-      memberId: this.member.id,
+      memberId: this.memberId,
       note,
       isFreezed: false,
       saleDate: moment.now(),

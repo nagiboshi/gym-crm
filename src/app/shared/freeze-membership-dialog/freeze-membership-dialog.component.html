@@ -1,5 +1,5 @@
-<div mat-dialog-content>Do you want to freeze {{purchaseItem.item.name}} ? </div>
+<div mat-dialog-content>Do you want to {{!purchase.isFreezed ? 'freeze':'defreeze'}} {{purchase.item.name}} ? </div>
 <div mat-dialog-actions>
   <button mat-button mat-dialog-close>No</button>
-  <button mat-raised-button color="primary" [mat-dialog-close]="purchaseItem">Yes</button>
+  <button mat-raised-button color="primary" (click)="toggleFreeze()">Yes</button>
 </div>

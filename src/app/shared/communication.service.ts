@@ -154,4 +154,10 @@ export class CommunicationService {
   freezeMembership(freeze: Freeze): Observable<Freeze> {
     return this.httpClient.post<Freeze>('/freeze', freeze);
   }
+
+  findFreeze(purchaseId: number, startDate: number): Observable<Freeze> {
+    const params = new HttpParams().set('purchaseId', purchaseId.toString())
+                                   .set('startDate', startDate.toString());
+    return this.httpClient.get<Freeze>('/freeze', {params} );
+  }
 }
