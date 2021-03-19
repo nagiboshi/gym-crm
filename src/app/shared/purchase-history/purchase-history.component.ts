@@ -1,14 +1,17 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {PurchaseItem} from '../../models/purchase.model';
+import {PurchaseHistoryItem, PurchaseItem, toPurchaseHistoryItem} from '../../models/purchase.model';
 import {FreezeMembershipDialogComponent} from '../freeze-membership-dialog/freeze-membership-dialog.component';
 import {Freeze} from '../../models/freeze.model';
 import {CommunicationService} from '../communication.service';
 import {MatDialog} from '@angular/material/dialog';
 import {PurchaseFormComponent} from '../../sales/purchase-form/purchase-form.component';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, forkJoin, Observable, of} from 'rxjs';
 import * as _moment from 'moment';
+import {combineAll, concatAll, concatMap, map, mapTo} from 'rxjs/operators';
 
 const moment = _moment;
+
+
 
 @Component({
   selector: 'app-purchase-history',
@@ -17,28 +20,39 @@ const moment = _moment;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PurchaseHistoryComponent implements OnInit {
-  purchasesSubj: BehaviorSubject<PurchaseItem[]> = new BehaviorSubject(null);
-
+  purchasesSubj: BehaviorSubject<PurchaseHistoryItem[]> = new BehaviorSubject(null);
+  todayMoment = moment().startOf('day');
   @Input()
   memberId: number;
 
   ngOnInit(): void {
-    this.communicationService.getMemberPurchases(this.memberId)
-      .toPromise()
-      .then(purchaseItems => this.purchasesSubj.next(purchaseItems));
+    const memberPurcases$ = this.communicationService.getMemberPurchases(this.memberId)
+      .pipe(
+        concatMap((purchaceItems) => of(...purchaceItems)),
+        map<PurchaseItem, Observable<PurchaseHistoryItem>>((purchaseItem: PurchaseItem, _: number) => {
+        return of(toPurchaseHistoryItem({...purchaseItem}, this.todayMoment));
+    }));
+
+    memberPurcases$.pipe(combineAll<PurchaseHistoryItem>()).subscribe((res) => {
+        this.purchasesSubj.next(res);
+      });
+
   }
 
   addNewPurchase() {
     this.dialog.open(PurchaseFormComponent, {data: this.memberId}).afterClosed().subscribe((purchase: PurchaseItem) => {
-      const savedPurchaseItem = this.communicationService.savePurchase(purchase);
-      savedPurchaseItem.toPromise().then((purchaseItem) => {
-        this.purchasesSubj.next([purchaseItem, ...this.purchasesSubj.getValue()]);
-      });
+      if (purchase) {
+        const savedPurchaseItem = this.communicationService.savePurchase(purchase);
+        savedPurchaseItem.toPromise().then((purchaseItem) => {
+          this.purchasesSubj.next([toPurchaseHistoryItem(purchaseItem, this.todayMoment), ...this.purchasesSubj.getValue()]);
+        });
+      }
     });
   }
 
 
-  constructor(public dialog: MatDialog, private communicationService: CommunicationService) { }
+  constructor(public dialog: MatDialog, private communicationService: CommunicationService) {
+  }
 
   freezePurchase(purchase: PurchaseItem) {
     // const freeze = !this.isFreezed(purchase);
@@ -78,7 +92,6 @@ export class PurchaseHistoryComponent implements OnInit {
         }
 
       }
-
     );
   }
 

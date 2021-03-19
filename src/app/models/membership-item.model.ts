@@ -3,5 +3,6 @@ export interface MembershipItem {
   isShared?: boolean;
   name: string;
   familySize?: number;
-  expirationTime: number;
+  expirationType: 'day'|'month'|'year';
+  expirationLength: number;
 }

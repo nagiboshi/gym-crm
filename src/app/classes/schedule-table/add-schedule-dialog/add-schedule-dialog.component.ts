@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {FormBuilder} from '@angular/forms';
 import {CommunicationService} from '../../../shared/communication.service';
-import {PrimalClassModel} from '../../primal-class.model';
+import {ClassModel} from '../../class.model';
 import {BehaviorSubject} from 'rxjs';
 import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
@@ -12,10 +12,11 @@ import {MAT_DATE_FORMATS} from '@angular/material/core';
 const moment =  _moment;
 export interface PrimalClassSchedule {
   days: number[];
-  selectedClass: PrimalClassModel;
+  selectedClass: ClassModel;
   startTime: number;
   endTime: number;
   capacity: number;
+  scheduleFrom: number;
   scheduleUntil: number;
 }
 
@@ -25,8 +26,8 @@ export interface PrimalClassSchedule {
   styleUrls: ['./add-schedule-dialog.component.scss'],
 })
 export class AddScheduleDialogComponent implements OnInit {
-  existingClasses: PrimalClassModel[];
-  selectedClass: PrimalClassModel;
+  existingClasses: ClassModel[];
+  selectedClass: ClassModel;
   dayMappings: { [day: number]: string };
   selectedDays: BehaviorSubject<number[]> = new BehaviorSubject([]);
   startTime = -1;

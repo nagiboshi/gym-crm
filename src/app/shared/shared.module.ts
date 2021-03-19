@@ -28,6 +28,7 @@ import {MembershipExpirationPipe} from './pipes/membership-expiration.pipe';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FreezeMembershipDialogComponent} from './freeze-membership-dialog/freeze-membership-dialog.component';
 import {PurchaseHistoryComponent} from './purchase-history/purchase-history.component';
+import {MatTreeModule} from '@angular/material/tree';
 
 
 @NgModule({
@@ -55,6 +56,7 @@ import {PurchaseHistoryComponent} from './purchase-history/purchase-history.comp
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatTreeModule,
     MatDialogModule,
     MatDatepickerModule,
     FlexLayoutModule,
@@ -76,6 +78,7 @@ import {PurchaseHistoryComponent} from './purchase-history/purchase-history.comp
     MatInputModule,
     MatTooltipModule,
     MatDialogModule,
+    MatTreeModule,
     HttpClientModule,
     MatTableModule,
     // MomentDateModule,

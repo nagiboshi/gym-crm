@@ -54,6 +54,7 @@
 
 
   .purchase-row {
+    position: relative;
     &.freezed {
       background-color: rgba(0, 117, 169, 0.1);
 
@@ -61,11 +62,26 @@
         color: rgba(0, 117, 169, 0.6);
       }
     }
+
+    .nearly-expired-exclamation {
+      position: absolute;
+      left: 5px;
+      font-size: 20px;
+      height: 45px;
+      color: #ff0000;
+      line-height: 45px;
+    }
+
+    &.expired {
+      opacity: 0.6;
+    }
+
   }
 }
 
 #sell-icon {
-  position: fixed;
-  bottom: 40px;
-  right: 500px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  place-self: flex-end;
 }
+

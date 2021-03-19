@@ -7,7 +7,7 @@ import {SharedModule} from './shared/shared.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CommunicationService} from './shared/communication.service';
 import {HttpClient} from '@angular/common/http';
-import {PrimalClassModel} from './classes/primal-class.model';
+import {ClassModel} from './classes/class.model';
 import {MembershipService} from './models/membership-service.model';
 
 @NgModule({
@@ -28,7 +28,7 @@ import {MembershipService} from './models/membership-service.model';
 
                 return () => new Promise((resolve, _) => {
                     Promise.all([http.get<MembershipService[]>('/memberships').toPromise(),
-                        http.get<PrimalClassModel[]>('/classes').toPromise()]).then(([memberships, classes]) => {
+                        http.get<ClassModel[]>('/classes').toPromise()]).then(([memberships, classes]) => {
                         commService.primalClassSubj.next(classes);
                         commService.membershipServicesSubj.next(memberships);
                         resolve();

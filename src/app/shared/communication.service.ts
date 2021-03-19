@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {PurchaseItem} from '../models/purchase.model';
-import {BehaviorSubject, Observable, of, zip} from 'rxjs';
+import {BehaviorSubject, Observable, of, Subject, zip} from 'rxjs';
 import {MembershipService} from '../models/membership-service.model';
 import {Member} from '../models/member.model';
-import {PrimalClassModel} from '../classes/primal-class.model';
+import {ClassModel} from '../classes/class.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {isEmpty} from 'lodash';
 import {ScheduleMember} from '../models/schedule-member.model';
@@ -17,6 +17,7 @@ export interface ClassSchedule {
   timeEnd: number;
   day: number;
   capacity: number;
+  scheduleFrom: number;
   scheduleUntil: number;
   signedMembers?: ScheduleMember[];
 }
@@ -28,8 +29,9 @@ export interface ScheduleWeekDay {
 }
 
 export interface DaySchedule {
+  scheduleId: number;
   dayOfWeek: number;
-  primalClass: PrimalClassModel;
+  primalClass: ClassModel;
   timeStart: number;
   timeEnd: number;
   capacity: number;
@@ -39,33 +41,29 @@ export interface DaySchedule {
 
 @Injectable({providedIn: 'root'})
 export class CommunicationService {
-  primalClassSubj = new BehaviorSubject<PrimalClassModel[]>([]);
+  primalClassSubj = new BehaviorSubject<ClassModel[]>([]);
   schedulesSubj = new BehaviorSubject<ClassSchedule[]>([]);
+  newPurchase = new Subject<PurchaseItem>();
+  newPurchase$: Observable<PurchaseItem> = this.newPurchase.asObservable();
+
   membershipServicesSubj = new BehaviorSubject<MembershipService[]>([]);
+
   constructor(private httpClient: HttpClient) {
   }
 
   getMembers(size: number, filterNameLastNameOrPhone: string, offset: number): Observable<Member[]> {
     const params: HttpParams = new HttpParams()
-                                    .append('size', size.toString())
-                                    .append('filterNameLastNameOrPhone', filterNameLastNameOrPhone)
-                                    .append('offset', offset.toString());
+      .append('size', size.toString())
+      .append('filterNameLastNameOrPhone', filterNameLastNameOrPhone)
+      .append('offset', offset.toString());
     return this.httpClient.get<Member[]>('/members', {params});
   }
 
-  private _getDataList<T>(behaviorSubj: BehaviorSubject<T>, url: string, params?: Map<string, any>): Observable<T> {
+  private _getDataList<T>(behaviorSubj: BehaviorSubject<T>, url: string, params?: any): Observable<T> {
     let result: Observable<T>;
-    let httpParams;
-    if ( params ) {
-      httpParams = new HttpParams();
-      for ( const [paramName, paramValue] of params) {
-        httpParams.set(paramName, paramValue.toString());
-      }
-    }
-
     if (isEmpty(behaviorSubj.getValue())) {
-      if ( httpParams ) {
-        result = this.httpClient.get<T>(url, {params: httpParams});
+      if ( params ) {
+        result = this.httpClient.get<T>(url, {params});
       } else {
         result = this.httpClient.get<T>(url);
       }
@@ -85,24 +83,19 @@ export class CommunicationService {
 
 
   getSchedules(startDate: Date, endDate: Date): Observable<ClassSchedule[]> {
-    const params: Map<string, any> = new Map();
-    params.set('from', startDate.getTime());
-    params.set('to', endDate.getTime());
+    const params = { from: startDate.getTime(), to: endDate.getTime()};
     return this._getDataList<ClassSchedule[]>(this.schedulesSubj, '/schedules', params);
   }
 
-  signIn(schedule: ClassSchedule, member: Member): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const foundMember = schedule.signedMembers.find((m) => m.id == member.id );
-      if (!foundMember) {
-        const params = new HttpParams().set('scheduleId', schedule.id.toString()).set('memberId', member.id.toString());
-        this.httpClient.post('/signMember', {params}).toPromise().then(() => {
-          resolve();
-        });
-      } else  {
-        resolve();
-      }
-    });
+  signIn(scheduleId: number, memberIds: number[], date: number): Observable<ScheduleMember[]> {
+    const params = new HttpParams().append('scheduleId', scheduleId.toString())
+      .append('memberIds', memberIds.toString())
+      .append('date', date.toString());
+    return this.httpClient.post<ScheduleMember[]>('/signMembers', {params});
+  }
+
+  emitNewPurchase(purchase: PurchaseItem) {
+    this.newPurchase.next(purchase);
   }
 
   getMember(id: string) {
@@ -112,25 +105,29 @@ export class CommunicationService {
 
 
   addSchedules(schedules: ClassSchedule[]) {
-    // debugger;
-   return this.httpClient.put<ClassSchedule[]>('/schedules', schedules );
+    return this.httpClient.put<ClassSchedule[]>('/schedules', schedules);
   }
 
   getMemberPurchases(memberId: number): Observable<PurchaseItem[]> {
-    const params = new HttpParams().set('memberId', memberId.toString());
+    const params = new HttpParams().append('memberId', memberId.toString());
     return this.httpClient.get<PurchaseItem[]>('/purchases', {params});
+  }
+
+  getPurchaseItems(from: number, to: number): Observable<PurchaseItem[]> {
+    const params = new HttpParams().append('from', from.toString()).set('to', to.toString());
+    return this.httpClient.get<PurchaseItem[]>('/purchasesFromTo', {params});
   }
 
   getMembershipServices(): MembershipService[] {
     return this.membershipServicesSubj.getValue();
   }
 
-  findMembers(firstLastNamePhoneNumber: string){
-      return this.getMembers(20, firstLastNamePhoneNumber, 0);
+  findMembers(firstLastNamePhoneNumber: string) {
+    return this.getMembers(20, firstLastNamePhoneNumber, 0);
   }
 
 
-  getClasses(): PrimalClassModel[] {
+  getClasses(): ClassModel[] {
     return this.primalClassSubj.getValue();
   }
 
@@ -144,11 +141,11 @@ export class CommunicationService {
   }
 
   savePurchase(purchase: PurchaseItem): Observable<PurchaseItem> {
-    return this.httpClient.put<PurchaseItem>('/purchase', purchase );
+    return this.httpClient.put<PurchaseItem>('/purchase', purchase);
   }
 
   updateMember(member: Member) {
-   return this.httpClient.patch<Member>('/member', JSON.stringify(member) );
+    return this.httpClient.patch<Member>('/member', JSON.stringify(member));
   }
 
   freezeMembership(freeze: Freeze): Observable<Freeze> {
@@ -156,8 +153,8 @@ export class CommunicationService {
   }
 
   findFreeze(purchaseId: number, startDate: number): Observable<Freeze> {
-    const params = new HttpParams().set('purchaseId', purchaseId.toString())
-                                   .set('startDate', startDate.toString());
-    return this.httpClient.get<Freeze>('/freeze', {params} );
+    const params = new HttpParams().append('purchaseId', purchaseId.toString())
+      .append('startDate', startDate.toString());
+    return this.httpClient.get<Freeze>('/freeze', {params});
   }
 }

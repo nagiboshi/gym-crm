@@ -4,7 +4,9 @@
   &:hover {
     background-color: rgba(0, 117, 169, 0.1);
   }
+
   height: 24px;
+
   .unsign-user-icon {
     padding: 0;
     display: none;
@@ -22,6 +24,49 @@
   margin-top: 10px;
 }
 
+.sign-in-title {
+  padding-left: 24px;
+}
+
 .sign-in-dialog-row {
-  height: 24px;
+  height: 40px;
+
+  .sign-in-label {
+    padding-left: 24px;
+    height: 40px;
+    display: block;
+    width: 120px;
+    min-width: 120px;
+    margin-right: 15px;
+  }
+}
+
+table {
+  margin-top: 20px;
+  width: 100%;
+
+  tr:last-child {
+    td.mat-cell {
+      border-bottom-color: transparent;
+    }
+  }
+}
+
+.sell-button {
+  cursor: pointer;
+}
+
+.sign-in-member a{
+  color: rgba(0, 0, 0, 0.87);
+  text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+}
+
+.nearly-expired-membership {
+  font-size: 20px;
+  color: #FF0000;
+  margin-right: 15px;
+  cursor: pointer;
 }

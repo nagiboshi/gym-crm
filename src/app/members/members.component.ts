@@ -36,8 +36,6 @@ export class MembersComponent implements AfterViewInit, OnInit {
   }
 
   applyFilter(event: Event) {
-
-    // TODO:: Add time debouncing
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.loadMembers(filterValue);
   }

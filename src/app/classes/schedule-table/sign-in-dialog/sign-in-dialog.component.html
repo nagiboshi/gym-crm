@@ -1,19 +1,69 @@
-<div fxFill fxLayout="column" fxLayoutAlign="center center">
-  <div><h1>Sign in to {{this.signInDialogData.daySchedule.primalClass.name}}: </h1>
-    <div class="sign-in-dialog-row">Date: {{signInDialogData.signInDate.toDate() | date}}</div>
-    <div class="sign-in-dialog-row">Time: {{this.signInDialogData.daySchedule.timeStart |  date: 'HH:mm': '+0000'}}
-      - {{this.signInDialogData.daySchedule.timeEnd | date: 'HH:mm': '+0000'}}</div>
-    <div class="sign-in-dialog-row">Capacity: <span
-      [ngClass]="{warn: scheduleMembers.length > this.signInDialogData.daySchedule.capacity}">{{scheduleMembers.length}}</span>
-      of {{this.signInDialogData.daySchedule.capacity}}</div>
-    <app-find-member [clearAfterSelection]="true" (memberSelected)="addMemberToSchedule($event)" [labelColor]="000"
-                     [placeholder]="'First, Last name of phone number '"></app-find-member>
-    <div fxLayoutAlign="space-between" fxLayout="row" class="signed-member-row"
-         *ngFor="let signedMember of scheduleMembers">
-      <div (click)="removeFromSchedule(signedMember)"
-           class="signed-member">{{signedMember.member.firstName + " " + signedMember.member.lastName}}</div>
-      <mat-icon class="unsign-user-icon">delete</mat-icon>
+<div fxFill fxLayout="column">
+  <div fxLayout="column">
+    <h1 class="sign-in-title">Sign in to {{this.signInDialogData.daySchedule.primalClass.name}}: </h1>
+    <div fxLayout="row" class="sign-in-dialog-row">
+      <span class="sign-in-label">Date:</span>
+      <div>{{signInDialogData.signInDate.toDate() | date}}</div>
     </div>
+    <div fxLayout="row" class="sign-in-dialog-row">
+      <span class="sign-in-label">Time:</span>
+      <div>{{this.signInDialogData.daySchedule.timeStart |  date: 'HH:mm': '+0000'}}
+        - {{this.signInDialogData.daySchedule.timeEnd | date: 'HH:mm': '+0000'}}</div>
+    </div>
+    <div fxLayout="row" class="sign-in-dialog-row">
+      <span class="sign-in-label">Capacity:</span> <span
+      [ngClass]="{warn: scheduleMembers.length > this.signInDialogData.daySchedule.capacity}">{{scheduleMembers.length}}</span>&nbsp;
+      of {{this.signInDialogData.daySchedule.capacity}}</div>
+    <div fxLayout="row" class="sign-in-dialog-row">
+      <span class="sign-in-label">Sign in:</span>
+      <app-find-member fxFlex [clearAfterSelection]="true" (memberSelected)="addMemberToSchedule($event)"
+                       [labelColor]="000"
+                       [placeholder]="'First, Last name of phone number '"></app-find-member>
+    </div>
+
+    <table mat-table [dataSource]="signInMembers">
+
+      <!-- Full name -->
+      <ng-container matColumnDef="fullName">
+        <th mat-header-cell *matHeaderCellDef> Name</th>
+        <td mat-cell
+            [ngClass]="'sign-in-member'"
+            *matCellDef="let signInMember">
+                <span matTooltip="Membership is nearly expired"
+                      class="nearly-expired-membership"
+                      *ngIf="signInMember.activeMembership.isNearlyExpire">!</span>
+          <a
+            routerLink="/member/{{signInMember.scheduleMember.member.id}}">{{signInMember.scheduleMember.member.firstName + ' ' + signInMember.scheduleMember.member.lastName}}</a>
+        </td>
+      </ng-container>
+
+      <!-- Package -->
+      <ng-container matColumnDef="package">
+        <th mat-header-cell *matHeaderCellDef> Package</th>
+        <td mat-cell *matCellDef="let signInMember"> {{signInMember.activeMembership.item.name}} </td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="expiryDate">
+        <th mat-header-cell *matHeaderCellDef> Expiry Date</th>
+        <td mat-cell
+            *matCellDef="let signInMember"> {{signInMember.activeMembership.item | membershipExpiration:signInMember.activeMembership.startDate }} </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="sell">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let signInMember">
+          <mat-icon (click)="openSellDialog(signInMember)" [ngClass]="{'sell-button': true}"
+                    *ngIf="signInMember.activeMembership.isExpired || signInMember.activeMembership.isNearlyExpire">
+            attach_money
+          </mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
     <div class="control-buttons">
       <button color="primary" [mat-dialog-close]="scheduleMembers" mat-raised-button>Save</button>
       <button mat-button mat-dialog-close>Cancel</button>

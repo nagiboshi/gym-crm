@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpRequest, HttpResponse, HttpHandler, HttpEvent, HttpInterceptor, HTTP_INTERCEPTORS} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
 import {Observable, of, throwError} from 'rxjs';
-import {delay, mergeMap, materialize, dematerialize} from 'rxjs/operators';
+import {delay, dematerialize, materialize, mergeMap} from 'rxjs/operators';
 import {MembershipItem} from '../models/membership-item.model';
 import {Member} from '../models/member.model';
 import {PurchaseItem} from '../models/purchase.model';
@@ -9,6 +9,10 @@ import {MembershipService} from '../models/membership-service.model';
 import {ScheduleMember} from '../models/schedule-member.model';
 import * as _moment from 'moment';
 import {Freeze} from '../models/freeze.model';
+import {clone as copy} from 'lodash';
+import {extendMoment} from 'moment-range';
+import {ClassModel} from '../classes/class.model';
+import {FITNESS_CLASS_TYPE, MARTIAL_ARTS_CLASS_TYPE} from '../models/class-type';
 
 export const NAMES = ['Oleksandr', 'Ammar', 'Omar', 'Emad', 'Mohammed', 'Ahmed', 'Hamed', 'Nader', 'Nadine'];
 export const LAST_NAMES = ['LastName1', 'LastName2', 'LastName3', 'LastName4'];
@@ -16,25 +20,34 @@ export const EMAILS = ['example@gmail.com', 'example2@gmail.com', 'example3@gmai
 export const PHONE_NUMBERS = ['0551678467', '0551111112', '0551111113', '0551111114', '0551111115', '0551111116'];
 // array in local storage for registered users
 let users = JSON.parse(localStorage.getItem('users')) || [];
-const moment = _moment;
+const moment = extendMoment(_moment);
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min);
 }
+
+let lastScheduleId = 1;
+const oneDayTimeStamp = 8.64e+7;
 const oneYearTimeStamp = moment().endOf('year').toDate().getTime() - moment().startOf('year').toDate().getTime();
-const oneDayTimeStamp = moment().endOf('day').toDate().getTime() - moment().startOf('day').toDate().getTime();
 const oneWeekTimeStamp = moment().endOf('week').toDate().getTime() - moment().startOf('week').toDate().getTime();
 const oneMonthTimeStamp = moment().endOf('month').toDate().getTime() - moment().startOf('month').toDate().getTime();
 
 
+const classes: ClassModel[] = [{name: 'BJJ', id: 1, classType: MARTIAL_ARTS_CLASS_TYPE},
+  {name: 'MMA', id: 2, classType: MARTIAL_ARTS_CLASS_TYPE},
+  {name: 'Muay Thai', id: 3, classType: MARTIAL_ARTS_CLASS_TYPE},
+  {name: 'Wrestling', id: 4, classType: MARTIAL_ARTS_CLASS_TYPE},
+  {name: 'Core', id: 5, classType: FITNESS_CLASS_TYPE}
+];
+
 const freezes: Freeze[] = [{
-    id: 1,
-    purchaseId: 1,
-    startDate: moment().subtract(3 * oneWeekTimeStamp, 'milliseconds').toDate().getTime(),
-    endDate: moment().subtract(oneWeekTimeStamp, 'milliseconds').toDate().getTime()
-  },
+  id: 1,
+  purchaseId: 1,
+  startDate: moment().subtract(3 * oneWeekTimeStamp, 'milliseconds').toDate().getTime(),
+  endDate: moment().subtract(oneWeekTimeStamp, 'milliseconds').toDate().getTime()
+},
   {
     id: 2,
     purchaseId: 1,
@@ -44,7 +57,7 @@ const freezes: Freeze[] = [{
   {
     id: 3,
     purchaseId: 2,
-    startDate: moment().subtract( oneWeekTimeStamp, 'milliseconds').toDate().getTime(),
+    startDate: moment().subtract(oneWeekTimeStamp, 'milliseconds').toDate().getTime(),
   }];
 
 const members: Member[] = [
@@ -133,23 +146,27 @@ const members: Member[] = [
   }
 ];
 
-const mapMemberToScheduleMember = (membrs: Member[]): ScheduleMember[] => {
+const mapMemberToScheduleMember = (membrs: Member[], day: number): ScheduleMember[] => {
   return membrs.map((m) => {
+    const date = moment().startOf('week');
+    date.add(day, 'day');
     return {
       member: m,
-      id: getRandomInt(0, 10000),
-      scheduleDate: new Date().getTime()
+      id: lastScheduleId++,
+      scheduleDate: date.toDate().getTime()
     };
   });
 };
-
+const today = moment();
 const schedules = [{
   id: 2,
   classId: 1,
   day: 0,
-  signedMembers: mapMemberToScheduleMember(members.slice(0, 3)),
+  signedMembers: mapMemberToScheduleMember(members.slice(0, 3), 0),
   capacity: 10,
   timeStart: 54800000,
+  scheduleFrom: today.clone().subtract(10, 'day').toDate().getTime(),
+  scheduleUntil: today.clone().add(30, 'day').toDate().getTime(),
   timeEnd: 58400000
 },
   {
@@ -157,7 +174,9 @@ const schedules = [{
     classId: 1,
     day: 0,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(1, 4)),
+    signedMembers: mapMemberToScheduleMember(members.slice(1, 4), 0),
+    scheduleFrom: today.clone().subtract(20, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(30, 'day').toDate().getTime(),
     timeStart: 64800000,
     timeEnd: 68400000
   },
@@ -166,7 +185,9 @@ const schedules = [{
     classId: 1,
     day: 2,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(2, 5)),
+    signedMembers: mapMemberToScheduleMember(members.slice(2, 5), 2),
+    scheduleFrom: today.clone().subtract(10, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(50, 'day').toDate().getTime(),
     timeStart: 64800000,
     timeEnd: 68400000
   },
@@ -175,7 +196,9 @@ const schedules = [{
     classId: 2,
     day: 0,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(3, 4)),
+    signedMembers: mapMemberToScheduleMember(members.slice(3, 4), 0),
+    scheduleFrom: today.clone().subtract(1, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(4, 'day').toDate().getTime(),
     timeStart: 68400000,
     timeEnd: 71400000
   },
@@ -184,7 +207,9 @@ const schedules = [{
     classId: 1,
     day: 3,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(0, 2)),
+    signedMembers: mapMemberToScheduleMember(members.slice(0, 2), 3),
+    scheduleFrom: today.clone().subtract(10, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(30, 'day').toDate().getTime(),
     timeStart: 54800000,
     timeEnd: 58400000
   },
@@ -193,17 +218,31 @@ const schedules = [{
     classId: 2,
     day: 4,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(0, 4)),
+    signedMembers: mapMemberToScheduleMember(members.slice(0, 4), 4),
+    scheduleFrom: today.clone().subtract(10, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(30, 'day').toDate().getTime(),
     timeStart: 64800000,
     timeEnd: 68400000
   },
-  {id: 7, classId: 3, day: 5, capacity: 10, signedMembers: null, timeStart: 64800000, timeEnd: 68400000},
+  {
+    id: 7,
+    classId: 3,
+    day: 5,
+    capacity: 10,
+    signedMembers: null,
+    timeStart: 64800000,
+    timeEnd: 68400000,
+    scheduleFrom: today.clone().subtract(10, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(30, 'day').toDate().getTime()
+  },
   {
     id: 8,
     classId: 4,
     day: 6,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(2, 5)),
+    signedMembers: mapMemberToScheduleMember(members.slice(2, 5), 6),
+    scheduleFrom: today.clone().subtract(2, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(2, 'day').toDate().getTime(),
     timeStart: 68400000,
     timeEnd: 71400000
   },
@@ -212,7 +251,9 @@ const schedules = [{
     classId: 1,
     day: 0,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(3, 6)),
+    signedMembers: mapMemberToScheduleMember(members.slice(3, 6), 0),
+    scheduleFrom: today.clone().subtract(4, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(1, 'day').toDate().getTime(),
     timeStart: 64800000,
     timeEnd: 68400000
   },
@@ -221,7 +262,9 @@ const schedules = [{
     classId: 1,
     day: 2,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(2, 5)),
+    signedMembers: mapMemberToScheduleMember(members.slice(2, 5), 2),
+    scheduleFrom: today.clone().subtract(5, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(8, 'day').toDate().getTime(),
     timeStart: 54800000,
     timeEnd: 58400000
   },
@@ -230,7 +273,9 @@ const schedules = [{
     classId: 2,
     day: 0,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(1, 4)),
+    signedMembers: mapMemberToScheduleMember(members.slice(1, 4), 0),
+    scheduleFrom: today.clone().subtract(1, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(1, 'day').toDate().getTime(),
     timeStart: 58400000,
     timeEnd: 61400000
   },
@@ -239,7 +284,9 @@ const schedules = [{
     classId: 1,
     day: 3,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(5, 6)),
+    signedMembers: mapMemberToScheduleMember(members.slice(5, 6), 3),
+    scheduleFrom: today.clone().subtract(0, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(50, 'day').toDate().getTime(),
     timeStart: 54800000,
     timeEnd: 58400000
   },
@@ -248,7 +295,9 @@ const schedules = [{
     classId: 2,
     day: 4,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(2, 4)),
+    signedMembers: mapMemberToScheduleMember(members.slice(2, 4), 4),
+    scheduleFrom: today.clone().subtract(10, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(30, 'day').toDate().getTime(),
     timeStart: 54800000,
     timeEnd: 58400000
   },
@@ -257,11 +306,18 @@ const schedules = [{
     classId: 3,
     day: 5,
     capacity: 10,
-    signedMembers: mapMemberToScheduleMember(members.slice(3, 6)),
+    signedMembers: mapMemberToScheduleMember(members.slice(3, 6), 5),
+    scheduleFrom: today.clone().subtract(10, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(30, 'day').toDate().getTime(),
     timeStart: 54800000,
     timeEnd: 58400000
   },
-  {id: 15, classId: 4, day: 6, capacity: 10, signedMembers: null, timeStart: 58400000, timeEnd: 61400000}];
+  {
+    id: 15, classId: 4, day: 6, capacity: 10, signedMembers: null, timeStart: 58400000,
+    scheduleFrom: today.clone().subtract(10, 'day').toDate().getTime(),
+    scheduleUntil: today.clone().add(30, 'day').toDate().getTime(),
+    timeEnd: 61400000
+  }];
 
 // const monthSchedule: MonthSchedule = {
 // month: new Date().getMonth(),
@@ -271,82 +327,82 @@ const schedules = [{
 
 const membershipServices: MembershipService[] = [{
   id: 1, name: 'Family Memberships', items: [
-    {id: 1, expirationTime: oneYearTimeStamp, name: 'Annual Family Membership (2 Adults, 1 Kid)', isShared: true, familySize: 3},
-    {id: 2, expirationTime: oneYearTimeStamp, name: 'Annual Family Membership (2 Adults, 2 Kids)', isShared: true, familySize: 4}
+    {id: 1, expirationType: 'year', expirationLength: 1, name: 'Annual Family Membership (2 Adults, 1 Kid)', isShared: true, familySize: 3},
+    {id: 2, expirationType: 'year', expirationLength: 1, name: 'Annual Family Membership (2 Adults, 2 Kids)', isShared: true, familySize: 4}
   ]
 },
   {
     id: 2, name: 'Kids Membership', items: [
-      {id: 3, expirationTime: oneDayTimeStamp, name: 'Day Pass'},
-      {id: 4, expirationTime: 2 * oneWeekTimeStamp, name: 'Free Trial'},
-      {id: 5, expirationTime: oneMonthTimeStamp, name: 'Kids BJJ 1 Month'},
-      {id: 6, expirationTime: 3 * oneMonthTimeStamp, name: 'Kids BJJ 3 Months'},
-      {id: 7, expirationTime: 6 * oneMonthTimeStamp, name: 'Kids BJJ 6 Months'},
-      {id: 8, expirationTime: oneYearTimeStamp, name: 'Kids BJJ Annual'},
-      {id: 9, expirationTime: oneMonthTimeStamp, name: 'Kids Muay Thai 1 Month'},
-      {id: 10, expirationTime: 3 * oneMonthTimeStamp, name: 'Kids Muay Thai 3 Months'},
-      {id: 11, expirationTime: 6 * oneMonthTimeStamp, name: 'Kids Muay Thai 6 Months'},
-      {id: 12, expirationTime: oneYearTimeStamp, name: 'Kids Muay Thai Annual'},
-      {id: 13, expirationTime: oneMonthTimeStamp, name: 'Kids BJJ and Muay Thai 1 Month'},
-      {id: 14, expirationTime: 3 * oneMonthTimeStamp, name: 'Kids BJJ and Muay Thai 3 Month'},
-      {id: 15, expirationTime: 6 * oneMonthTimeStamp, name: 'Kids BJJ and Muay Thai 6 Month'},
-      {id: 16, expirationTime: oneYearTimeStamp, name: 'Kids BJJ and Muay Thai Annual'}
+      {id: 3, expirationType: 'day', expirationLength: 1, name: 'Day Pass'},
+      {id: 4, expirationType: 'day', expirationLength: 14, name: 'Free Trial'},
+      {id: 5, expirationType: 'month', expirationLength: 1, name: 'Kids BJJ 1 Month'},
+      {id: 6, expirationType: 'month', expirationLength: 3, name: 'Kids BJJ 3 Months'},
+      {id: 7, expirationType: 'month', expirationLength: 6, name: 'Kids BJJ 6 Months'},
+      {id: 8, expirationType: 'year', expirationLength: 1, name: 'Kids BJJ Annual'},
+      {id: 9, expirationType: 'month', expirationLength: 1, name: 'Kids Muay Thai 1 Month'},
+      {id: 10, expirationType: 'month', expirationLength: 3, name: 'Kids Muay Thai 3 Months'},
+      {id: 11, expirationType: 'month', expirationLength: 6, name: 'Kids Muay Thai 6 Months'},
+      {id: 12, expirationType: 'year', expirationLength: 1, name: 'Kids Muay Thai Annual'},
+      {id: 13, expirationType: 'month', expirationLength: 1, name: 'Kids BJJ and Muay Thai 1 Month'},
+      {id: 14, expirationType: 'month', expirationLength: 3, name: 'Kids BJJ and Muay Thai 3 Month'},
+      {id: 15, expirationType: 'month', expirationLength: 6, name: 'Kids BJJ and Muay Thai 6 Month'},
+      {id: 16, expirationType: 'year', expirationLength: 1, name: 'Kids BJJ and Muay Thai Annual'}
     ]
   },
   {
     id: 3, name: 'Martial Arts Package (All)', items: [
-      {id: 17, expirationTime: oneMonthTimeStamp, name: '1 Month Martial Arts Package'},
-      {id: 18, expirationTime: oneMonthTimeStamp * 3, name: '3 Month Martial Arts Package'},
-      {id: 19, expirationTime: oneMonthTimeStamp * 6, name: '6 Month Martial Arts Package'},
-      {id: 20, expirationTime: oneMonthTimeStamp * 12, name: 'Annual Month Martial Arts Package'},
-      {id: 21, expirationTime: oneDayTimeStamp, name: 'Day Pass'},
-      {id: 22, expirationTime: oneWeekTimeStamp, name: 'Free Trial'},
-      {id: 23, expirationTime: oneDayTimeStamp * 10, name: 'Martial Arts 10 Class Pass'}
+      {id: 17, expirationType: 'month', expirationLength: 1, name: '1 Month Martial Arts Package'},
+      {id: 18, expirationType: 'month', expirationLength: 3, name: '3 Month Martial Arts Package'},
+      {id: 19, expirationType: 'month', expirationLength: 6, name: '6 Month Martial Arts Package'},
+      {id: 20, expirationType: 'year', expirationLength: 1, name: 'Annual Month Martial Arts Package'},
+      {id: 21, expirationType: 'day', expirationLength: 1, name: 'Day Pass'},
+      {id: 22, expirationType: 'day', expirationLength: 14, name: 'Free Trial'},
+      {id: 23, expirationType: 'day', expirationLength: 10, name: 'Martial Arts 10 Class Pass'}
     ]
   },
   {
     id: 4, name: 'Martial Arts per Discipline', items: [
-      {id: 24, expirationTime: oneMonthTimeStamp, name: 'BJJ 1 Month'},
-      {id: 25, expirationTime: 3 * oneMonthTimeStamp, name: 'BJJ 3 Months'},
-      {id: 26, expirationTime: 6 * oneMonthTimeStamp, name: 'BJJ 6 Months'},
-      {id: 27, expirationTime: 12 * oneMonthTimeStamp, name: 'BJJ Annual'},
-      {id: 28, expirationTime: oneMonthTimeStamp, name: 'Muay Thai 1 Month'},
-      {id: 29, expirationTime: 3 * oneMonthTimeStamp, name: 'Muay Thai 3 Months'},
-      {id: 30, expirationTime: oneMonthTimeStamp * 6, name: 'Muay Thai 6 Months'},
-      {id: 31, expirationTime: 12 * oneMonthTimeStamp, name: 'Muay Thai Annual'},
-      {id: 32, expirationTime: oneMonthTimeStamp, name: 'Boxing 1 Month'},
-      {id: 33, expirationTime: 3 * oneMonthTimeStamp, name: 'Boxing 3 Months'},
-      {id: 34, expirationTime: 6 * oneMonthTimeStamp, name: 'Boxing 6 Months'},
-      {id: 35, expirationTime: 12 * oneMonthTimeStamp, name: 'Boxing Annual'},
-      {id: 36, expirationTime: oneMonthTimeStamp, name: 'MMA 1 Month'},
-      {id: 37, expirationTime: 3 * oneMonthTimeStamp, name: 'MMA 3 Months'},
-      {id: 38, expirationTime: 6 * oneMonthTimeStamp, name: 'MMA 6 Months'},
-      {id: 39, expirationTime: 12 * oneMonthTimeStamp, name: 'MMA Annual'},
-      {id: 40, expirationTime: oneMonthTimeStamp, name: 'Wrestling 1 Month'},
-      {id: 41, expirationTime: 3 * oneMonthTimeStamp, name: 'Wrestling 3 Month'},
-      {id: 42, expirationTime: 6 * oneMonthTimeStamp, name: 'Wrestling 6 Month'},
-      {id: 43, expirationTime: 12 * oneMonthTimeStamp, name: 'Wrestling Annual'},
-      {id: 40, expirationTime: oneMonthTimeStamp, name: '2 Discipline 1 Month'},
-      {id: 41, expirationTime: 3 * oneMonthTimeStamp, name: '2 Discipline 3 Month'},
-      {id: 42, expirationTime: 6 * oneMonthTimeStamp, name: '2 Discipline 6 Month'},
-      {id: 43, expirationTime: 12 * oneMonthTimeStamp, name: '2 Discipline Annual'},
+      {id: 24, expirationType: 'month', expirationLength: 1, name: 'BJJ 1 Month'},
+      {id: 25, expirationType: 'month', expirationLength: 3, name: 'BJJ 3 Months'},
+      {id: 26, expirationType: 'month', expirationLength: 6, name: 'BJJ 6 Months'},
+      {id: 27, expirationType: 'year', expirationLength: 1, name: 'BJJ Annual'},
+      {id: 28, expirationType: 'month', expirationLength: 1, name: 'Muay Thai 1 Month'},
+      {id: 29, expirationType: 'month', expirationLength: 3, name: 'Muay Thai 3 Months'},
+      {id: 30, expirationType: 'month', expirationLength: 6, name: 'Muay Thai 6 Months'},
+      {id: 31, expirationType: 'year', expirationLength: 1, name: 'Muay Thai Annual'},
+      {id: 32, expirationType: 'month', expirationLength: 1, name: 'Boxing 1 Month'},
+      {id: 33, expirationType: 'month', expirationLength: 3, name: 'Boxing 3 Months'},
+      {id: 34, expirationType: 'month', expirationLength: 6, name: 'Boxing 6 Months'},
+      {id: 35, expirationType: 'year', expirationLength: 1, name: 'Boxing Annual'},
+      {id: 36, expirationType: 'month', expirationLength: 1, name: 'MMA 1 Month'},
+      {id: 37, expirationType: 'month', expirationLength: 3, name: 'MMA 3 Months'},
+      {id: 38, expirationType: 'month', expirationLength: 6, name: 'MMA 6 Months'},
+      {id: 39, expirationType: 'year', expirationLength: 1, name: 'MMA Annual'},
+      {id: 40, expirationType: 'month', expirationLength: 1, name: 'Wrestling 1 Month'},
+      {id: 41, expirationType: 'month', expirationLength: 3, name: 'Wrestling 3 Month'},
+      {id: 42, expirationType: 'month', expirationLength: 6, name: 'Wrestling 6 Month'},
+      {id: 43, expirationType: 'year', expirationLength: 1, name: 'Wrestling Annual'},
+      {id: 40, expirationType: 'month', expirationLength: 1, name: '2 Discipline 1 Month'},
+      {id: 41, expirationType: 'month', expirationLength: 3, name: '2 Discipline 3 Month'},
+      {id: 42, expirationType: 'month', expirationLength: 6, name: '2 Discipline 6 Month'},
+      {id: 43, expirationType: 'year', expirationLength: 1, name: '2 Discipline Annual'},
     ]
   },
   {
     id: 5, name: 'Personal Training', items: [
-      {id: 44, expirationTime: oneMonthTimeStamp, name: '1 on 1 PT'},
-      {id: 45, expirationTime: oneMonthTimeStamp, name: '10 PT Sessions'},
-      {id: 46, expirationTime: oneMonthTimeStamp, name: '20 PT Sessions'},
-      {id: 47, expirationTime: oneMonthTimeStamp, name: '30 PT Sessions'},
-      {id: 48, expirationTime: oneMonthTimeStamp, name: 'Semi Private Training'},
+      {id: 44, expirationType: 'day', expirationLength: 1, name: '1 on 1 PT'},
+      {id: 45, expirationType: 'day', expirationLength: 10, name: '10 PT Sessions'},
+      {id: 46, expirationType: 'day', expirationLength: 20, name: '20 PT Sessions'},
+      {id: 47, expirationType: 'month', expirationLength: 1, name: '30 PT Sessions'},
+      {id: 48, expirationType: 'day', expirationLength: 1, name: 'Semi Private Training'},
     ]
   },
   {
     id: 6, name: 'Unlimited Package', items: [
-      {id: 49, expirationTime: oneMonthTimeStamp, name: '1 Month Unlimited Package'},
-      {id: 50, expirationTime: 3 * oneMonthTimeStamp, name: '3 Months Unlimited Package'},
-      {id: 51, expirationTime: 6 * oneMonthTimeStamp, name: '6 Months Unlimited Package'},
-      {id: 52, expirationTime: 12 * oneMonthTimeStamp, name: 'Annual Unlimited Package'},
+      {id: 49, expirationType: 'month', expirationLength: 1, name: '1 Month Unlimited Package'},
+      {id: 50, expirationType: 'month', expirationLength: 3, name: '3 Months Unlimited Package'},
+      {id: 51, expirationType: 'month', expirationLength: 6, name: '6 Months Unlimited Package'},
+      {id: 52, expirationType: 'year', expirationLength: 1, name: 'Annual Unlimited Package'},
     ]
   }
 ];
@@ -356,7 +412,6 @@ export class FakeBackendInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const {url, method, headers, body} = request;
     // wrap in delayed observable to simulate server api call
-    console.log('request: ', request, 'url:', url, 'method: ', method, 'headers: ', headers, 'body: ', body);
     return of(null)
       .pipe(mergeMap(handleRoute))
       .pipe(materialize()) // call materialize and dematerialize to ensure delay even if an error is thrown (https://github.com/Reactive-Extensions/RxJS/issues/648)
@@ -364,6 +419,8 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       .pipe(dematerialize());
 
     function handleRoute() {
+
+
       switch (true) {
         case url.endsWith('/users/authenticate') && method === 'POST':
           return authenticate();
@@ -373,12 +430,20 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           return findFreeze(parseInt(request.params.get('purchaseId'), 10), parseInt(request.params.get('startDate'), 10));
         case url.endsWith('/users/register') && method === 'POST':
           return register();
+        case url.match('/signMembers') && method === 'POST':
+          return signMembers(parseInt(body.params.get('scheduleId'), 10),
+            parseInt(body.params.get('date'), 10),
+            body.params.getAll('memberIds').map(m => parseInt(m, 10)));
         case url.endsWith('/users') && method === 'GET':
           return getUsers();
         case url.match(/\/users\/\d+$/) && method === 'DELETE':
           return deleteUser();
         case url.match('/classes') && method == 'GET':
           return getClasses();
+        case url.match('/class') && method == 'PUT': {
+          const classModel: ClassModel = request.body as ClassModel;
+          return addClasses(classModel);
+        }
         case url.match('/member') && (method == 'PUT' || method == 'PATCH'):
           const member = request.body as Member;
           return mergeMember(member);
@@ -394,20 +459,36 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         case url.match(/\/memberships$/) && method == 'GET':
           return getMembershipServices();
         case url.match('/schedules') && method == 'GET':
-          return getSchedules();
+          const from = request.params.get('from');
+          const to = request.params.get('to');
+          return getSchedules(parseInt(from, 10), parseInt(to, 10));
         case url.match('/schedules') && method == 'PUT':
           return addSchedules(body);
         case url.match('/purchase') && method == 'PUT':
           return addPurchase(body); //
+        case url.startsWith('/purchasesFromTo') && method == 'GET':
+          return getPurchaseItems(parseInt(request.params.get('from'), 10), parseInt(request.params.get('to'), 10));
         case url.match('/purchases') && method == 'GET':
-          // const id = url.match(/\/purchases\/\d+$/).groups[1];
           return getMemberPurchases(parseInt(request.params.get('memberId'), 10));
+
         default:
           // pass through any requests not handled above
           return next.handle(request);
       }
     }
 
+
+    function signMembers(scheduleId: number, date: number, memberIds: number[]) {
+      const schedule = schedules.find(s => s.id == scheduleId);
+      const members1 = members.filter(m => memberIds.includes(m.id));
+
+      const scheduleMembers: ScheduleMember[] = members1.map((m) => {
+        return {id: lastScheduleId++, member: m, scheduleDate: date};
+      });
+
+      schedule.signedMembers = [...scheduleMembers, ...schedule.signedMembers];
+      return ok(scheduleMembers);
+    }
 
     function getMember(id) {
       const member = members.find(m => m.id == id);
@@ -447,26 +528,41 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       return ok(resultedMembers);
     }
 
-    function getClasses() {
-      return ok([
-        {name: 'BJJ', id: 1},
-        {name: 'MMA', id: 2},
-        {name: 'Muay Thai', id: 3},
-        {name: 'Wrestling', id: 4}]);
+
+
+    function getClasses(): Observable<any> {
+      return ok([...classes]);
     }
 
+    function addClasses(classModel: ClassModel) {
+      let id;
+      if ( classModel.id == 0 ) {
+          id = Math.max(...classes.map( c => c.id )) + 1;
+      } else {
+        id = classModel.id;
+      }
+      const savedClassModel = {...classModel, ...{id}};
 
-    function findFreeze(purchaseId: number, startDate: number )  {
-     return  ok(freezes.find( f => f.startDate == startDate && f.purchaseId == purchaseId ));
+      if ( classModel.id == 0 ) {
+        classes.push(savedClassModel);
+      } else  {
+        const index = classes.findIndex( c => c.id == classModel.id );
+        classes[index] = savedClassModel;
+      }
+      return ok(savedClassModel);
+    }
+
+    function findFreeze(purchaseId: number, startDate: number) {
+      return ok(freezes.find(f => f.startDate == startDate && f.purchaseId == purchaseId));
     }
 
     function freezePurchaseItem(newFreeze: Freeze) {
-      const ids = freezes.map( f => f.id);
+      const ids = freezes.map(f => f.id);
       const maxId = Math.max(...ids) + 1;
       const savedFreeze = {...newFreeze};
       savedFreeze.id = maxId;
-      const existFreezeIndex = freezes.findIndex( f => f.id == newFreeze.id);
-      if ( existFreezeIndex != -1 ) {
+      const existFreezeIndex = freezes.findIndex(f => f.id == newFreeze.id);
+      if (existFreezeIndex != -1) {
         freezes.splice(existFreezeIndex, 1, savedFreeze);
       } else {
         freezes.push(savedFreeze);
@@ -483,25 +579,29 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       return ok(savedPurchase);
     }
 
-    function _getRandomPurchases(memberId: number): PurchaseItem[] {
+    function _getRandomPurchases(memberId: number, from?: number, to?: number): PurchaseItem[] {
       const randomPackage1 = membershipServices[(getRandomInt(0, membershipServices.length))];
-      const randomItem1: MembershipItem = randomPackage1.items[getRandomInt(0, randomPackage1.items.length - 1)];
+      const randomItem1: MembershipItem = copy(randomPackage1.items[getRandomInt(0, randomPackage1.items.length - 1)]);
       const randomPackage2 = membershipServices[(getRandomInt(0, membershipServices.length))];
-      const randomItem2: MembershipItem = randomPackage2.items[getRandomInt(0, randomPackage2.items.length - 1)];
+      const randomItem2: MembershipItem = copy(randomPackage2.items[getRandomInt(0, randomPackage2.items.length - 1)]);
       const randomPackage3 = membershipServices[(getRandomInt(0, membershipServices.length))];
-      const randomItem3: MembershipItem = randomPackage3.items[getRandomInt(0, randomPackage3.items.length - 1)];
+      const randomItem3: MembershipItem = copy(randomPackage3.items[getRandomInt(0, randomPackage3.items.length - 1)]);
 
       const getRandomTime = () => {
         return new Date().getTime() - getRandomInt(0, 12 * 30 * 24 * 60 * 60 * 60 * 10);
       };
-      const startDate1 = getRandomTime();
-      const startDate2 = getRandomTime();
-      const startDate3 = getRandomTime();
-      return [{
+      // const startDate1 = getRandomTime();
+      // const startDate2 = getRandomTime();
+      // const startDate3 = getRandomTime();
+      const today = moment();
+      const randomPurchases = [{
         id: 1,
         memberId,
-        saleDate: startDate1 - getRandomInt(0 , 1000 * 60 * 60 * 24 ),
-        startDate: startDate1,
+        saleDate: today.clone().subtract(randomItem1.expirationLength, randomItem1.expirationType).toDate().getTime(),
+        // startDate1 - getRandomInt(0, 1000 * 60 * 60 * 24),
+        startDate: today.clone()
+          .subtract(randomItem1.expirationLength, randomItem1.expirationType)
+          .toDate().getTime() + 2 * oneDayTimeStamp, // expired
         isFreezed: false,
         note: 'sell his house to buy a membership',
         price: getRandomInt(0, 10000),
@@ -510,8 +610,10 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         {
           id: 2,
           memberId,
-          saleDate: startDate2 - getRandomInt(0 , 1000 * 60 * 60 * 24 ),
-          startDate: startDate2,
+          saleDate: today.clone().subtract(randomItem2.expirationLength, randomItem2.expirationType).toDate().getTime(),
+          startDate: today.clone()
+            .subtract(randomItem2.expirationLength, randomItem2.expirationType)
+            .toDate().getTime() + 30 * oneDayTimeStamp,
           note: 'bought with a credit payment',
           price: getRandomInt(0, 10000),
           item: randomItem2,
@@ -521,17 +623,28 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         {
           id: 3,
           memberId,
-          saleDate: startDate3 - getRandomInt(0 , 1000 * 60 * 60 * 24 ),
-          startDate: startDate3,
+          saleDate: today.clone().subtract(randomItem3.expirationLength, randomItem3.expirationType).toDate().getTime(),
+          startDate: memberId == 5 ? Date.now() :
+              today.clone().subtract(randomItem3.expirationLength, randomItem3.expirationType).toDate().getTime(), // nearly expired
           note: 'bought with a credit payment',
           price: getRandomInt(0, 10000),
           item: randomItem3,
           isFreezed: false,
         }];
+
+      return randomPurchases;
     }
 
     function getMemberPurchases(memberId: number) {
       return ok(_getRandomPurchases(memberId));
+    }
+
+    function getPurchaseItems(from: number, to: number) {
+      const result = [];
+      for (const member of members) {
+        result.push(..._getRandomPurchases(member.id));
+      }
+      return ok(result);
     }
 
     // route functions
@@ -558,8 +671,15 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       return ok(membershipServices);
     }
 
-    function getSchedules() {
-      return ok(schedules);
+    function getSchedules(from: number, to: number) {
+
+      return ok(copy(schedules).filter((s) => {
+        // debugger;
+        const range = moment().range(new Date(from), new Date(to));
+        // means schedule date is less then from filter  ( less means after from filter )
+        // console.log("s.scheduleFrom >= from && s.scheduleFrom <= to"  , s.scheduleFrom, from, to);
+        return range.contains(new Date(s.scheduleFrom)) || range.contains(new Date(s.scheduleUntil));
+      }));
     }
 
     function addSchedules(schedulesToSave) {
