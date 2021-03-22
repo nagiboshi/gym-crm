@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {ClassModel} from '../../classes/class.model';
+import {CommunicationService} from '../../shared/communication.service';
 
 @Component({
   selector: 'app-settings-page',
@@ -6,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./settings-page.component.scss']
 })
 export class SettingsPageComponent implements OnInit {
-  links = ['class-settings', 'payment-settings'];
-  activeLink = this.links[0];
-  constructor() { }
+
+
+  constructor(private communicationService: CommunicationService) {
+  }
 
   ngOnInit(): void {
   }

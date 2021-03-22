@@ -1,31 +1,42 @@
-table {
-  width: 100%;
+.members-component {
+  position: relative;
+
+  table {
+    width: 100%;
 
     tr.mat-header-row:hover {
       background-color: #FFF;
     }
 
-  tr:hover {
-    background-color: rgba(0, 117, 169, 0.6);
-    cursor: pointer;
-    .mat-cell {
-      color: #FFF;
-    }
-    .edit-cell, .delete-cell {
+    tr:hover {
+      background-color: rgba(0, 117, 169, 0.6);
+      cursor: pointer;
 
-      mat-icon {
-        visibility: visible;
+      .mat-cell {
+        color: #FFF;
+      }
+
+      .edit-cell, .delete-cell {
+
+        mat-icon {
+          visibility: visible;
+        }
       }
     }
-  }
 
-  .edit-cell, .delete-cell {
-    width: 70px;
+    .edit-cell, .delete-cell {
+      width: 70px;
 
-    mat-icon {
-      visibility: hidden;
+      mat-icon {
+        visibility: hidden;
+      }
     }
+
+
   }
-
-
+  .add-person-container {
+    position: fixed;
+    width: 1150px;
+    bottom: 20px;
+  }
 }

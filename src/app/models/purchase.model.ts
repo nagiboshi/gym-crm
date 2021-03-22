@@ -1,6 +1,7 @@
 import {MembershipItem} from './membership-item.model';
 import {Moment} from 'moment';
 import * as _moment from 'moment';
+import {PaymentMethod} from './payment-method';
 
 const moment = _moment;
 const threeDaysTS = 2.592e+8;
@@ -12,6 +13,7 @@ export interface PurchaseItem {
   startDate: number;
   price: number;
   note: string;
+  paymentMethodId: number;
   isFreezed: boolean;
   lastFreezeTs?: number;
   memberId: number;

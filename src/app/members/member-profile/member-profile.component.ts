@@ -1,16 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {PurchaseItem} from '../../models/purchase.model';
 import {ActivatedRoute} from '@angular/router';
-import {PurchaseFormComponent} from '../../sales/purchase-form/purchase-form.component';
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {CommunicationService} from '../../shared/communication.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Member} from '../../models/member.model';
-import {FreezeMembershipDialogComponent} from '../../shared/freeze-membership-dialog/freeze-membership-dialog.component';
-import {Freeze} from '../../models/freeze.model';
 import * as _moment from 'moment';
-
+import {first} from 'lodash';
 const moment = _moment;
 
 @Component({
@@ -41,7 +37,7 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
   ngOnInit() {
     const id = parseInt(this.activatedRoute.snapshot.params.id, 10);
     this.loadProfile(id);
-    this.routeChangeSub = this.activatedRoute.url.subscribe(urlSegment => this.loadProfile(parseInt(urlSegment[1].toString(), 10)));
+    this.routeChangeSub = this.activatedRoute.url.subscribe(urlSegment => this.loadProfile(parseInt(first(urlSegment).path, 10)) );
   }
 
   initForm() {

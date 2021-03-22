@@ -29,12 +29,14 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {FreezeMembershipDialogComponent} from './freeze-membership-dialog/freeze-membership-dialog.component';
 import {PurchaseHistoryComponent} from './purchase-history/purchase-history.component';
 import {MatTreeModule} from '@angular/material/tree';
+import {ClassCategoryNamePipe} from './pipes/class-category-name.pipe';
+import {DeletePromptDialogComponent} from './delete-class-dialog/delete-prompt-dialog.component';
 
 
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent,
     AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent,
-    MembershipExpirationPipe, FreezeMembershipDialogComponent],
+    MembershipExpirationPipe, ClassCategoryNamePipe, DeletePromptDialogComponent, FreezeMembershipDialogComponent],
   providers: [fakeBackendProvider, MatIconRegistry, DatePipe, {
     provide: MAT_DATE_FORMATS, useValue: {
       parse: {
@@ -93,7 +95,9 @@ import {MatTreeModule} from '@angular/material/tree';
     PurchaseHistoryComponent,
     FindMemberComponent,
     YearMonthSelectorComponent,
-    MembershipExpirationPipe
+    MembershipExpirationPipe,
+    ClassCategoryNamePipe,
+    DeletePromptDialogComponent
   ]
 })
 export class SharedModule {

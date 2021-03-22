@@ -5,13 +5,10 @@ import {MembershipService} from '../../models/membership-service.model';
 import {MembershipItem} from '../../models/membership-item.model';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../../environments/environment';
-import {PurchaseItem} from '../../models/purchase.model';
 import {CommunicationService} from '../../shared/communication.service';
 import * as _moment from 'moment';
-import {Moment} from 'moment';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Member} from '../../models/member.model';
-
+import {PaymentMethod} from '../../models/payment-method';
 const moment = _moment;
 
 @Component({
@@ -32,17 +29,18 @@ export class PurchaseFormComponent implements OnInit {
   membershipServices: MembershipService[];
   selectedServiceItem: MembershipItem;
   serviceItems$: Observable<MembershipItem[]>;
-  paymentMethods = ['Cash', 'Cheque', 'Amex', 'Visa/MC', 'Discover', 'Credit (ATM) (No Auth)', 'Other', 'Account', 'Groupon Voucher', 'Prepaid Gift Card'];
+  paymentMethods: PaymentMethod[];
 
   constructor(private dialogRef: MatDialogRef<PurchaseFormComponent>,
               private fb: FormBuilder,
-              public memberService: CommunicationService,
+              public communicationService: CommunicationService,
               @Inject(MAT_DIALOG_DATA) private memberId: number) {
   }
 
   ngOnInit(): void {
 
-    this.membershipServices = this.memberService.getMembershipServices();
+    this.membershipServices = this.communicationService.getMembershipServices();
+    this.paymentMethods = this.communicationService.getPaymentMethods();
     this.selectedService = first(this.membershipServices);
     this.selectedServiceItem = first(this.selectedService.items);
     this.serviceItems$ = of(this.selectedService.items);
@@ -58,7 +56,7 @@ export class PurchaseFormComponent implements OnInit {
     });
 
     this.selectPaymentFormGroup = this.fb.group({
-      paymentMethod: ['', Validators.required]
+      paymentMethod: [first(this.paymentMethods), Validators.required]
     });
 
     this.salePriceFormGroup = this.fb.group({
@@ -103,6 +101,7 @@ export class PurchaseFormComponent implements OnInit {
       isFreezed: false,
       saleDate: moment.now(),
       startDate: startDateMoment.toDate().getTime(),
+      paymentMethodId: this.selectPaymentFormGroup.value.paymentMethod.id,
       item: this.selectedServiceItem,
     });
   }

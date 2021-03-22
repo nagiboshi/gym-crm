@@ -26,8 +26,6 @@ export class MembersComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    // this.dataSource.paginator = this.paginator;
-    // this.dataSource.sort = this.sort;
   }
 
   ngOnInit() {
@@ -35,10 +33,7 @@ export class MembersComponent implements AfterViewInit, OnInit {
     this.dataSource.loadMembers();
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.loadMembers(filterValue);
-  }
+
 
   addMember() {
     const newUser = {id: 0, firstName: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
@@ -55,7 +50,7 @@ export class MembersComponent implements AfterViewInit, OnInit {
   }
 
   openProfile(row: any) {
-    this.router.navigateByUrl('/member/' + row.id);
+    this.router.navigateByUrl('/members/' + row.id);
   }
 }
 

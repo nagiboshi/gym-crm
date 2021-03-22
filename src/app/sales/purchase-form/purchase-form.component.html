@@ -80,7 +80,7 @@
       <mat-form-field>
         <mat-select formControlName="paymentMethod">
           <mat-option [value]="paymentMethod" *ngFor="let paymentMethod of paymentMethods">
-            {{paymentMethod}}
+            {{paymentMethod.name}}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -102,7 +102,7 @@
       </div>
       <div class="form-row">
         <div class="form-label">Payment Method: </div>
-        <div class="form-value">{{selectPaymentFormGroup.value.paymentMethod}}</div>
+        <div class="form-value">{{selectPaymentFormGroup.value.paymentMethod.name}}</div>
       </div>
       <div class="form-row">
         <div class="form-label">Expiration Date: </div>

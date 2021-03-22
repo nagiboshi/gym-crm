@@ -9,6 +9,8 @@ import {CommunicationService} from './shared/communication.service';
 import {HttpClient} from '@angular/common/http';
 import {ClassModel} from './classes/class.model';
 import {MembershipService} from './models/membership-service.model';
+import {PaymentMethod} from './models/payment-method';
+import {ClassCategory} from './classes/class.category';
 
 @NgModule({
     declarations: [
@@ -28,9 +30,14 @@ import {MembershipService} from './models/membership-service.model';
 
                 return () => new Promise((resolve, _) => {
                     Promise.all([http.get<MembershipService[]>('/memberships').toPromise(),
-                        http.get<ClassModel[]>('/classes').toPromise()]).then(([memberships, classes]) => {
-                        commService.primalClassSubj.next(classes);
+                        http.get<ClassModel[]>('/classes').toPromise(),
+                        http.get<PaymentMethod[]>('/paymentMethods').toPromise(),
+                        http.get<ClassCategory[]>('/classCategories').toPromise()])
+                      .then(([memberships, classes,paymentMethods, classCategories]) => {
+                        commService.classesSubj.next(classes);
                         commService.membershipServicesSubj.next(memberships);
+                        commService.peymentMethodsSubj.next(paymentMethods);
+                        commService.classCategoriesSubj.next(classCategories);
                         resolve();
                     });
                 });

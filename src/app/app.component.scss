@@ -1,9 +1,6 @@
-.main-wrapper {
-  margin: 0 auto;
-}
-
-.primal-route{
-  &.active {
-    background-color: #0079a7;
-  }
+a.active {
+  background-color: #0079a7;
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
 }

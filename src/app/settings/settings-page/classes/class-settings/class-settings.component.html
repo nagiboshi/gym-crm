@@ -1,0 +1,58 @@
+<div class="class-settings-container">
+  <table mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>
+        <div fxLayoutAlign="start center" fxLayout>
+          <div class="table-header-title"> Classes</div>
+          <mat-form-field>
+            <mat-select placeholder="Filter by" (valueChange)="filterOutClassesByType($event)">
+              <mat-option *ngFor="let classCategory of classCategories"
+                          [value]="classCategory.id">{{classCategory.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let row"> {{row.name}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="classCategory">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let row">
+        {{row | classCategoryName:row.categoryId}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="edit">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td class="edit-cell" mat-cell *matCellDef="let row">
+        <button (click)="editClass(row)" mat-flat-button>
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td class="delete-cell" mat-cell *matCellDef="let row">
+        <button (click)="removeClass(row)" mat-flat-button>
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="classesColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: classesColumns;"></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="3">No classes created yet</td>
+    </tr>
+  </table>
+  <div fxLayoutAlign="end">
+    <button (click)="addNewClass()" class="add-button" mat-mini-fab>
+      <mat-icon>add
+      </mat-icon>
+    </button>
+  </div>
+</div>

@@ -1,63 +1,63 @@
-<div id="members-float-header">
-  <mat-form-field>
-    <mat-label>SEARCH</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Start typing..." #input>
-  </mat-form-field>
-  <button  mat-button (click)="addMember()" color="primary"><mat-icon>add</mat-icon> &nbsp;&nbsp;Add member</button>
-</div>
+<div class="members-component">
+  <div>
+    <table mat-table [dataSource]="dataSource" matSort>
 
+      <!-- First name column -->
+      <ng-container matColumnDef="firstName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> First Name</th>
+        <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.firstName}} </td>
+      </ng-container>
 
-<div class="mat-elevation-z8">
-  <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Name Column -->
+      <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Name</th>
+        <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.lastName}} </td>
+      </ng-container>
 
-    <!-- First name column -->
-    <ng-container matColumnDef="firstName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> First Name</th>
-      <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.firstName}} </td>
-    </ng-container>
+      <!-- Color Column -->
+      <ng-container matColumnDef="phoneNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Phone</th>
+        <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.phoneNumber}} </td>
+      </ng-container>
 
-    <!-- Name Column -->
-    <ng-container matColumnDef="lastName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Name</th>
-      <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.lastName}} </td>
-    </ng-container>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Email</th>
+        <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.email}} </td>
+      </ng-container>
 
-    <!-- Color Column -->
-    <ng-container matColumnDef="phoneNumber">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Phone</th>
-      <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.phoneNumber}} </td>
-    </ng-container>
+      <ng-container matColumnDef="gender">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Gender</th>
+        <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.gender}} </td>
+      </ng-container>
+      <ng-container matColumnDef="edit">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td class="edit-cell" mat-cell *matCellDef="let row">
+          <mat-icon>edit</mat-icon>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td class="delete-cell" mat-cell *matCellDef="let row">
+          <mat-icon>delete</mat-icon>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Email</th>
-      <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.email}} </td>
-    </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-    <ng-container matColumnDef="gender">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Gender</th>
-      <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.gender}} </td>
-    </ng-container>
-    <ng-container matColumnDef="edit">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td class="edit-cell" mat-cell *matCellDef="let row">
-        <mat-icon>edit</mat-icon>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="delete">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td class="delete-cell" mat-cell *matCellDef="let row">
-        <mat-icon>delete</mat-icon>
-      </td>
-    </ng-container>
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">No data</td>
+      </tr>
+    </table>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 
-    <!-- Row shown when there is no matching data. -->
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-    </tr>
-  </table>
+  </div>
+  <div fxLayoutAlign="end" class="add-person-container">
+  <button id="add-person-button" mat-fab (click)="addMember()" color="primary">
+    <mat-icon>person_add</mat-icon>
+  </button>
 
-  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
 </div>

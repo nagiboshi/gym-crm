@@ -5,10 +5,11 @@ import {MembershipService} from '../models/membership-service.model';
 import {Member} from '../models/member.model';
 import {ClassModel} from '../classes/class.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {isEmpty} from 'lodash';
+import {isEmpty, remove} from 'lodash';
 import {ScheduleMember} from '../models/schedule-member.model';
 import {Freeze} from '../models/freeze.model';
-
+import {PaymentMethod} from '../models/payment-method';
+import {ClassCategory} from '../classes/class.category';
 
 export interface ClassSchedule {
   id: number;
@@ -41,13 +42,15 @@ export interface DaySchedule {
 
 @Injectable({providedIn: 'root'})
 export class CommunicationService {
-  primalClassSubj = new BehaviorSubject<ClassModel[]>([]);
+  classesSubj = new BehaviorSubject<ClassModel[]>([]);
   schedulesSubj = new BehaviorSubject<ClassSchedule[]>([]);
   newPurchase = new Subject<PurchaseItem>();
   newPurchase$: Observable<PurchaseItem> = this.newPurchase.asObservable();
-
+  classAdded = new Subject<ClassModel>();
+  classAdded$: Observable<ClassModel> = this.classAdded.asObservable();
   membershipServicesSubj = new BehaviorSubject<MembershipService[]>([]);
-
+  peymentMethodsSubj = new BehaviorSubject<PaymentMethod[]>([]);
+  classCategoriesSubj = new BehaviorSubject<ClassCategory[]>([]);
   constructor(private httpClient: HttpClient) {
   }
 
@@ -99,8 +102,8 @@ export class CommunicationService {
   }
 
   getMember(id: string) {
-    const params = new HttpParams().set('id', id);
-    return this.httpClient.get<Member>('/member', {params});
+    // const params = new HttpParams().set('id', id);
+    return this.httpClient.get<Member>('/members/' + id); // , {params});
   }
 
 
@@ -122,19 +125,60 @@ export class CommunicationService {
     return this.membershipServicesSubj.getValue();
   }
 
+  getPaymentMethods(): PaymentMethod[] {
+    return this.peymentMethodsSubj.getValue();
+  }
+
   findMembers(firstLastNamePhoneNumber: string) {
     return this.getMembers(20, firstLastNamePhoneNumber, 0);
   }
 
 
   getClasses(): ClassModel[] {
-    return this.primalClassSubj.getValue();
+    return this.classesSubj.getValue();
+  }
+
+  removeClass(id: number):Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const params = new HttpParams().append('id', id.toString());
+      return this.httpClient.delete('/class', {params}).toPromise().then(() => {
+        const filteredClasses = this.classesSubj.getValue();
+        remove(filteredClasses, c => c.id == id);
+        this.classesSubj.next([...filteredClasses]);
+        resolve();
+      });
+    });
+
+  }
+
+  getClassCategories(): ClassCategory[] {
+    return this.classCategoriesSubj.getValue();
   }
 
   newMember(member: Member): Observable<Member> {
     return this.httpClient.put<Member>('/member', member);
   }
 
+
+  addClass(newClass: ClassModel): Promise<ClassModel> {
+    return new Promise<ClassModel>((resolve, reject) => {
+      this.httpClient.put<ClassModel>('/class', newClass).toPromise().then((addedClass) => {
+          if( newClass.id == 0 ) {
+            this.classesSubj.next([addedClass, ...this.classesSubj.getValue()]);
+          } else {
+            const classes = this.classesSubj.getValue();
+            const index = classes.findIndex( c => c.id == newClass.id);
+            if( index != -1 ) {
+              classes[index] = addedClass;
+            }
+
+            this.classesSubj.next([...classes]);
+          }
+        resolve(addedClass);
+      });
+
+    })
+  }
 
   getDayMappings() {
     return {0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat'};

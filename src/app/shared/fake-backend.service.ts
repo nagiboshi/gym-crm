@@ -9,15 +9,14 @@ import {MembershipService} from '../models/membership-service.model';
 import {ScheduleMember} from '../models/schedule-member.model';
 import * as _moment from 'moment';
 import {Freeze} from '../models/freeze.model';
-import {clone as copy} from 'lodash';
+import {clone as copy, remove} from 'lodash';
 import {extendMoment} from 'moment-range';
 import {ClassModel} from '../classes/class.model';
 import {FITNESS_CLASS_TYPE, MARTIAL_ARTS_CLASS_TYPE} from '../models/class-type';
+import {PaymentMethod} from '../models/payment-method';
+import {ClassCategory} from '../classes/class.category';
 
 export const NAMES = ['Oleksandr', 'Ammar', 'Omar', 'Emad', 'Mohammed', 'Ahmed', 'Hamed', 'Nader', 'Nadine'];
-export const LAST_NAMES = ['LastName1', 'LastName2', 'LastName3', 'LastName4'];
-export const EMAILS = ['example@gmail.com', 'example2@gmail.com', 'example3@gmail.com', 'example4@gmail.com'];
-export const PHONE_NUMBERS = ['0551678467', '0551111112', '0551111113', '0551111114', '0551111115', '0551111116'];
 // array in local storage for registered users
 let users = JSON.parse(localStorage.getItem('users')) || [];
 const moment = extendMoment(_moment);
@@ -35,12 +34,22 @@ const oneWeekTimeStamp = moment().endOf('week').toDate().getTime() - moment().st
 const oneMonthTimeStamp = moment().endOf('month').toDate().getTime() - moment().startOf('month').toDate().getTime();
 
 
-const classes: ClassModel[] = [{name: 'BJJ', id: 1, classType: MARTIAL_ARTS_CLASS_TYPE},
-  {name: 'MMA', id: 2, classType: MARTIAL_ARTS_CLASS_TYPE},
-  {name: 'Muay Thai', id: 3, classType: MARTIAL_ARTS_CLASS_TYPE},
-  {name: 'Wrestling', id: 4, classType: MARTIAL_ARTS_CLASS_TYPE},
-  {name: 'Core', id: 5, classType: FITNESS_CLASS_TYPE}
+const classCategories: ClassCategory[] = [{id: 1, name: 'Martial Arts'}, {id: 2, name: 'Fitness'}];
+
+const classes: ClassModel[] = [{name: 'BJJ', id: 1, categoryId: 1},
+  {name: 'MMA', id: 2, categoryId: 1},
+  {name: 'Muay Thai', id: 3, categoryId: 1},
+  {name: 'Wrestling', id: 4, categoryId: 1},
+  {name: 'Core', id: 5, categoryId: 2}
 ];
+
+const paymentMethods: PaymentMethod[] = [{id: 1, name: 'Cash'},
+  {id: 2, name: 'Cheque'},
+  {id: 3, name: 'Amex'},
+  {id: 4, name: 'Visa/MC'},
+  {id: 5, name: 'Discover'},
+  {id: 6, name: 'Credit (ATM) (No Auth)'},
+  {id: 7, name: 'Other'}];
 
 const freezes: Freeze[] = [{
   id: 1,
@@ -442,9 +451,12 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           return getClasses();
         case url.match('/class') && method == 'PUT': {
           const classModel: ClassModel = request.body as ClassModel;
-          return addClasses(classModel);
+          return mergeClasses(classModel);
         }
-        case url.match('/member') && (method == 'PUT' || method == 'PATCH'):
+        case url.match('/class') && method == 'DELETE': {
+          return removeClass(parseInt(request.params.get('id')));
+        }
+        case url.match('/members') && (method == 'PUT' || method == 'PATCH'):
           const member = request.body as Member;
           return mergeMember(member);
         case url.match(/\/members$/) && method == 'GET':
@@ -452,9 +464,8 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           const offset = request.params.get('offset');
           const size = request.params.get('size');
           return getMembers(size, offset, filterNameLastNameOrPhone);
-        case url.match(/\/member$/) && method == 'GET':
-          // const memberId = url.match(/\/member\/\d+$/).groups[1];
-          const id = parseInt(request.params.get('id'), 10);
+        case url.match(/\/members\/\d+$/) && method == 'GET':
+          const id = idFromUrl();
           return getMember(id);
         case url.match(/\/memberships$/) && method == 'GET':
           return getMembershipServices();
@@ -466,11 +477,18 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           return addSchedules(body);
         case url.match('/purchase') && method == 'PUT':
           return addPurchase(body); //
+        case url.match('/paymentMethod') && method == 'GET':
+          return getPaymentMethods(); //
+        case url.match('/paymentMethod') && method == 'PUT':
+          return addPaymentMethod(body); //
+        case url.match(/\/paymentMethod\/\d+$/) && method == 'DELETE':
+          return deletePaymentMethod(); //
         case url.startsWith('/purchasesFromTo') && method == 'GET':
           return getPurchaseItems(parseInt(request.params.get('from'), 10), parseInt(request.params.get('to'), 10));
         case url.match('/purchases') && method == 'GET':
           return getMemberPurchases(parseInt(request.params.get('memberId'), 10));
-
+        case url.match('/classCategories') && method == 'GET':
+          return getClassCategories();
         default:
           // pass through any requests not handled above
           return next.handle(request);
@@ -488,6 +506,10 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
       schedule.signedMembers = [...scheduleMembers, ...schedule.signedMembers];
       return ok(scheduleMembers);
+    }
+
+    function getClassCategories() {
+      return ok(copy(classCategories));
     }
 
     function getMember(id) {
@@ -529,24 +551,28 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     }
 
 
-
     function getClasses(): Observable<any> {
       return ok([...classes]);
     }
 
-    function addClasses(classModel: ClassModel) {
+    function removeClass(id: number) {
+      remove(classes, c => c.id == id);
+      return ok();
+    }
+
+    function mergeClasses(classModel: ClassModel) {
       let id;
-      if ( classModel.id == 0 ) {
-          id = Math.max(...classes.map( c => c.id )) + 1;
+      if (classModel.id == 0) {
+        id = Math.max(...classes.map(c => c.id)) + 1;
       } else {
         id = classModel.id;
       }
       const savedClassModel = {...classModel, ...{id}};
 
-      if ( classModel.id == 0 ) {
+      if (classModel.id == 0) {
         classes.push(savedClassModel);
-      } else  {
-        const index = classes.findIndex( c => c.id == classModel.id );
+      } else {
+        const index = classes.findIndex(c => c.id == classModel.id);
         classes[index] = savedClassModel;
       }
       return ok(savedClassModel);
@@ -590,9 +616,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       const getRandomTime = () => {
         return new Date().getTime() - getRandomInt(0, 12 * 30 * 24 * 60 * 60 * 60 * 10);
       };
-      // const startDate1 = getRandomTime();
-      // const startDate2 = getRandomTime();
-      // const startDate3 = getRandomTime();
+
       const today = moment();
       const randomPurchases = [{
         id: 1,
@@ -605,7 +629,8 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         isFreezed: false,
         note: 'sell his house to buy a membership',
         price: getRandomInt(0, 10000),
-        item: randomItem1
+        paymentMethodId: paymentMethods[getRandomInt(0, paymentMethods.length - 1)].id,
+        item: randomItem1,
       },
         {
           id: 2,
@@ -618,6 +643,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           price: getRandomInt(0, 10000),
           item: randomItem2,
           isFreezed: true,
+          paymentMethodId: paymentMethods[getRandomInt(0, paymentMethods.length - 1)].id,
           lastFreezeTs: freezes[2].startDate
         },
         {
@@ -625,10 +651,11 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           memberId,
           saleDate: today.clone().subtract(randomItem3.expirationLength, randomItem3.expirationType).toDate().getTime(),
           startDate: memberId == 5 ? Date.now() :
-              today.clone().subtract(randomItem3.expirationLength, randomItem3.expirationType).toDate().getTime(), // nearly expired
+            today.clone().subtract(randomItem3.expirationLength, randomItem3.expirationType).toDate().getTime(), // nearly expired
           note: 'bought with a credit payment',
           price: getRandomInt(0, 10000),
           item: randomItem3,
+          paymentMethodId: paymentMethods[getRandomInt(0, paymentMethods.length - 1)].id,
           isFreezed: false,
         }];
 
@@ -637,6 +664,29 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
     function getMemberPurchases(memberId: number) {
       return ok(_getRandomPurchases(memberId));
+    }
+
+    function getPaymentMethods() {
+      return ok(copy(paymentMethods));
+    }
+
+    function addPaymentMethod(paymentMethod: PaymentMethod) {
+      paymentMethod = copy(paymentMethod);
+      let id;
+      if (paymentMethod.id == 0) {
+        id = Math.max(...paymentMethods.map(s => s.id));
+      } else {
+        id = paymentMethod.id;
+      }
+      paymentMethod.id = id;
+      paymentMethods.push(paymentMethod);
+      return ok(paymentMethod);
+    }
+
+    function deletePaymentMethod() {
+      const id = idFromUrl();
+      const isRemoved = remove(paymentMethods, m => m.id == id).length > 0;
+      return ok(isRemoved);
     }
 
     function getPurchaseItems(from: number, to: number) {
@@ -688,6 +738,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       schedules.push(...schedulesToSave);
       return ok(schedulesToSave);
     }
+
 
     function register() {
       const user = body;
