@@ -49,7 +49,7 @@ export class CommunicationService {
   classAdded = new Subject<ClassModel>();
   classAdded$: Observable<ClassModel> = this.classAdded.asObservable();
   membershipServicesSubj = new BehaviorSubject<MembershipService[]>([]);
-  peymentMethodsSubj = new BehaviorSubject<PaymentMethod[]>([]);
+  paymentMethodsSubj = new BehaviorSubject<PaymentMethod[]>([]);
   classCategoriesSubj = new BehaviorSubject<ClassCategory[]>([]);
   constructor(private httpClient: HttpClient) {
   }
@@ -126,7 +126,41 @@ export class CommunicationService {
   }
 
   getPaymentMethods(): PaymentMethod[] {
-    return this.peymentMethodsSubj.getValue();
+    return this.paymentMethodsSubj.getValue();
+  }
+
+  addPaymentMethod(newPaymentMethod: PaymentMethod) {
+    return new Promise<PaymentMethod>((resolve, reject) => {
+      this.httpClient.put<PaymentMethod>('/paymentMethod', newPaymentMethod).toPromise().then((addedPaymentMethod) => {
+        if( newPaymentMethod.id == 0 ) {
+          this.paymentMethodsSubj.next([addedPaymentMethod, ...this.paymentMethodsSubj.getValue()]);
+        } else {
+          debugger;
+          const paymentMethods = this.paymentMethodsSubj.getValue();
+          const index = paymentMethods.findIndex( c => c.id == newPaymentMethod.id);
+          if( index != -1 ) {
+            paymentMethods[index] = addedPaymentMethod;
+          }
+
+          this.paymentMethodsSubj.next([...paymentMethods]);
+        }
+        resolve(addedPaymentMethod);
+      }).catch((e) => {
+        reject(e);
+      });
+
+    });
+  }
+
+  removePaymentMethod(id: number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      return this.httpClient.delete(`/paymentMethod/${id}`).toPromise().then(() => {
+        const paymentMethods = this.paymentMethodsSubj.getValue();
+        remove(paymentMethods, c => c.id == id);
+        this.paymentMethodsSubj.next([...paymentMethods]);
+        resolve();
+      });
+    });
   }
 
   findMembers(firstLastNamePhoneNumber: string) {
@@ -175,9 +209,11 @@ export class CommunicationService {
             this.classesSubj.next([...classes]);
           }
         resolve(addedClass);
+      }).catch((e) => {
+        reject(e);
       });
 
-    })
+    });
   }
 
   getDayMappings() {

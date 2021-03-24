@@ -36,7 +36,7 @@ import {ClassCategory} from './classes/class.category';
                       .then(([memberships, classes,paymentMethods, classCategories]) => {
                         commService.classesSubj.next(classes);
                         commService.membershipServicesSubj.next(memberships);
-                        commService.peymentMethodsSubj.next(paymentMethods);
+                        commService.paymentMethodsSubj.next(paymentMethods);
                         commService.classCategoriesSubj.next(classCategories);
                         resolve();
                     });

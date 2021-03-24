@@ -30,19 +30,21 @@ export class ClassSettingsComponent implements OnInit {
     this.dataSource.filterByClassType(categoryId);
   }
 
-  _newClass(): ClassModel{
-    return {id:0, categoryId: first(this.communicationService.getClassCategories()).id, name:'' };
+  _newClass(): ClassModel {
+    return {id: 0, categoryId: first(this.communicationService.getClassCategories()).id, name: ''};
   }
 
-  addNewClass(){
+  addNewClass() {
     this.showMergeClassDialog();
   }
 
   showMergeClassDialog(classModel?: ClassModel) {
-    const data: ClassDialogData = {classCategories: this.communicationService.getClassCategories(),
-                                   classData: classModel ? classModel : this._newClass()};
-    this.dialog.open(CreateClassDialogComponent, {data }).afterClosed().subscribe((classToCreate) => {
-      if( classToCreate ) {
+    const data: ClassDialogData = {
+      classCategories: this.communicationService.getClassCategories(),
+      classData: classModel ? classModel : this._newClass()
+    };
+    this.dialog.open(CreateClassDialogComponent, {data}).afterClosed().subscribe((classToCreate) => {
+      if (classToCreate) {
         this.communicationService
           .addClass(classToCreate)
           .then(this.dataSource.updateClasses.bind(this.dataSource));
@@ -50,13 +52,13 @@ export class ClassSettingsComponent implements OnInit {
     });
   }
 
-  removeClass(classToRemove: ClassModel) {
+  remove(classToRemove: ClassModel) {
     this.dialog.open(DeletePromptDialogComponent, {data: `Are you sure you want to delete class ${classToRemove.name}`}).afterClosed().subscribe((doAction) => {
-        if( doAction ) {
-          this.communicationService.removeClass(classToRemove.id)
-            .then(this.dataSource.updateClasses.bind(this.dataSource));
-        }
-    })
+      if (doAction) {
+        this.communicationService.removeClass(classToRemove.id)
+          .then(this.dataSource.updateClasses.bind(this.dataSource));
+      }
+    });
 
   }
 

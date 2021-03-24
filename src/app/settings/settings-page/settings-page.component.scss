@@ -1,6 +1,6 @@
 .settings-page-wrapper {
   display: inline-grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 50% 50%;
   grid-column-gap: 100px;
-  width: 100%;
+  width: calc(100% - 100px);
 }

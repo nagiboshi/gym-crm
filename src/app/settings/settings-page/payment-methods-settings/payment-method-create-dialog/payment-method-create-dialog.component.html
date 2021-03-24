@@ -1,0 +1,10 @@
+<form fxLayout="column" (ngSubmit)="merge()" [formGroup]="formGroup">
+  <mat-form-field>
+    <input placeholder="Payment method name" matInput formControlName="name"/>
+  </mat-form-field>
+  <mat-dialog-actions>
+    <button mat-dialog-close color="warn" mat-button>Cancel</button>
+    <button color="primary" mat-raised-button type="submit">Save</button>
+  </mat-dialog-actions>
+</form>
+

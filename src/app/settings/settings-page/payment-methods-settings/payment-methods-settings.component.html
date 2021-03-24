@@ -1,4 +1,5 @@
-<table mat-table [dataSource]="paymentMethods" matSort>
+<div class="payment-settings-container">
+<table mat-table [dataSource]="dataSource" matSort>
 
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Methods</th>
@@ -7,8 +8,8 @@
 
   <ng-container matColumnDef="edit">
     <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
-    <td mat-cell *matCellDef="let row">
-      <mat-icon>edit</mat-icon>
+    <td class="edit-cell" mat-cell *matCellDef="let row">
+      <mat-icon (click)="showPaymentMethodDialog(row)">edit</mat-icon>
     </td>
   </ng-container>
 
@@ -27,3 +28,11 @@
     <td class="mat-cell" colspan="3">No payment methods created yet</td>
   </tr>
 </table>
+<div fxLayoutAlign="end">
+  <button (click)="showPaymentMethodDialog()" class="add-button" mat-mini-fab>
+    <mat-icon>add
+    </mat-icon>
+  </button>
+</div>
+</div>
+

@@ -6,10 +6,11 @@ import {SharedModule} from '../shared/shared.module';
 import {SettingsRoutingModule} from './settings-routing.module';
 import {ClassSettingsComponent} from './settings-page/classes/class-settings/class-settings.component';
 import {PaymentMethodsSettingsComponent} from './settings-page/payment-methods-settings/payment-methods-settings.component';
+import {PaymentMethodCreateDialogComponent} from './settings-page/payment-methods-settings/payment-method-create-dialog/payment-method-create-dialog.component';
 
 
 @NgModule({
-  declarations: [SettingsPageComponent, CreateClassDialogComponent, ClassSettingsComponent, PaymentMethodsSettingsComponent],
+  declarations: [SettingsPageComponent, CreateClassDialogComponent, PaymentMethodCreateDialogComponent, ClassSettingsComponent, PaymentMethodsSettingsComponent],
   imports: [
     CommonModule,
     SharedModule,
