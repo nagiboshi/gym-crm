@@ -1,8 +1,8 @@
-export interface MembershipItem {
+export interface PackageItem {
   id: number;
   isShared?: boolean;
+  numberOfParticipants?: number;
   name: string;
-  familySize?: number;
   expirationType: 'day'|'month'|'year';
   expirationLength: number;
 }

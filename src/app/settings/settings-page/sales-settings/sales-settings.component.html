@@ -1,0 +1,39 @@
+<h5 class="sales-settings-title">Package settings</h5>
+<div class="sales-settings-content">
+
+  <div fxLayoutAlign="start center" class="expandable-package" *ngFor="let expandablePackage of packages | async">
+    <div>
+      <div fxLayoutAlign="start center" fxLayout="row">
+        <div (click)="expandPackage(expandablePackage)" class="expandable-package-name" fxLayout="start center">
+          <div *ngIf="expandablePackage.isExpandable" fxLayoutAlign="start center" class="mat-icon-rtl-mirror">
+            <mat-icon>
+              {{expandablePackage.isExpanded ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </div>
+          <div fxLayoutAlign="start center">
+            {{expandablePackage.name}}
+          </div>
+        </div>
+        <div class="expandable-package-actions">
+          <button mat-flat-button>
+            <mat-icon (click)="openSalesDialog(expandablePackage)">edit</mat-icon>
+          </button>
+          <button mat-flat-button>
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div *ngIf="expandablePackage.isExpanded" class="package-items">
+        <div class="package-item" *ngFor="let item of expandablePackage.items">
+          {{item.name}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div>
+  <button (click)="openSalesDialog()" mat-mini-fab>
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

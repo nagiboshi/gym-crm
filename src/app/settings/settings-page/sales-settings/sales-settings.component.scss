@@ -1,0 +1,42 @@
+.sales-settings-title {
+  color: rgba(0, 0, 0, .54);
+  font: 400 14px/20px Roboto, "Helvetica Neue", sans-serif;
+}
+
+.sales-settings-content {
+  > * {
+    user-select: none;
+  }
+
+  .expandable-package {
+
+    cursor: pointer;
+    min-height: 40px;
+
+    &:hover {
+      .expandable-package-actions {
+        display: block;
+      }
+    }
+
+    .expandable-package-name {
+      min-height: 40px;
+    }
+
+    .expandable-package-actions {
+      display: none;
+        button {
+          padding: 0;
+          min-width: 24px;
+        }
+    }
+
+    .package-items {
+      padding-left: 40px;
+
+      .package-item {
+        min-height: 35px;
+      }
+    }
+  }
+}

@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
-import {PurchaseItem} from '../models/purchase.model';
-import {BehaviorSubject, Observable, of, Subject, zip} from 'rxjs';
-import {MembershipService} from '../models/membership-service.model';
-import {Member} from '../models/member.model';
+import {PurchaseItem} from '../models/purchase';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {Package} from '../models/package';
+import {Member} from '../models/member';
 import {ClassModel} from '../classes/class.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {isEmpty, remove} from 'lodash';
-import {ScheduleMember} from '../models/schedule-member.model';
-import {Freeze} from '../models/freeze.model';
+import {ScheduleMember} from '../models/schedule-member';
+import {Freeze} from '../models/freeze';
 import {PaymentMethod} from '../models/payment-method';
 import {ClassCategory} from '../classes/class.category';
 
@@ -48,9 +48,10 @@ export class CommunicationService {
   newPurchase$: Observable<PurchaseItem> = this.newPurchase.asObservable();
   classAdded = new Subject<ClassModel>();
   classAdded$: Observable<ClassModel> = this.classAdded.asObservable();
-  membershipServicesSubj = new BehaviorSubject<MembershipService[]>([]);
+  packagesSubj = new BehaviorSubject<Package[]>([]);
   paymentMethodsSubj = new BehaviorSubject<PaymentMethod[]>([]);
   classCategoriesSubj = new BehaviorSubject<ClassCategory[]>([]);
+
   constructor(private httpClient: HttpClient) {
   }
 
@@ -65,7 +66,7 @@ export class CommunicationService {
   private _getDataList<T>(behaviorSubj: BehaviorSubject<T>, url: string, params?: any): Observable<T> {
     let result: Observable<T>;
     if (isEmpty(behaviorSubj.getValue())) {
-      if ( params ) {
+      if (params) {
         result = this.httpClient.get<T>(url, {params});
       } else {
         result = this.httpClient.get<T>(url);
@@ -86,7 +87,7 @@ export class CommunicationService {
 
 
   getSchedules(startDate: Date, endDate: Date): Observable<ClassSchedule[]> {
-    const params = { from: startDate.getTime(), to: endDate.getTime()};
+    const params = {from: startDate.getTime(), to: endDate.getTime()};
     return this._getDataList<ClassSchedule[]>(this.schedulesSubj, '/schedules', params);
   }
 
@@ -121,8 +122,12 @@ export class CommunicationService {
     return this.httpClient.get<PurchaseItem[]>('/purchasesFromTo', {params});
   }
 
-  getMembershipServices(): MembershipService[] {
-    return this.membershipServicesSubj.getValue();
+  getPackages$(): Observable<Package[]> {
+    return this.packagesSubj.asObservable();
+  }
+
+  getPackages(): Package[] {
+    return this.packagesSubj.getValue();
   }
 
   getPaymentMethods(): PaymentMethod[] {
@@ -132,13 +137,13 @@ export class CommunicationService {
   addPaymentMethod(newPaymentMethod: PaymentMethod) {
     return new Promise<PaymentMethod>((resolve, reject) => {
       this.httpClient.put<PaymentMethod>('/paymentMethod', newPaymentMethod).toPromise().then((addedPaymentMethod) => {
-        if( newPaymentMethod.id == 0 ) {
+        if (newPaymentMethod.id == 0) {
           this.paymentMethodsSubj.next([addedPaymentMethod, ...this.paymentMethodsSubj.getValue()]);
         } else {
           debugger;
           const paymentMethods = this.paymentMethodsSubj.getValue();
-          const index = paymentMethods.findIndex( c => c.id == newPaymentMethod.id);
-          if( index != -1 ) {
+          const index = paymentMethods.findIndex(c => c.id == newPaymentMethod.id);
+          if (index != -1) {
             paymentMethods[index] = addedPaymentMethod;
           }
 
@@ -172,7 +177,7 @@ export class CommunicationService {
     return this.classesSubj.getValue();
   }
 
-  removeClass(id: number):Promise<void> {
+  removeClass(id: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const params = new HttpParams().append('id', id.toString());
       return this.httpClient.delete('/class', {params}).toPromise().then(() => {
@@ -197,17 +202,17 @@ export class CommunicationService {
   addClass(newClass: ClassModel): Promise<ClassModel> {
     return new Promise<ClassModel>((resolve, reject) => {
       this.httpClient.put<ClassModel>('/class', newClass).toPromise().then((addedClass) => {
-          if( newClass.id == 0 ) {
-            this.classesSubj.next([addedClass, ...this.classesSubj.getValue()]);
-          } else {
-            const classes = this.classesSubj.getValue();
-            const index = classes.findIndex( c => c.id == newClass.id);
-            if( index != -1 ) {
-              classes[index] = addedClass;
-            }
-
-            this.classesSubj.next([...classes]);
+        if (newClass.id == 0) {
+          this.classesSubj.next([addedClass, ...this.classesSubj.getValue()]);
+        } else {
+          const classes = this.classesSubj.getValue();
+          const index = classes.findIndex(c => c.id == newClass.id);
+          if (index != -1) {
+            classes[index] = addedClass;
           }
+
+          this.classesSubj.next([...classes]);
+        }
         resolve(addedClass);
       }).catch((e) => {
         reject(e);
@@ -218,6 +223,26 @@ export class CommunicationService {
 
   getDayMappings() {
     return {0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat'};
+  }
+
+  savePackage(packageElement: Package): Promise<Package> {
+    return new Promise<Package>((resolve, reject) => {
+      this.httpClient.put<Package>('/package', packageElement).toPromise().then((mergedPackage) => {
+        const packages = this.packagesSubj.getValue();
+        if (packageElement.id == 0) {
+          this.packagesSubj.next([mergedPackage, ...packages]);
+        } else {
+          const packageIndex = packages.findIndex( p => p.id == packageElement.id);
+          if( packageIndex != -1 ) {
+            packages[packageIndex] == mergedPackage;
+            this.packagesSubj.next([...packages]);
+          }
+        }
+
+        resolve(mergedPackage);
+      }).catch( e => reject(e));
+    });
+
   }
 
   savePurchase(purchase: PurchaseItem): Observable<PurchaseItem> {

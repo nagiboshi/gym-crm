@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {PurchaseHistoryItem, PurchaseItem, toPurchaseHistoryItem} from '../../models/purchase.model';
+import {PurchaseHistoryItem, PurchaseItem, toPurchaseHistoryItem} from '../../models/purchase';
 import {FreezeMembershipDialogComponent} from '../freeze-membership-dialog/freeze-membership-dialog.component';
-import {Freeze} from '../../models/freeze.model';
+import {Freeze} from '../../models/freeze';
 import {CommunicationService} from '../communication.service';
 import {MatDialog} from '@angular/material/dialog';
 import {PurchaseFormComponent} from '../../sales/purchase-form/purchase-form.component';

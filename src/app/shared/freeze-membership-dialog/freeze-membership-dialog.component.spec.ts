@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { FreezeMembershipDialogComponent } from './freeze-membership-dialog.component';
 
@@ -6,7 +6,7 @@ describe('FreezeMembershipDialogComponent', () => {
   let component: FreezeMembershipDialogComponent;
   let fixture: ComponentFixture<FreezeMembershipDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ FreezeMembershipDialogComponent ]
     })

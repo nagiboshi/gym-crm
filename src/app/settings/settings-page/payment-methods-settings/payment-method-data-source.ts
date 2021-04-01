@@ -1,7 +1,7 @@
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {PaymentMethod} from '../../../models/payment-method';
-import {CommunicationService} from '../../../shared/communication.service';
+import {CommunicationService} from '@shared/communication.service';
 export class PaymentMethodDataSource extends DataSource<PaymentMethod> {
   data: BehaviorSubject<PaymentMethod[]>;
   constructor(private communicationService: CommunicationService) {

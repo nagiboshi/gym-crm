@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {PurchaseItem} from '../../models/purchase.model';
+import {PurchaseItem} from '../../models/purchase';
 
 @Component({
   selector: 'app-freeze-membership-dialog',

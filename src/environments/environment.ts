@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  vat: 0.05
+  vat: 0.05,
+  apiUrl: 'http://localhost/'
 };
 
 /*

@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {MembershipItem} from '../../models/membership-item.model';
+import {PackageItem} from '../../models/package-item';
 import {Moment} from 'moment';
 import {DatePipe} from '@angular/common';
 import {isNumber} from 'lodash';
@@ -16,7 +16,7 @@ export class MembershipExpirationPipe implements PipeTransform {
   constructor(private datePipe: DatePipe) {
   }
 
-  transform(membershipItem: MembershipItem, ...args: any[]): any {
+  transform(membershipItem: PackageItem, ...args: any[]): any {
     let [membershipStartDate] = args;
     if (isNumber(membershipStartDate)) {
       membershipStartDate = moment(membershipStartDate);

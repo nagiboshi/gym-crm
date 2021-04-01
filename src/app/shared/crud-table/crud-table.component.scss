@@ -1,0 +1,21 @@
+.edit-cell, .delete-cell {
+  width: 30px;
+  cursor: pointer;
+  text-align: center;
+  button{
+    padding: 0;
+    min-width: 35px;
+    max-width: 35px;
+  }
+}
+
+.add-button {
+  margin-top: 30px;
+}
+
+table {
+  width: 100%;
+  .table-header-title {
+    margin-right: 20px;
+  }
+}

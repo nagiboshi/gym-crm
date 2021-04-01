@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog} from '@angular/material/dialog';
-import {CommunicationService, DaySchedule} from '../../../shared/communication.service';
-import {Member} from '../../../models/member.model';
-import {ScheduleMember} from '../../../models/schedule-member.model';
+import {CommunicationService, DaySchedule} from '@shared/communication.service';
+import {Member} from '../../../models/member';
+import {ScheduleMember} from '../../../models/schedule-member';
 import {Moment} from 'moment';
 import * as _moment from 'moment';
 import {remove, groupBy, sortBy, Dictionary, first} from 'lodash';
-import {PurchaseHistoryItem, PurchaseItem, toPurchaseHistoryItem} from '../../../models/purchase.model';
+import {PurchaseHistoryItem, PurchaseItem, toPurchaseHistoryItem} from '../../../models/purchase';
 import {PurchaseFormComponent} from '../../../sales/purchase-form/purchase-form.component';
 import {Router} from '@angular/router';
 

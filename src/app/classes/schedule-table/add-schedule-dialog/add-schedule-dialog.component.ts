@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {FormBuilder} from '@angular/forms';
-import {CommunicationService} from '../../../shared/communication.service';
+import {CommunicationService} from '@shared/communication.service';
 import {ClassModel} from '../../class.model';
 import {BehaviorSubject} from 'rxjs';
 import * as _moment from 'moment';

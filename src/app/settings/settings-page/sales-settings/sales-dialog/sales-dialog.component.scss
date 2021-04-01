@@ -1,0 +1,32 @@
+.sales-grid {
+  display: inline-grid;
+  grid-template-columns: auto auto auto auto auto auto;
+  grid-column-gap: 20px;
+
+  .is-shared {
+    justify-self: center;
+    align-self: center;
+  }
+
+  .remove {
+    align-self: center;
+    cursor: pointer;
+  }
+
+  .sales-grid-header {
+    color: rgba(0,0,0,0.7);
+    font-size: 0.8em;
+  }
+
+  .expiration-type {
+    width: 70px
+  }
+
+  .expiration-length {
+    width: 40px;
+  }
+
+  .number-of-participants {
+    width: 40px;
+  }
+}

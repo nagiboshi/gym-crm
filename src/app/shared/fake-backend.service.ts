@@ -2,13 +2,13 @@ import {Injectable} from '@angular/core';
 import {HTTP_INTERCEPTORS, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
 import {Observable, of, throwError} from 'rxjs';
 import {delay, dematerialize, materialize, mergeMap} from 'rxjs/operators';
-import {MembershipItem} from '../models/membership-item.model';
-import {Member} from '../models/member.model';
-import {PurchaseItem} from '../models/purchase.model';
-import {MembershipService} from '../models/membership-service.model';
-import {ScheduleMember} from '../models/schedule-member.model';
+import {PackageItem} from '../models/package-item';
+import {Member} from '../models/member';
+import {PurchaseItem} from '../models/purchase';
+import {Package} from '../models/package';
+import {ScheduleMember} from '../models/schedule-member';
 import * as _moment from 'moment';
-import {Freeze} from '../models/freeze.model';
+import {Freeze} from '../models/freeze';
 import {clone as copy, remove} from 'lodash';
 import {extendMoment} from 'moment-range';
 import {ClassModel} from '../classes/class.model';
@@ -18,7 +18,7 @@ import {ClassCategory} from '../classes/class.category';
 
 export const NAMES = ['Oleksandr', 'Ammar', 'Omar', 'Emad', 'Mohammed', 'Ahmed', 'Hamed', 'Nader', 'Nadine'];
 // array in local storage for registered users
-let users = JSON.parse(localStorage.getItem('users')) || [];
+let users = JSON.parse(localStorage.getItem('users')) || [{username: 'admin', password: 'admin'}];
 const moment = extendMoment(_moment);
 
 function getRandomInt(min, max) {
@@ -334,10 +334,10 @@ const schedules = [{
 // daySchedule:
 // }
 
-const membershipServices: MembershipService[] = [{
+const membershipServices: Package[] = [{
   id: 1, name: 'Family Memberships', items: [
-    {id: 1, expirationType: 'year', expirationLength: 1, name: 'Annual Family Membership (2 Adults, 1 Kid)', isShared: true, familySize: 3},
-    {id: 2, expirationType: 'year', expirationLength: 1, name: 'Annual Family Membership (2 Adults, 2 Kids)', isShared: true, familySize: 4}
+    {id: 1, expirationType: 'year', expirationLength: 1, name: 'Annual Family Membership (2 Adults, 1 Kid)', isShared: true, numberOfParticipants: 3},
+    {id: 2, expirationType: 'year', expirationLength: 1, name: 'Annual Family Membership (2 Adults, 2 Kids)', isShared: true, numberOfParticipants: 4}
   ]
 },
   {
@@ -607,11 +607,11 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
     function _getRandomPurchases(memberId: number, from?: number, to?: number): PurchaseItem[] {
       const randomPackage1 = membershipServices[(getRandomInt(0, membershipServices.length))];
-      const randomItem1: MembershipItem = copy(randomPackage1.items[getRandomInt(0, randomPackage1.items.length - 1)]);
+      const randomItem1: PackageItem = copy(randomPackage1.items[getRandomInt(0, randomPackage1.items.length - 1)]);
       const randomPackage2 = membershipServices[(getRandomInt(0, membershipServices.length))];
-      const randomItem2: MembershipItem = copy(randomPackage2.items[getRandomInt(0, randomPackage2.items.length - 1)]);
+      const randomItem2: PackageItem = copy(randomPackage2.items[getRandomInt(0, randomPackage2.items.length - 1)]);
       const randomPackage3 = membershipServices[(getRandomInt(0, membershipServices.length))];
-      const randomItem3: MembershipItem = copy(randomPackage3.items[getRandomInt(0, randomPackage3.items.length - 1)]);
+      const randomItem3: PackageItem = copy(randomPackage3.items[getRandomInt(0, randomPackage3.items.length - 1)]);
 
       const getRandomTime = () => {
         return new Date().getTime() - getRandomInt(0, 12 * 30 * 24 * 60 * 60 * 60 * 10);

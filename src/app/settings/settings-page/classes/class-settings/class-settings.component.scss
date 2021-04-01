@@ -1,22 +1,2 @@
-table {
-  width: 100%;
-  .edit-cell, .delete-cell {
-    width: 30px;
-    cursor: pointer;
-    text-align: center;
-    button{
-      padding: 0;
-      min-width: 35px;
-      max-width: 35px;
-    }
-  }
+@import "../../../../shared/crud-table/crud-table.component";
 
-  .table-header-title {
-    margin-right: 20px;
-  }
-}
-
-
-.add-button {
-  margin-top: 30px;
-}

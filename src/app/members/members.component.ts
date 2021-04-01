@@ -3,10 +3,10 @@ import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatDialog} from '@angular/material/dialog';
 import {Router} from '@angular/router';
-import {CommunicationService} from '../shared/communication.service';
+import {CommunicationService} from '@shared/communication.service';
 import {MembersDataSource} from './members-data-source';
-import {Member} from '../models/member.model';
-import {AddMemberDialogComponent} from '../shared/add-member-dialog/add-member-dialog.component';
+import {Member} from '../models/member';
+import {AddMemberDialogComponent} from '@shared/add-member-dialog/add-member-dialog.component';
 
 
 @Component({

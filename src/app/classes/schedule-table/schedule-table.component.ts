@@ -9,7 +9,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {ClassModel} from '../class.model';
-import {ClassSchedule, CommunicationService, DaySchedule, ScheduleWeekDay} from '../../shared/communication.service';
+import {ClassSchedule, CommunicationService, DaySchedule, ScheduleWeekDay} from '@shared/communication.service';
 import {MatDialog} from '@angular/material/dialog';
 import {AddScheduleDialogComponent, PrimalClassSchedule} from './add-schedule-dialog/add-schedule-dialog.component';
 import {BehaviorSubject, GroupedObservable, Observable, of, Subscription} from 'rxjs';
@@ -26,8 +26,8 @@ import {
 import {DateSelectionStrategy} from './schedule-calendar/date-selection.strategy';
 import {ScheduleCalendarHeaderComponent} from './schedule-calendar/schedule.calendar-header.component';
 import {SelectionStrategyEventEmitter} from './schedule-calendar/selection-strategy.event-emitter';
-import {ScheduleMember} from '../../models/schedule-member.model';
-import {PurchaseItem} from '../../models/purchase.model';
+import {ScheduleMember} from '../../models/schedule-member';
+import {PurchaseItem} from '../../models/purchase';
 
 const moment = _moment;
 

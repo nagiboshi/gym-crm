@@ -1,5 +1,5 @@
-<div class="page-wrapper">
-  <header fxLayoutAlign="space-between center">
+<section class="page-wrapper">
+  <header *ngIf="accountService.user | async" fxLayoutAlign="space-between center">
     <nav mat-tab-nav-bar>
       <a [ngClass]="{'primal-route': true, 'active': appRoute.isActive}" *ngFor="let appRoute of appRoutes$ | async"
          mat-tab-link
@@ -10,13 +10,13 @@
       <a fxLayoutAlign="center center" fxLayout="row" routerLinkActive="active" mat-button [routerLink]="'/settings'">
         <mat-icon>settings</mat-icon>
       </a>
-      <button mat-button>
+      <button (click)="logout()" mat-button>
         <mat-icon>exit_to_app</mat-icon>
       </button>
 
     </div>
   </header>
-  <section class="main-wrapper">
+  <div class="main-content">
    <router-outlet></router-outlet>
-  </section>
-</div>
+  </div>
+</section>

@@ -1,0 +1,56 @@
+<mat-dialog-content>
+  <form fxLayout="column" (ngSubmit)="submit()" [formGroup]="formGroup">
+    <mat-form-field>
+      <input matInput formControlName="name" placeholder="Input package name">
+    </mat-form-field>
+    <ng-container formArrayName="items">
+      <div class="sales-grid">
+        <div class="sales-grid-header">Name</div>
+        <div class="sales-grid-header">Is Shared ?</div>
+        <div class="sales-grid-header">Size</div>
+        <div class="sales-grid-header">Expiration</div>
+        <div class="sales-grid-header"></div>
+        <div class="sales-grid-header"></div>
+        <ng-container *ngFor="let _ of packageItemsArray.controls; let i=index">
+          <ng-container [formGroupName]="i">
+            <div class="sales-grid-body">
+              <mat-form-field class="package-variation-name">
+                <input formControlName="name"  matInput/>
+              </mat-form-field>
+            </div>
+            <div class="sales-grid-body is-shared">
+              <mat-checkbox formControlName="isShared"></mat-checkbox>
+            </div>
+            <div class="sales-grid-body">
+              <mat-form-field [style.visibility]="!packageItemsArray.controls[i].value.isShared? 'hidden':'visible'" class="number-of-participants">
+                <input min="1" type="number" formControlName="numberOfParticipants" matInput/>
+              </mat-form-field>
+
+            </div>
+            <div class="sales-grid-body">
+              <mat-form-field class="expiration-type">
+                <mat-select formControlName="expirationType">
+                  <mat-option value="day">Day</mat-option>
+                  <mat-option value="month">Month</mat-option>
+                  <mat-option value="year">Year</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="sales-grid-body">
+              <mat-form-field class="expiration-length">
+                <input min="1" formControlName="expirationLength" type="number" matInput>
+              </mat-form-field>
+            </div>
+            <div (click)="showDeletePrompt(packageItemsArray.controls[i].value)" class="sales-grid-body remove">
+              <mat-icon>delete</mat-icon>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-container>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-dialog-close mat-button>Cancel</button>
+  <button type="submit" mat-raised-button color="primary">Save</button>
+</mat-dialog-actions>

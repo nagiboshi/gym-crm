@@ -1,6 +1,19 @@
 .settings-page-wrapper {
   display: inline-grid;
   grid-template-columns: 50% 50%;
-  grid-column-gap: 100px;
-  width: calc(100% - 100px);
+  grid-column-gap: 0px;
+  width: 100%;
+
+  class-settings {
+    padding-right: 100px;
+    padding-bottom: 30px;
+  }
+
+  payment-methods-settings {
+    padding-bottom: 30px;
+  }
+
+  sales-settings {
+    margin-top: 30px;
+  }
 }

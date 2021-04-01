@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 
 import {ClassesRoutingModule} from './classes-routing.module';
 import {ScheduleTableComponent} from './schedule-table/schedule-table.component';
-import {SharedModule} from '../shared/shared.module';
+import {SharedModule} from '@shared/shared.module';
 import {AddScheduleDialogComponent} from './schedule-table/add-schedule-dialog/add-schedule-dialog.component';
 import {FormsModule} from '@angular/forms';
 import {SignInDialogComponent} from './schedule-table/sign-in-dialog/sign-in-dialog.component';

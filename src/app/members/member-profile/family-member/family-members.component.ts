@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Member} from '../../../models/member.model';
-import {CommunicationService} from '../../../shared/communication.service';
+import {Member} from '../../../models/member';
+import {CommunicationService} from '@shared/communication.service';
 
 @Component({
   selector: 'family-members',

@@ -1,7 +1,7 @@
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {Member} from '../models/member.model';
+import {Member} from '../models/member';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {CommunicationService} from '../shared/communication.service';
+import {CommunicationService} from '@shared/communication.service';
 
 export class MembersDataSource implements DataSource<Member> {
   private _size = 20;

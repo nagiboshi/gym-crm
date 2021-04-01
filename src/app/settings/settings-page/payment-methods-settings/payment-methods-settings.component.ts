@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {CommunicationService} from '../../../shared/communication.service';
+import {CommunicationService} from '@shared/communication.service';
 import {PaymentMethod} from '../../../models/payment-method';
 import {MatDialog} from '@angular/material/dialog';
 import {PaymentMethodDataSource} from './payment-method-data-source';
 import {PaymentMethodCreateDialogComponent} from './payment-method-create-dialog/payment-method-create-dialog.component';
-import {DeletePromptDialogComponent} from '../../../shared/delete-class-dialog/delete-prompt-dialog.component';
-import {ClassModel} from '../../../classes/class.model';
+import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
 
 @Component({
   selector: 'payment-methods-settings',

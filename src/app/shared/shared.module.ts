@@ -30,7 +30,8 @@ import {FreezeMembershipDialogComponent} from './freeze-membership-dialog/freeze
 import {PurchaseHistoryComponent} from './purchase-history/purchase-history.component';
 import {MatTreeModule} from '@angular/material/tree';
 import {ClassCategoryNamePipe} from './pipes/class-category-name.pipe';
-import {DeletePromptDialogComponent} from './delete-class-dialog/delete-prompt-dialog.component';
+import {DeletePromptDialogComponent} from './delete-prompt-dialog/delete-prompt-dialog.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 @NgModule({
@@ -64,6 +65,7 @@ import {DeletePromptDialogComponent} from './delete-class-dialog/delete-prompt-d
     FlexLayoutModule,
     MatTooltipModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatMomentDateModule,
     // MomentDateModule,
     FormsModule
@@ -83,6 +85,7 @@ import {DeletePromptDialogComponent} from './delete-class-dialog/delete-prompt-d
     MatTreeModule,
     HttpClientModule,
     MatTableModule,
+    MatCheckboxModule,
     // MomentDateModule,
     MatMomentDateModule,
     MatAutocompleteModule,

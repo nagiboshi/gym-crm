@@ -1,7 +1,7 @@
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {ClassModel} from '../../../../classes/class.model';
 import {BehaviorSubject, Observable, of} from 'rxjs';
-import {CommunicationService} from '../../../../shared/communication.service';
+import {CommunicationService} from '@shared/communication.service';
 import {remove} from 'lodash';
 export class ClassesDataSource extends DataSource<ClassModel> {
   data: BehaviorSubject<ClassModel[]>;

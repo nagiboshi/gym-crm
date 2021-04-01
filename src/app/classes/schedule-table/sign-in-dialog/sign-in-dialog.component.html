@@ -33,7 +33,7 @@
                       class="nearly-expired-membership"
                       *ngIf="signInMember.activeMembership.isNearlyExpire">!</span>
           <a
-            routerLink="/member/{{signInMember.scheduleMember.member.id}}">{{signInMember.scheduleMember.member.firstName + ' ' + signInMember.scheduleMember.member.lastName}}</a>
+            routerLink="/members/{{signInMember.scheduleMember.member.id}}">{{signInMember.scheduleMember.member.firstName + ' ' + signInMember.scheduleMember.member.lastName}}</a>
         </td>
       </ng-container>
 

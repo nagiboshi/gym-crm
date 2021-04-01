@@ -2,9 +2,9 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnD
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {CommunicationService} from '../../shared/communication.service';
+import {CommunicationService} from '@shared/communication.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Member} from '../../models/member.model';
+import {Member} from '../../models/member';
 import * as _moment from 'moment';
 import {first} from 'lodash';
 const moment = _moment;

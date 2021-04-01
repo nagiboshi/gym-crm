@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {first} from 'lodash';
-import {MembershipService} from '../../models/membership-service.model';
-import {MembershipItem} from '../../models/membership-item.model';
+import {Package} from '../../models/package';
+import {PackageItem} from '../../models/package-item';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../../environments/environment';
-import {CommunicationService} from '../../shared/communication.service';
+import {CommunicationService} from '@shared/communication.service';
 import * as _moment from 'moment';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {PaymentMethod} from '../../models/payment-method';
@@ -25,10 +25,10 @@ export class PurchaseFormComponent implements OnInit {
   startDateFormGroup: FormGroup;
   salePriceFormGroup: FormGroup;
   noteFormGroup: FormGroup;
-  selectedService: MembershipService;
-  membershipServices: MembershipService[];
-  selectedServiceItem: MembershipItem;
-  serviceItems$: Observable<MembershipItem[]>;
+  selectedService: Package;
+  membershipServices: Package[];
+  selectedServiceItem: PackageItem;
+  serviceItems$: Observable<PackageItem[]>;
   paymentMethods: PaymentMethod[];
 
   constructor(private dialogRef: MatDialogRef<PurchaseFormComponent>,
@@ -39,7 +39,7 @@ export class PurchaseFormComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.membershipServices = this.communicationService.getMembershipServices();
+    this.membershipServices = this.communicationService.getPackages();
     this.paymentMethods = this.communicationService.getPaymentMethods();
     this.selectedService = first(this.membershipServices);
     this.selectedServiceItem = first(this.selectedService.items);
@@ -72,7 +72,7 @@ export class PurchaseFormComponent implements OnInit {
     });
   }
 
-  afterServiceFormGroupSelection(membershipService: MembershipService) {
+  afterServiceFormGroupSelection(membershipService: Package) {
     this.selectedService = membershipService;
     this.serviceItems$ = of(this.selectedService.items);
   }
@@ -85,7 +85,7 @@ export class PurchaseFormComponent implements OnInit {
     return Math.round(parseFloat(this.salePriceFormGroup.value.price) * environment.vat);
   }
 
-  afterServiceItemFormGroupSelection(membershipItem: MembershipItem) {
+  afterServiceItemFormGroupSelection(membershipItem: PackageItem) {
     this.selectedServiceItem = membershipItem;
   }
 

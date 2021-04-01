@@ -1,7 +1,8 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {Member} from './models/member.model';
+import {Member} from './models/member';
 import {NavigationEnd, Router} from '@angular/router';
 import {BehaviorSubject} from 'rxjs';
+import {AccountService} from '@shared/account.service';
 
 interface AppRoute {
   label: string;
@@ -20,7 +21,7 @@ export class AppComponent {
     {label: 'Members', isActive: false,  path: '/members'}
   ]);
   title = 'primal-accounting';
-  constructor(private router: Router, cd: ChangeDetectorRef) {
+  constructor(private router: Router, public accountService: AccountService) {
     router.events.subscribe(e => {
       if (e instanceof NavigationEnd) {
         const appRoutes = this.appRoutes$.getValue();
@@ -43,8 +44,11 @@ export class AppComponent {
   }
 
   onMemberFound(member: Member) {
-    this.router.navigate([`/member/${member.id}`]);
+    this.router.navigate([`/members/${member.id}`]);
   }
 
 
+  logout() {
+    this.accountService.logout();
+  }
 }

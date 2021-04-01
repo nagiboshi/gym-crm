@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {ClassModel} from '../../../../classes/class.model';
-import {CommunicationService} from '../../../../shared/communication.service';
+import {CommunicationService} from '@shared/communication.service';
 import {first} from 'lodash';
 import {ClassesDataSource} from './classes-data-source';
 import {MatDialog} from '@angular/material/dialog';
 import {ClassDialogData, CreateClassDialogComponent} from '../create-class-dialog/create-class-dialog.component';
 import {ClassCategory} from '../../../../classes/class.category';
-import {DeletePromptDialogComponent} from '../../../../shared/delete-class-dialog/delete-prompt-dialog.component';
+import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
 
 @Component({
   selector: 'class-settings',
