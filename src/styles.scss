@@ -41,6 +41,10 @@ header {
   }
 }
 
+#schedule-datepicker .mat-calendar-body-range-start::after,
+#schedule-datepicker .mat-calendar-body-range-start:not(.mat-calendar-body-in-comparison-range)::before {
+  width: 96%;
+}
 
 .mat-calendar-body-selected {
   background-color: $primaryColor1;
