@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "primal-accounting": {
+    "club-membership-crm": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/primal-accounting",
+            "outputPath": "dist/club-membership-crm",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -67,18 +67,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "primal-accounting:build"
+            "browserTarget": "club-membership-crm:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "primal-accounting:build:production"
+              "browserTarget": "club-membership-crm:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "primal-accounting:build"
+            "browserTarget": "club-membership-crm:build"
           }
         },
         "test": {
@@ -116,18 +116,18 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "primal-accounting:serve"
+            "devServerTarget": "club-membership-crm:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "primal-accounting:serve:production"
+              "devServerTarget": "club-membership-crm:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "primal-accounting",
+  "defaultProject": "club-membership-crm",
   "cli": {
     "analytics": false
   }
