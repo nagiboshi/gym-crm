@@ -67,7 +67,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     MatButtonModule,
     MatCheckboxModule,
     MatMomentDateModule,
-    // MomentDateModule,
+    MatPaginatorModule,
     FormsModule
   ],
   exports: [
@@ -79,6 +79,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     MatStepperModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatPaginatorModule,
     MatInputModule,
     MatTooltipModule,
     MatDialogModule,

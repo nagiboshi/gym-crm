@@ -9,7 +9,7 @@
   </mat-form-field>
   <mat-dialog-actions>
     <button mat-dialog-close color="warn" mat-button>Cancel</button>
-    <button color="primary" mat-raised-button type="submit">Save</button>
+    <button color="primary" [disabled]="formGroup.invalid" mat-raised-button type="submit">Save</button>
   </mat-dialog-actions>
 </form>
 

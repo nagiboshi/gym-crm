@@ -43,6 +43,7 @@ export interface DaySchedule {
 @Injectable({providedIn: 'root'})
 export class CommunicationService {
   classesSubj = new BehaviorSubject<ClassModel[]>([]);
+  classes$ = this.classesSubj.asObservable();
   schedulesSubj = new BehaviorSubject<ClassSchedule[]>([]);
   newPurchase = new Subject<PurchaseItem>();
   newPurchase$: Observable<PurchaseItem> = this.newPurchase.asObservable();
@@ -234,7 +235,7 @@ export class CommunicationService {
         } else {
           const packageIndex = packages.findIndex( p => p.id == packageElement.id);
           if( packageIndex != -1 ) {
-            packages[packageIndex] == mergedPackage;
+            packages[packageIndex] = mergedPackage;
             this.packagesSubj.next([...packages]);
           }
         }

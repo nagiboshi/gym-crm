@@ -1,4 +1,4 @@
-<div class="payment-settings-container">
+<div fxLayout="column" fxLayoutAlign="space-between" class="payment-settings-container">
 <table mat-table [dataSource]="dataSource" matSort>
 
   <ng-container matColumnDef="name">
@@ -28,7 +28,8 @@
     <td class="mat-cell" colspan="3">No payment methods created yet</td>
   </tr>
 </table>
-<div fxLayoutAlign="end">
+<div fxLayoutAlign="space-between center">
+  <mat-paginator [hidePageSize]="true" [pageSizeOptions]="[5]" showFirstLastButtons></mat-paginator>
   <button (click)="showPaymentMethodDialog()" class="add-button" mat-mini-fab>
     <mat-icon>add
     </mat-icon>

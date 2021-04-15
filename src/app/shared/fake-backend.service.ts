@@ -12,7 +12,6 @@ import {Freeze} from '../models/freeze';
 import {clone as copy, remove} from 'lodash';
 import {extendMoment} from 'moment-range';
 import {ClassModel} from '../classes/class.model';
-import {FITNESS_CLASS_TYPE, MARTIAL_ARTS_CLASS_TYPE} from '../models/class-type';
 import {PaymentMethod} from '../models/payment-method';
 import {ClassCategory} from '../classes/class.category';
 
@@ -336,8 +335,22 @@ const schedules = [{
 
 const membershipServices: Package[] = [{
   id: 1, name: 'Family Memberships', items: [
-    {id: 1, expirationType: 'year', expirationLength: 1, name: 'Annual Family Membership (2 Adults, 1 Kid)', isShared: true, numberOfParticipants: 3},
-    {id: 2, expirationType: 'year', expirationLength: 1, name: 'Annual Family Membership (2 Adults, 2 Kids)', isShared: true, numberOfParticipants: 4}
+    {
+      id: 1,
+      expirationType: 'year',
+      expirationLength: 1,
+      name: 'Annual Family Membership (2 Adults, 1 Kid)',
+      isShared: true,
+      numberOfParticipants: 3
+    },
+    {
+      id: 2,
+      expirationType: 'year',
+      expirationLength: 1,
+      name: 'Annual Family Membership (2 Adults, 2 Kids)',
+      isShared: true,
+      numberOfParticipants: 4
+    }
   ]
 },
   {
@@ -445,6 +458,8 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             body.params.getAll('memberIds').map(m => parseInt(m, 10)));
         case url.endsWith('/users') && method === 'GET':
           return getUsers();
+        case url.endsWith('/package') && method === 'PUT':
+          return mergePackage(body);
         case url.match(/\/users\/\d+$/) && method === 'DELETE':
           return deleteUser();
         case url.match('/classes') && method == 'GET':
@@ -558,6 +573,45 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     function removeClass(id: number) {
       remove(classes, c => c.id == id);
       return ok();
+    }
+
+
+    function mergePackageItem(packageEl: Package, packageItem: PackageItem) {
+      let id;
+      if (packageItem.id == 0) {
+        id = Math.max(...membershipServices.map(c => c.id)) + 1;
+      } else {
+        id = packageItem.id;
+      }
+      const savedPackageItem = {...packageItem, ...{id}};
+
+      if (packageItem.id == 0) {
+        packageEl.items.push(savedPackageItem);
+      } else {
+        const index = packageEl.items.findIndex(c => c.id == packageEl.id);
+        packageEl.items[index] = savedPackageItem;
+      }
+      return savedPackageItem;
+    }
+
+    function mergePackage(packageEl: Package) {
+      let id;
+      if (packageEl.id == 0) {
+        id = Math.max(...membershipServices.map(c => c.id)) + 1;
+      } else {
+        id = packageEl.id;
+      }
+      const savedPackage = {...packageEl, ...{id}};
+
+      savedPackage.items.forEach( item => mergePackageItem(savedPackage, item));
+
+      if (packageEl.id == 0) {
+        membershipServices.push(savedPackage);
+      } else {
+        const index = membershipServices.findIndex(c => c.id == packageEl.id);
+        membershipServices[index] = savedPackage;
+      }
+      return ok(savedPackage);
     }
 
     function mergeClasses(classModel: ClassModel) {

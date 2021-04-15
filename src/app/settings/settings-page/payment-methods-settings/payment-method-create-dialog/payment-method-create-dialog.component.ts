@@ -1,11 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ClassCategory} from '../../../../classes/class.category';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {first} from 'lodash';
-import {ClassModel} from '../../../../classes/class.model';
 import {PaymentMethod} from '../../../../models/payment-method';
-import {ClassDialogData, CreateClassDialogComponent} from '../../classes/create-class-dialog/create-class-dialog.component';
 import {CommunicationService} from '@shared/communication.service';
 
 @Component({

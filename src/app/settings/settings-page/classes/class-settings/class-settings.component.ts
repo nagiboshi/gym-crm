@@ -1,33 +1,43 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ClassModel} from '../../../../classes/class.model';
 import {CommunicationService} from '@shared/communication.service';
 import {first} from 'lodash';
-import {ClassesDataSource} from './classes-data-source';
 import {MatDialog} from '@angular/material/dialog';
-import {ClassDialogData, CreateClassDialogComponent} from '../create-class-dialog/create-class-dialog.component';
 import {ClassCategory} from '../../../../classes/class.category';
 import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatTableDataSource} from '@angular/material/table';
+import {Subscription} from 'rxjs';
+import {ClassDialogData, CreateClassDialogComponent} from './create-class-dialog/create-class-dialog.component';
 
 @Component({
   selector: 'class-settings',
   templateUrl: './class-settings.component.html',
   styleUrls: ['./class-settings.component.scss']
 })
-export class ClassSettingsComponent implements OnInit {
+export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit {
   classesColumns = ['name', 'classCategory', 'edit', 'delete'];
-  dataSource: ClassesDataSource;
+  dataSource: MatTableDataSource<ClassModel>;
   classCategories: ClassCategory[] = [{id: -1, name: 'All'}];
+  classesSub: Subscription;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
 
   constructor(private communicationService: CommunicationService, private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
     this.classCategories = [...this.classCategories, ...this.communicationService.getClassCategories()];
-    this.dataSource = new ClassesDataSource(this.communicationService);
+    this.dataSource = new MatTableDataSource<ClassModel>(this.communicationService.getClasses());
+    this.dataSource.filterPredicate = (data, filter: any) => !filter || filter == -1 || data.categoryId == filter;
+    this.classesSub = this.communicationService.classes$.subscribe(classes => this.dataSource.data = classes);
   }
 
   filterOutClassesByType(categoryId: number) {
-    this.dataSource.filterByClassType(categoryId);
+    this.dataSource.filter = <any> categoryId;
   }
 
   _newClass(): ClassModel {
@@ -46,8 +56,7 @@ export class ClassSettingsComponent implements OnInit {
     this.dialog.open(CreateClassDialogComponent, {data}).afterClosed().subscribe((classToCreate) => {
       if (classToCreate) {
         this.communicationService
-          .addClass(classToCreate)
-          .then(this.dataSource.updateClasses.bind(this.dataSource));
+          .addClass(classToCreate);
       }
     });
   }
@@ -55,8 +64,7 @@ export class ClassSettingsComponent implements OnInit {
   remove(classToRemove: ClassModel) {
     this.dialog.open(DeletePromptDialogComponent, {data: `Are you sure you want to delete class ${classToRemove.name}`}).afterClosed().subscribe((doAction) => {
       if (doAction) {
-        this.communicationService.removeClass(classToRemove.id)
-          .then(this.dataSource.updateClasses.bind(this.dataSource));
+        this.communicationService.removeClass(classToRemove.id);
       }
     });
 
@@ -64,5 +72,9 @@ export class ClassSettingsComponent implements OnInit {
 
   editClass(classToEdit: ClassModel) {
     this.showMergeClassDialog(classToEdit);
+  }
+
+  ngOnDestroy(): void {
+    this.classesSub.unsubscribe();
   }
 }

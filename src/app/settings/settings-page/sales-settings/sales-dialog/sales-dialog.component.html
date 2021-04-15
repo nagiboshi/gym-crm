@@ -1,5 +1,6 @@
-<mat-dialog-content>
-  <form fxLayout="column" (ngSubmit)="submit()" [formGroup]="formGroup">
+<form (ngSubmit)="submit()" [formGroup]="formGroup">
+  <mat-dialog-content fxLayout="column" class="sales-dialog">
+    <h6 class="unsaved-changes" *ngIf="formGroup.dirty">*You have unsaved changes</h6>
     <mat-form-field>
       <input matInput formControlName="name" placeholder="Input package name">
     </mat-form-field>
@@ -15,14 +16,15 @@
           <ng-container [formGroupName]="i">
             <div class="sales-grid-body">
               <mat-form-field class="package-variation-name">
-                <input formControlName="name"  matInput/>
+                <input formControlName="name" matInput/>
               </mat-form-field>
             </div>
             <div class="sales-grid-body is-shared">
               <mat-checkbox formControlName="isShared"></mat-checkbox>
             </div>
             <div class="sales-grid-body">
-              <mat-form-field [style.visibility]="!packageItemsArray.controls[i].value.isShared? 'hidden':'visible'" class="number-of-participants">
+              <mat-form-field [style.visibility]="!packageItemsArray.controls[i].value.isShared? 'hidden':'visible'"
+                              class="number-of-participants">
                 <input min="1" type="number" formControlName="numberOfParticipants" matInput/>
               </mat-form-field>
 
@@ -41,16 +43,17 @@
                 <input min="1" formControlName="expirationLength" type="number" matInput>
               </mat-form-field>
             </div>
-            <div (click)="showDeletePrompt(packageItemsArray.controls[i].value)" class="sales-grid-body remove">
+            <div (click)="showDeletePrompt(i, packageItemsArray.controls[i].value)" class="sales-grid-body remove">
               <mat-icon>delete</mat-icon>
             </div>
           </ng-container>
         </ng-container>
       </div>
     </ng-container>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-dialog-close mat-button>Cancel</button>
-  <button type="submit" mat-raised-button color="primary">Save</button>
-</mat-dialog-actions>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-dialog-close mat-button>Cancel</button>
+    <button type="submit" [disabled]="formGroup.invalid" mat-raised-button color="primary">Save</button>
+    <button type="button" (click)="addPackageItem()" mat-raised-button>Add Package Item</button>
+  </mat-dialog-actions>
+</form>

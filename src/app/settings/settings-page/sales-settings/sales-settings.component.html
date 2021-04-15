@@ -1,39 +1,45 @@
-<h5 class="sales-settings-title">Package settings</h5>
-<div class="sales-settings-content">
+  <div fxLayout="column" fxLayoutAlign="space-between" class="payment-settings-container">
+    <table mat-table [dataSource]="dataSource" matSort>
 
-  <div fxLayoutAlign="start center" class="expandable-package" *ngFor="let expandablePackage of packages | async">
-    <div>
-      <div fxLayoutAlign="start center" fxLayout="row">
-        <div (click)="expandPackage(expandablePackage)" class="expandable-package-name" fxLayout="start center">
-          <div *ngIf="expandablePackage.isExpandable" fxLayoutAlign="start center" class="mat-icon-rtl-mirror">
-            <mat-icon>
-              {{expandablePackage.isExpanded ? 'expand_more' : 'chevron_right'}}
-            </mat-icon>
-          </div>
-          <div fxLayoutAlign="start center">
-            {{expandablePackage.name}}
-          </div>
-        </div>
-        <div class="expandable-package-actions">
-          <button mat-flat-button>
-            <mat-icon (click)="openSalesDialog(expandablePackage)">edit</mat-icon>
-          </button>
-          <button mat-flat-button>
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </div>
-      <div *ngIf="expandablePackage.isExpanded" class="package-items">
-        <div class="package-item" *ngFor="let item of expandablePackage.items">
-          {{item.name}}
-        </div>
-      </div>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Package Settings</th>
+        <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="items">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+        <td class="edit-cell" mat-cell *matCellDef="let row">
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="edit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+        <td class="edit-cell" mat-cell *matCellDef="let row">
+          <mat-icon (click)="openSalesDialog(row)">edit</mat-icon>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td class="delete-cell" mat-cell *matCellDef="let row">
+          <mat-icon>delete</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="3">No payment methods created yet</td>
+      </tr>
+    </table>
+    <div fxLayoutAlign="space-between center">
+      <mat-paginator [hidePageSize]="true" [pageSizeOptions]="[5]" showFirstLastButtons></mat-paginator>
+      <button (click)="openSalesDialog()" class="add-button" mat-mini-fab>
+        <mat-icon>add
+        </mat-icon>
+      </button>
     </div>
   </div>
 
-</div>
-<div>
-  <button (click)="openSalesDialog()" mat-mini-fab>
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
