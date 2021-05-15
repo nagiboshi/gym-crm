@@ -3,11 +3,18 @@ h2 {
   margin-top: 15px;
 }
 
+.member-profile-save button {
+  width: 56px;
+  height: 56px;
+}
+
 .member-profile-container {
   position: relative;
   .member-photo {
     margin-right: 20px;
   }
+
+
 
   .member-info {
     .member-info-row {

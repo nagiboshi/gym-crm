@@ -5,11 +5,10 @@ import {MembersRoutingModule} from './members-routing.module';
 import {MembersComponent} from './members.component';
 import {MemberProfileComponent} from './member-profile/member-profile.component';
 import {SharedModule} from '@shared/shared.module';
-import {FamilyMembersComponent} from './member-profile/family-member/family-members.component';
 
 
 @NgModule({
-  declarations: [MembersComponent, MemberProfileComponent, FamilyMembersComponent],
+  declarations: [MembersComponent, MemberProfileComponent],
   exports: [
     MembersComponent
   ],

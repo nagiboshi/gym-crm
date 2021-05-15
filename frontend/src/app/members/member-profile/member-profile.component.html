@@ -38,29 +38,25 @@
           </div>
           <div fxLayout="row" class="member-info-row">
             <mat-form-field>
-            <textarea matInput placeholder="Notes" formControlName="notes" matInput>
+            <textarea matInput placeholder="Notes" formControlName="notes">
             </textarea>
             </mat-form-field>
           </div>
         </div>
         <div fxFlex="33">
 
-          <div class="member-info-row">
-            <family-members (afterFamilyMemberRemove)="removeFamilyMember($event)"
-                            (afterFamilyMemberSelected)="addMemberToFamily($event)"
-                            [members]="loadedMember.family"></family-members>
-          </div>
         </div>
 
       </div>
     </div>
-    <div fxLayoutAlign="start end" *ngIf="form.touched">
+    <div class="member-profile-save" fxLayoutAlign="start end" *ngIf="form.touched">
       <button (click)="updateMember()" mat-mini-fab>
-        <mat-icon>edit</mat-icon>
+        <mat-icon>save</mat-icon>
       </button>
     </div>
 
   </form>
   <div fxLayoutAlign="start">
   <app-purchase-history [memberId]="loadedMember.id"></app-purchase-history>
+</div>
 </div>

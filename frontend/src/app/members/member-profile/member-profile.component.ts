@@ -80,21 +80,21 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
     }
   }
 
-  removeFamilyMember(member: Member) {
-    this.patchFamilyField();
-    const index = this.loadedMember.family.findIndex(m => m.id == member.id);
-    this.loadedMember.family.splice(index, 1);
-    this.form.markAllAsTouched();
-  }
-
-  addMemberToFamily(member: Member) {
-    if (member.id != this.loadedMember.id) {
-      this.patchFamilyField();
-      this.loadedMember.family.push(member);
-      this.communicationService.updateMember(this.loadedMember);
-      this.form.markAllAsTouched();
-    }
-  }
+  // removeFamilyMember(member: Member) {
+  //   this.patchFamilyField();
+  //   const index = this.loadedMember.family.findIndex(m => m.id == member.id);
+  //   this.loadedMember.family.splice(index, 1);
+  //   this.form.markAllAsTouched();
+  // }
+  //
+  // addMemberToFamily(member: Member) {
+  //   if (member.id != this.loadedMember.id) {
+  //     this.patchFamilyField();
+  //     this.loadedMember.family.push(member);
+  //     this.communicationService.updateMember(this.loadedMember);
+  //     this.form.markAllAsTouched();
+  //   }
+  // }
 
 
 

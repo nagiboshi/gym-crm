@@ -23,7 +23,7 @@ import {JwtInterceptor} from './helpers/jwt.interceptor';
     BrowserAnimationsModule,
     BrowserModule,
     AppRoutingModule,
-    SharedModule
+    SharedModule,
   ],
   providers: [
     CommunicationService,
