@@ -1,0 +1,12 @@
+.member-picture {
+  margin-right: 20px;
+  width: 50%;
+  min-width: 180px;
+  height: 100%;
+  .drop-area {
+    border: 1px dashed black;
+    padding: 20px;
+    box-sizing: border-box;
+    height: 100%;
+  }
+}
