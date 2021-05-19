@@ -1,0 +1,49 @@
+import {Controller, UploadedFile, UploadedFiles} from '@nestjs/common';
+import {Crud, CrudRequest, Override, ParsedBody, ParsedRequest} from '@nestjsx/crud';
+import {Member} from './member';
+import {MemberService} from './member.service';
+import {FileUploadingUtils} from '../interceptors/file-uploading-utils.interceptor';
+import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
+
+
+interface UploadedImage {
+  fieldName: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  filename: string;
+  path: string;
+  size: number;
+}
+@Crud({
+  model: {
+    type: Member
+  },
+  query: {
+    join: {
+      referalMember: {
+        eager: false
+      }
+    }
+  },
+  routes: {
+    createOneBase: {
+      interceptors: [FileUploadingUtils.singleFileUploader('image')],
+    }
+  },
+})
+@Controller('member')
+export class MemberController {
+  constructor(public service: MemberService) {
+  }
+
+  @Override()
+  createOne(
+    @ParsedRequest() req: CrudRequest,
+    @ParsedBody() dto: Member,
+    @UploadedFile() image: any & UploadedImage,
+  ) {
+    dto.photoLink = image.path;
+    return this.service.createOne(req, dto);
+  }
+}
