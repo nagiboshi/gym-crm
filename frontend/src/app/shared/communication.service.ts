@@ -10,7 +10,7 @@ import {ScheduleMember} from '../models/schedule-member';
 import {Freeze} from '../models/freeze';
 import {PaymentMethod} from '../models/payment-method';
 import {ClassCategory} from '../classes/class.category';
-
+import {environment} from '../../environments/environment';
 export interface ClassSchedule {
   id: number;
   classId: number;
@@ -39,7 +39,6 @@ export interface DaySchedule {
   signedMembers$?: BehaviorSubject<ScheduleMember[]>;
 }
 
-
 @Injectable({providedIn: 'root'})
 export class CommunicationService {
   classesSubj = new BehaviorSubject<ClassModel[]>([]);
@@ -61,7 +60,7 @@ export class CommunicationService {
       .append('size', size.toString())
       .append('filterNameLastNameOrPhone', filterNameLastNameOrPhone)
       .append('offset', offset.toString());
-    return this.httpClient.get<Member[]>('/members', {params});
+    return this.httpClient.get<Member[]>('/api/member', {params});
   }
 
   private _getDataList<T>(behaviorSubj: BehaviorSubject<T>, url: string, params?: any): Observable<T> {
@@ -105,7 +104,7 @@ export class CommunicationService {
 
   getMember(id: string) {
     // const params = new HttpParams().set('id', id);
-    return this.httpClient.get<Member>('/members/' + id); // , {params});
+    return this.httpClient.get<Member>('/api/member/' + id); // , {params});
   }
 
 
@@ -195,8 +194,8 @@ export class CommunicationService {
     return this.classCategoriesSubj.getValue();
   }
 
-  newMember(member: Member): Observable<Member> {
-    return this.httpClient.put<Member>('/member', member);
+  newMember(member: FormData): Observable<Member> {
+    return this.httpClient.post<Member>('/api/member', member);
   }
 
 

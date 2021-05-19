@@ -16,32 +16,39 @@ import {AddMemberDialogComponent} from '@shared/add-member-dialog/add-member-dia
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MembersComponent implements AfterViewInit, OnInit {
-  displayedColumns: string[] = ['firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'edit', 'delete'];
+  displayedColumns: string[] = ['firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'delete'];
   dataSource: MembersDataSource;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(public dialog: MatDialog, private memberService: CommunicationService, private router: Router) {
+  constructor(public dialog: MatDialog, private communicationService: CommunicationService, private router: Router) {
   }
 
   ngAfterViewInit() {
   }
 
   ngOnInit() {
-    this.dataSource = new MembersDataSource(this.memberService);
+    this.dataSource = new MembersDataSource(this.communicationService);
     this.dataSource.loadMembers();
   }
 
 
 
   addMember() {
-    const newUser = {id: 0, firstName: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
-    this.dialog.open(AddMemberDialogComponent, {data: newUser})
+    const newMember = {id: 0, firstName: '', file: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
+    this.dialog.open(AddMemberDialogComponent, {data: newMember})
       .afterClosed()
       .subscribe((newMember: Member) => {
+        console.log('new member' ,newMember);
         if ( newMember ) {
-          this.memberService.newMember(newMember).toPromise().then((savedMember) => {
+          const formData = new FormData();
+          for (let newMemberKey in newMember) {
+            formData.set(newMemberKey, newMember[newMemberKey])
+          }
+
+
+          this.communicationService.newMember(formData).toPromise().then((savedMember) => {
             const memberSubj = this.dataSource.membersSubject;
             memberSubj.next([...memberSubj.getValue(), savedMember]);
           });

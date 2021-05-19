@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   vat: 0.05,
-  apiUrl: 'http://localhost/'
+  // apiUrl: 'http://localhost:3000/'
 };
 
 /*

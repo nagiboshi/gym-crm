@@ -4,7 +4,7 @@
 
   <form [formGroup]="form" fxLayout="row" class="member">
     <div class="member-photo">
-      <img height="250" [src]="loadedMember.photoLink"/>
+      <img (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg width="220" height="250" [src]="loadedMember.photoLink | memberPhotoLink"/>
     </div>
     <div class="member-info-right-part">
       <div fxLayout="row" class="member-info">

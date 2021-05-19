@@ -32,12 +32,13 @@ import {MatTreeModule} from '@angular/material/tree';
 import {ClassCategoryNamePipe} from './pipes/class-category-name.pipe';
 import {DeletePromptDialogComponent} from './delete-prompt-dialog/delete-prompt-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MemberPhotoLinkPipe } from './pipes/member-photo-link.pipe';
 
 
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent,
     AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent,
-    MembershipExpirationPipe, ClassCategoryNamePipe, DeletePromptDialogComponent, FreezeMembershipDialogComponent],
+    MembershipExpirationPipe, ClassCategoryNamePipe, DeletePromptDialogComponent, FreezeMembershipDialogComponent, MemberPhotoLinkPipe],
   providers: [fakeBackendProvider, MatIconRegistry, DatePipe, {
     provide: MAT_DATE_FORMATS, useValue: {
       parse: {
@@ -70,39 +71,40 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     MatPaginatorModule,
     FormsModule
   ],
-  exports: [
-    FlexLayoutModule,
-    MatTabsModule,
-    MatButtonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatStepperModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatPaginatorModule,
-    MatInputModule,
-    MatTooltipModule,
-    MatDialogModule,
-    MatTreeModule,
-    HttpClientModule,
-    MatTableModule,
-    MatCheckboxModule,
-    // MomentDateModule,
-    MatMomentDateModule,
-    MatAutocompleteModule,
-    TimeRangeSelectorComponent,
-    MatSortModule,
-    FreezeMembershipDialogComponent,
-    MatDatepickerModule,
-    MatPaginatorModule,
-    AddMemberDialogComponent,
-    PurchaseHistoryComponent,
-    FindMemberComponent,
-    YearMonthSelectorComponent,
-    MembershipExpirationPipe,
-    ClassCategoryNamePipe,
-    DeletePromptDialogComponent
-  ]
+    exports: [
+        FlexLayoutModule,
+        MatTabsModule,
+        MatButtonModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatStepperModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatPaginatorModule,
+        MatInputModule,
+        MatTooltipModule,
+        MatDialogModule,
+        MatTreeModule,
+        HttpClientModule,
+        MatTableModule,
+        MatCheckboxModule,
+        // MomentDateModule,
+        MatMomentDateModule,
+        MatAutocompleteModule,
+        TimeRangeSelectorComponent,
+        MatSortModule,
+        FreezeMembershipDialogComponent,
+        MatDatepickerModule,
+        MatPaginatorModule,
+        AddMemberDialogComponent,
+        PurchaseHistoryComponent,
+        FindMemberComponent,
+        YearMonthSelectorComponent,
+        MembershipExpirationPipe,
+        ClassCategoryNamePipe,
+        DeletePromptDialogComponent,
+        MemberPhotoLinkPipe
+    ]
 })
 export class SharedModule {
   constructor(private iconRegistry: MatIconRegistry, private sanitizer: DomSanitizer) {

@@ -29,12 +29,6 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Gender</th>
         <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.gender}} </td>
       </ng-container>
-      <ng-container matColumnDef="edit">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td class="edit-cell" mat-cell *matCellDef="let row">
-          <mat-icon>edit</mat-icon>
-        </td>
-      </ng-container>
       <ng-container matColumnDef="delete">
         <th mat-header-cell *matHeaderCellDef></th>
         <td class="delete-cell" mat-cell *matCellDef="let row">

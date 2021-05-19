@@ -474,11 +474,11 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         case url.match('/members') && (method == 'PUT' || method == 'PATCH'):
           const member = request.body as Member;
           return mergeMember(member);
-        case url.match(/\/members$/) && method == 'GET':
-          const filterNameLastNameOrPhone = request.params.get('filterNameLastNameOrPhone');
-          const offset = request.params.get('offset');
-          const size = request.params.get('size');
-          return getMembers(size, offset, filterNameLastNameOrPhone);
+        // case url.match(/\/members$/) && method == 'GET':
+        //   const filterNameLastNameOrPhone = request.params.get('filterNameLastNameOrPhone');
+        //   const offset = request.params.get('offset');
+        //   const size = request.params.get('size');
+        //   return getMembers(size, offset, filterNameLastNameOrPhone);
         case url.match(/\/members\/\d+$/) && method == 'GET':
           const id = idFromUrl();
           return getMember(id);

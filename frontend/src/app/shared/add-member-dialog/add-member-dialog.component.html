@@ -2,11 +2,11 @@
 <mat-dialog-content>
   <form fxFlex fxLayoutAlign="space-between" [formGroup]="memberForm">
     <div class="member-picture">
-      <div [ngClass]="{'drop-area': true, 'highlighted': doBorderHighlight}" (dragover)="highlightBorder($event, true)" (dragenter)="highlightBorder($event, true)"
+      <div (click)="openAvatarFileChoose()" [ngClass]="{'drop-area': true, 'highlighted': doBorderHighlight}" (dragover)="highlightBorder($event, true)" (dragenter)="highlightBorder($event, true)"
            (dragleave)="highlightBorder($event, false)" (drop)="handleAvatarDrop($event)" fxLayoutAlign="center center">
         Drop picture here or select
       </div>
-      <input type="file" accept="image/*" (change)="handleAvatar($event)">
+      <input #avatarFileChoose class="avatar-file-target" type="file" accept="image/*" (change)="handleAvatar($event)">
 
     </div>
     <div class="member-fields">
@@ -38,7 +38,7 @@
       <div>
         <mat-form-field>
           <mat-label>Gender</mat-label>
-          <mat-select type="text" formControlName="gender">
+          <mat-select formControlName="gender">
             <mat-option value="male">Male</mat-option>
             <mat-option value="female">Female</mat-option>
           </mat-select>

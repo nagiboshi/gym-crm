@@ -71,16 +71,16 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
   }
 
   openUserRegistrationForm() {
-    const newUser = {id: 0, firstName: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
+    const newMember = {id: 0, firstName: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
     this.searchInput.nativeElement.blur();
     this.showNewMemberOption = false;
-    this.dialog.open(AddMemberDialogComponent, {data: newUser})
+    this.dialog.open(AddMemberDialogComponent, {data: newMember})
       .afterClosed()
       .subscribe((newMember: Member) => {
         if ( newMember ) {
-          this.communicationService.newMember(newMember).toPromise().then((savedMember) => {
-            this.memberSelected.emit(savedMember);
-          });
+          // this.communicationService.newMember(newMember).toPromise().then((savedMember) => {
+          //   this.memberSelected.emit(savedMember);
+          // });
         }
       });
   }
