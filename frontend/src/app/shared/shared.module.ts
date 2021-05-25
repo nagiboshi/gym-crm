@@ -15,7 +15,7 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {TimeRangeSelectorComponent} from './time-range-selector/time-range-selector.component';
 import {CommonModule, DatePipe} from '@angular/common';
-import {fakeBackendProvider} from './fake-backend.service';
+// import {fakeBackendProvider} from './fake-backend.service';
 import {HttpClientModule} from '@angular/common/http';
 import {FindMemberComponent} from './find-member/find-member.component';
 import {YearMonthSelectorComponent} from './year-month-selector/year-month-selector.component';
@@ -33,13 +33,14 @@ import {ClassCategoryNamePipe} from './pipes/class-category-name.pipe';
 import {DeletePromptDialogComponent} from './delete-prompt-dialog/delete-prompt-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { MemberPhotoLinkPipe } from './pipes/member-photo-link.pipe';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent,
     AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent,
     MembershipExpirationPipe, ClassCategoryNamePipe, DeletePromptDialogComponent, FreezeMembershipDialogComponent, MemberPhotoLinkPipe],
-  providers: [fakeBackendProvider, MatIconRegistry, DatePipe, {
+  providers: [ MatIconRegistry, DatePipe, {
     provide: MAT_DATE_FORMATS, useValue: {
       parse: {
         dateInput: 'LL',
@@ -65,6 +66,7 @@ import { MemberPhotoLinkPipe } from './pipes/member-photo-link.pipe';
     MatDatepickerModule,
     FlexLayoutModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
     MatButtonModule,
     MatCheckboxModule,
     MatMomentDateModule,
@@ -82,6 +84,7 @@ import { MemberPhotoLinkPipe } from './pipes/member-photo-link.pipe';
         MatSelectModule,
         MatPaginatorModule,
         MatInputModule,
+        MatProgressSpinnerModule,
         MatTooltipModule,
         MatDialogModule,
         MatTreeModule,

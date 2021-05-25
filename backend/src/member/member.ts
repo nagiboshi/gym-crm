@@ -1,5 +1,5 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
-import {IsEmail,  IsNotEmpty, MinLength} from 'class-validator';
+import {IsEmail, IsMobilePhone, IsNotEmpty, MinLength} from 'class-validator';
 
 @Entity()
 export class Member {
@@ -20,6 +20,7 @@ export class Member {
   photoLink: string;
 
   @Column({nullable: true})
+  @IsMobilePhone()
   phoneNumber: string;
 
   @Column()
@@ -41,17 +42,3 @@ export class Member {
   referalMember: Member;
 
 }
-
-
-//
-// id: number;
-// firstName: string;
-// lastName: string;
-// photoLink: string;
-// email: string;
-// phoneNumber: string;
-// gender: string;
-// notes?: string;
-// referalType?: string;
-// referalMember?: Member;
-// family?: Member[];

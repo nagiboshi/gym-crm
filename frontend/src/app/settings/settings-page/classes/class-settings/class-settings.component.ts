@@ -9,6 +9,7 @@ import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {Subscription} from 'rxjs';
 import {ClassDialogData, CreateClassDialogComponent} from './create-class-dialog/create-class-dialog.component';
+import {Branch} from '@models/branch';
 
 @Component({
   selector: 'class-settings',
@@ -19,6 +20,7 @@ export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit 
   classesColumns = ['name', 'classCategory', 'edit', 'delete'];
   dataSource: MatTableDataSource<ClassModel>;
   classCategories: ClassCategory[] = [{id: -1, name: 'All'}];
+  branches: Branch[] = [{id: -1, name: 'All'}];
   classesSub: Subscription;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -31,8 +33,9 @@ export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit 
 
   ngOnInit(): void {
     this.classCategories = [...this.classCategories, ...this.communicationService.getClassCategories()];
+    this.branches = [...this.branches, ...this.communicationService.getBranches()];
     this.dataSource = new MatTableDataSource<ClassModel>(this.communicationService.getClasses());
-    this.dataSource.filterPredicate = (data, filter: any) => !filter || filter == -1 || data.categoryId == filter;
+    this.dataSource.filterPredicate = (data, filter: any) => !filter || filter == -1 || data.classCategoryId == filter;
     this.classesSub = this.communicationService.classes$.subscribe(classes => this.dataSource.data = classes);
   }
 
@@ -41,7 +44,7 @@ export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   _newClass(): ClassModel {
-    return {id: 0, categoryId: first(this.communicationService.getClassCategories()).id, name: ''};
+    return {id: 0, classCategoryId: first(this.communicationService.getClassCategories()).id, name: '', branchId: null};
   }
 
   addNewClass() {
@@ -76,5 +79,9 @@ export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit 
 
   ngOnDestroy(): void {
     this.classesSub.unsubscribe();
+  }
+
+  filterOutClassesByBranch($event: any) {
+    
   }
 }

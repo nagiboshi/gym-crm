@@ -1,11 +1,29 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import {Module} from '@nestjs/common';
+import {AppController} from './app.controller';
+import {AppService} from './app.service';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import * as Joi from 'joi';
-import { MemberModule } from './member/member.module';
+import {MemberModule} from './member/member.module';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {Member} from './member/member';
+import {UserModule} from './user/user.module';
+import {User} from './user/user';
+import {AuthModule} from './auth/auth.module';
+import {BranchModule} from './branch/branch.module';
+import {Branch} from './branch/branch';
+import {ClassesModule} from './classes/classes.module';
+import {ClassCategoryModule} from './class-category/class-category.module';
+import {ClassCategory} from './class-category/class-category';
+import {ClassModel} from './classes/class-model';
+import {PackageModule} from './package/package.module';
+import {Package} from './package/package';
+import {PaymentMethodModule} from './payment-method/payment-method.module';
+import {PaymentMethod} from './payment-method/payment-method';
+import {PurchaseItemModule} from './purchase-item/purchase-item.module';
+import {PurchaseFreeze} from './purchase-item/purchase-freeze';
+import {PurchaseItem} from './purchase-item/purchase-item';
+import {PackageItem} from './package/package-item';
+
 @Module({
   imports: [ConfigModule.forRoot({
     validationSchema: Joi.object({
@@ -15,7 +33,8 @@ import {Member} from './member/member';
       POSTGRES_PASSWORD: Joi.string().required(),
       POSTGRES_DB: Joi.string().required(),
       PORT: Joi.number(),
-    })}, ),  TypeOrmModule.forRootAsync({
+    })
+  },), TypeOrmModule.forRootAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => ({
@@ -25,16 +44,16 @@ import {Member} from './member/member';
       username: configService.get('POSTGRES_USER'),
       password: configService.get('POSTGRES_PASSWORD'),
       database: configService.get('POSTGRES_DB'),
+      schema: 'public',
       keepConnectionAlive: true,
-      logging: true,
       entities: [
-        Member
-        // join(__dirname, '**', '*.entity.{ts,js}')
+        Member, User, Branch, ClassCategory, ClassModel, PackageItem, Package, PaymentMethod, PurchaseItem, PurchaseFreeze
       ],
       synchronize: true,
     })
-  }), MemberModule ],
+  }), MemberModule, UserModule, AuthModule, BranchModule, ClassesModule, ClassCategoryModule, PackageModule, PaymentMethodModule, PurchaseItemModule],
   controllers: [AppController,],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+}

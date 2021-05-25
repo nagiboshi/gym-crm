@@ -32,7 +32,7 @@
       <ng-container matColumnDef="delete">
         <th mat-header-cell *matHeaderCellDef></th>
         <td class="delete-cell" mat-cell *matCellDef="let row">
-          <mat-icon>delete</mat-icon>
+          <mat-icon (click)="openMemberRemoveDialog(row)">delete</mat-icon>
         </td>
       </ng-container>
 
@@ -45,7 +45,7 @@
       </tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    <mat-paginator (page)="onPageChange($event)" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 
   </div>
   <div fxLayoutAlign="end" class="add-person-container">

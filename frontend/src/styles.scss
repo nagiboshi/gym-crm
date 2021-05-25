@@ -91,6 +91,10 @@ header {
   background-color: $primaryColor6;
 }
 
+.mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+  background-color: $primaryColor8;
+}
+
 
 .mat-step-header .mat-step-icon-selected, .mat-step-header .mat-step-icon-state-done {
   background-color:  $primaryColor6;

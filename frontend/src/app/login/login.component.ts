@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CommunicationService} from '@shared/communication.service';
-import {AccountService} from '@shared/account.service';
+import {UserService} from '@shared/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {first} from 'rxjs/operators';
 
@@ -15,11 +15,11 @@ export class LoginComponent implements OnInit {
   returnUrl: string;
   constructor(private router: Router,
               private communicationService: CommunicationService,
-              private accountService: AccountService,
+              private accountService: UserService,
               private route: ActivatedRoute,
               private fb: FormBuilder) {
     // redirect to home if already logged in
-    if (this.accountService.userValue) {
+    if (this.accountService.token) {
       this.router.navigate(['/']);
     }
   }

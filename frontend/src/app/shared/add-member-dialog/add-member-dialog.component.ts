@@ -1,8 +1,9 @@
-import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FileChangeEvent} from '@angular/compiler-cli/src/perform_watch';
 import {first} from 'lodash';
+import {DomSanitizer} from '@angular/platform-browser';
 @Component({
   selector: 'app-add-member-dialog',
   templateUrl: './add-member-dialog.component.html',
@@ -14,7 +15,11 @@ export class AddMemberDialogComponent implements OnInit {
   doBorderHighlight: boolean;
   @ViewChild('avatarFileChoose')
   avatarFileChoose: ElementRef;
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private fb: FormBuilder) {
+  @ViewChild('userAvatarPreview')
+  memberAvatar: ElementRef;
+  memberAvatarDisplay: string = 'none';
+  memberAvatarSrc: string = "";
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private fb: FormBuilder, private domSanitizer: DomSanitizer) {
   }
 
 
@@ -32,17 +37,28 @@ export class AddMemberDialogComponent implements OnInit {
   }
 
   handleAvatar(e: Event ) {
-      const fileTarget = (<any>e.target).files;
-      if( fileTarget ) {
+      const imgs = (<any>e.target).files;
+      this.handleAvatarChange(imgs);
+  }
 
-        this.memberForm.patchValue({image: first(fileTarget)})
-      }
+  handleAvatarChange(imgs) {
+    if( imgs ) {
+      const [img] = imgs;
+      this.memberForm.patchValue({image: img});
+      this.memberAvatarSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(img)) as string;
+      this.memberAvatarDisplay = 'block';
+    } else {
+      this.memberAvatarSrc  = "";
+      this.memberAvatarDisplay = 'none';
+    }
   }
 
   handleAvatarDrop(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
-    this.memberForm.patchValue({file: first(e.dataTransfer.files)});
+    if( e.dataTransfer?.files ) {
+      this.handleAvatarChange(e.dataTransfer.files);
+    }
   }
 
   highlightBorder(e: DragEvent, doHighlight: boolean) {

@@ -22,6 +22,6 @@ export class ClassesDataSource extends DataSource<ClassModel> {
   }
 
   filterByClassType(categoryId: number) {
-    this.data.next([...this.communicationService.getClasses()].filter((c => categoryId == -1 || c.categoryId == categoryId)));
+    this.data.next([...this.communicationService.getClasses()].filter((c => categoryId == -1 || c.classCategoryId == categoryId)));
   }
 }

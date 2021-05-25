@@ -9,6 +9,5 @@ export interface Member {
   notes?: string;
   referalType?: string;
   referalMember?: Member;
-  family?: Member[];
 
 }

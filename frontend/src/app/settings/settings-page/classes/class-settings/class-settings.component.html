@@ -5,9 +5,16 @@
         <div fxLayoutAlign="start center" fxLayout>
           <div class="table-header-title"> Classes</div>
           <mat-form-field>
-            <mat-select placeholder="Filter by" (valueChange)="filterOutClassesByType($event)">
+            <mat-select placeholder="Class type" (valueChange)="filterOutClassesByType($event)">
               <mat-option *ngFor="let classCategory of classCategories"
                           [value]="classCategory.id">{{classCategory.name}}</mat-option>
+            </mat-select>
+
+          </mat-form-field>
+          <mat-form-field>
+            <mat-select placeholder="Branch" (valueChange)="filterOutClassesByBranch($event)">
+              <mat-option *ngFor="let branch of branches"
+                          [value]="branch.id">{{branch.name}}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>

@@ -9,10 +9,20 @@ import {PaymentMethodCreateDialogComponent} from './settings-page/payment-method
 import {SalesSettingsComponent} from './settings-page/sales-settings/sales-settings.component';
 import {SalesDialogComponent} from './settings-page/sales-settings/sales-dialog/sales-dialog.component';
 import {CreateClassDialogComponent} from './settings-page/classes/class-settings/create-class-dialog/create-class-dialog.component';
+import {UsersComponent} from './settings-page/users/users.component';
+import {UserMergeDialogComponent} from './settings-page/users/user-merge-dialog/user-merge-dialog.component';
 
 
 @NgModule({
-  declarations: [SettingsPageComponent, CreateClassDialogComponent, PaymentMethodCreateDialogComponent, ClassSettingsComponent, PaymentMethodsSettingsComponent, SalesSettingsComponent, SalesDialogComponent],
+  declarations: [SettingsPageComponent,
+    CreateClassDialogComponent,
+    PaymentMethodCreateDialogComponent,
+    ClassSettingsComponent,
+    PaymentMethodsSettingsComponent,
+    SalesSettingsComponent,
+    UserMergeDialogComponent,
+    SalesDialogComponent,
+    UsersComponent],
   imports: [
     CommonModule,
     SharedModule,

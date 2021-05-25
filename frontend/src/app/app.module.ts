@@ -13,6 +13,7 @@ import {PaymentMethod} from './models/payment-method';
 import {ClassCategory} from './classes/class.category';
 import {ErrorInterceptor} from './helpers/errors.interceptor';
 import {JwtInterceptor} from './helpers/jwt.interceptor';
+import {Branch} from '@models/branch';
 
 @NgModule({
   declarations: [
@@ -27,24 +28,31 @@ import {JwtInterceptor} from './helpers/jwt.interceptor';
   ],
   providers: [
     CommunicationService,
-    {
-      provide: APP_INITIALIZER, useFactory: (http: HttpClient, commService: CommunicationService) => {
+    // {
+    //   provide: APP_INITIALIZER, useFactory: (http: HttpClient, commService: CommunicationService) => {
 
-        return () => new Promise((resolve, _) => {
-          Promise.all([http.get<Package[]>('/memberships').toPromise(),
-            http.get<ClassModel[]>('/classes').toPromise(),
-            http.get<PaymentMethod[]>('/paymentMethods').toPromise(),
-            http.get<ClassCategory[]>('/classCategories').toPromise()])
-            .then(([memberships, classes, paymentMethods, classCategories]) => {
-              commService.classesSubj.next(classes);
-              commService.packagesSubj.next(memberships);
-              commService.paymentMethodsSubj.next(paymentMethods);
-              commService.classCategoriesSubj.next(classCategories);
-              resolve(true);
-            });
-        });
-      }, deps: [HttpClient, CommunicationService], multi: true
-    }, {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+        // return () => new Promise((resolve, _) => {
+
+          // Promise.all([http.get<Package[]>('/memberships').toPromise(),
+          //   http.get<ClassModel[]>('/api/classes').toPromise(),
+          //   http.get<PaymentMethod[]>('/api/paymentMethods').toPromise(),
+          //   http.get<ClassCategory[]>('/api/class-category').toPromise(),
+          //   http.get<Branch[]>('/api/branch').toPromise()])
+          //   .then(([memberships, classes, paymentMethods, classCategories, branches]) => {
+          //     commService.classesSubj.next(classes);
+          //     commService.packagesSubj.next(memberships);
+          //     commService.paymentMethodsSubj.next(paymentMethods);
+          //     commService.classCategoriesSubj.next(classCategories);
+          //     commService.branchesSubj.next(branches);
+          //     resolve(true);
+          //   }).catch(e => {
+          //     console.log(e);
+          //     debugger;
+          // });
+        // });
+      // }, deps: [HttpClient, CommunicationService], multi: true
+    // },
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]

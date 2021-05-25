@@ -65,12 +65,6 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
     this.routeChangeSub.unsubscribe();
   }
 
-  patchFamilyField() {
-    if (!this.loadedMember.family) {
-      this.loadedMember.family = [];
-    }
-  }
-
   updateMember() {
     if (this.form.valid) {
       this.loadedMember = Object.assign(this.loadedMember, this.form.value);
@@ -79,23 +73,5 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
       this.cd.markForCheck();
     }
   }
-
-  // removeFamilyMember(member: Member) {
-  //   this.patchFamilyField();
-  //   const index = this.loadedMember.family.findIndex(m => m.id == member.id);
-  //   this.loadedMember.family.splice(index, 1);
-  //   this.form.markAllAsTouched();
-  // }
-  //
-  // addMemberToFamily(member: Member) {
-  //   if (member.id != this.loadedMember.id) {
-  //     this.patchFamilyField();
-  //     this.loadedMember.family.push(member);
-  //     this.communicationService.updateMember(this.loadedMember);
-  //     this.form.markAllAsTouched();
-  //   }
-  // }
-
-
 
 }

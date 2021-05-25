@@ -1,24 +1,17 @@
-import {Controller, UploadedFile, UploadedFiles} from '@nestjs/common';
+import {Controller, UploadedFile, UseGuards} from '@nestjs/common';
 import {Crud, CrudRequest, Override, ParsedBody, ParsedRequest} from '@nestjsx/crud';
 import {Member} from './member';
 import {MemberService} from './member.service';
 import {FileUploadingUtils} from '../interceptors/file-uploading-utils.interceptor';
-import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
+import {JwtAuthGuard} from '../auth/jwt-auth.guard';
+import {AuthGuard} from '@nestjs/passport';
 
 
-interface UploadedImage {
-  fieldName: string;
-  originalname: string;
-  encoding: string;
-  mimetype: string;
-  filename: string;
-  path: string;
-  size: number;
-}
 @Crud({
   model: {
     type: Member
   },
+
   query: {
     join: {
       referalMember: {
@@ -33,6 +26,7 @@ interface UploadedImage {
   },
 })
 @Controller('member')
+@UseGuards(JwtAuthGuard)
 export class MemberController {
   constructor(public service: MemberService) {
   }

@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { MemberController } from './member.controller';
-import { MemberService } from './member.service';
+import {Module} from '@nestjs/common';
+import {MemberController} from './member.controller';
+import {MemberService} from './member.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {Member} from './member';
 
@@ -9,4 +9,5 @@ import {Member} from './member';
   controllers: [MemberController],
   providers: [MemberService]
 })
-export class MemberModule {}
+export class MemberModule {
+}

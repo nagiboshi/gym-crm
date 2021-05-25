@@ -11,6 +11,8 @@ import {Freeze} from '../models/freeze';
 import {PaymentMethod} from '../models/payment-method';
 import {ClassCategory} from '../classes/class.category';
 import {environment} from '../../environments/environment';
+import {User} from '@models/user';
+import {Branch} from '@models/branch';
 export interface ClassSchedule {
   id: number;
   classId: number;
@@ -51,7 +53,7 @@ export class CommunicationService {
   packagesSubj = new BehaviorSubject<Package[]>([]);
   paymentMethodsSubj = new BehaviorSubject<PaymentMethod[]>([]);
   classCategoriesSubj = new BehaviorSubject<ClassCategory[]>([]);
-
+  branchesSubj = new BehaviorSubject<Branch[]>([]);
   constructor(private httpClient: HttpClient) {
   }
 
@@ -100,6 +102,10 @@ export class CommunicationService {
 
   emitNewPurchase(purchase: PurchaseItem) {
     this.newPurchase.next(purchase);
+  }
+
+  removeMember(id: number) {
+    return this.httpClient.delete('/api/member/' + id);
   }
 
   getMember(id: string) {
@@ -194,6 +200,10 @@ export class CommunicationService {
     return this.classCategoriesSubj.getValue();
   }
 
+  getBranches(): Branch[] {
+    return this.branchesSubj.getValue();
+  }
+
   newMember(member: FormData): Observable<Member> {
     return this.httpClient.post<Member>('/api/member', member);
   }
@@ -227,7 +237,7 @@ export class CommunicationService {
 
   savePackage(packageElement: Package): Promise<Package> {
     return new Promise<Package>((resolve, reject) => {
-      this.httpClient.put<Package>('/package', packageElement).toPromise().then((mergedPackage) => {
+      this.httpClient.post<Package>('/api/package', packageElement).toPromise().then((mergedPackage) => {
         const packages = this.packagesSubj.getValue();
         if (packageElement.id == 0) {
           this.packagesSubj.next([mergedPackage, ...packages]);
@@ -262,4 +272,5 @@ export class CommunicationService {
       .append('startDate', startDate.toString());
     return this.httpClient.get<Freeze>('/freeze', {params});
   }
+
 }

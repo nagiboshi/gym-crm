@@ -24,7 +24,7 @@ export class CreateClassDialogComponent implements OnInit {
     this.formGroup = this.fb.group({
       id: [this.data.classData.id],
       name: [this.data.classData.name, [Validators.required]],
-      categoryId: [this.data.classData.categoryId, [Validators.required]]
+      categoryId: [this.data.classData.classCategoryId  , [Validators.required]]
     });
   }
 

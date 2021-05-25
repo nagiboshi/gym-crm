@@ -12,7 +12,8 @@
     "importHelpers": true,
     "target": "es2015",
     "paths": {
-      "@shared/*":["src/app/shared/*"]
+      "@shared/*":["src/app/shared/*"],
+      "@models/*": ["src/app/models/*"]
     },
     "module": "es2020",
     "lib": [
