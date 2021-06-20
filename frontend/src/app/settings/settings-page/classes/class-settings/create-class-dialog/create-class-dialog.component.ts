@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ClassModel} from '../../../../../classes/class.model';
 import {ClassCategory} from '../../../../../classes/class.category';
+import {Branch} from '@models/branch';
 
 export interface ClassDialogData {
   classData: ClassModel;
@@ -24,7 +25,8 @@ export class CreateClassDialogComponent implements OnInit {
     this.formGroup = this.fb.group({
       id: [this.data.classData.id],
       name: [this.data.classData.name, [Validators.required]],
-      categoryId: [this.data.classData.classCategoryId  , [Validators.required]]
+      categoryId: [this.data.classData.categoryId  , [Validators.required]],
+      branchId: [this.data.classData.branchId]
     });
   }
 

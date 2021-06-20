@@ -1,35 +1,35 @@
   <mat-dialog-content>
     <mat-vertical-stepper #stepper [linear]="true">
-      <mat-step [stepControl]="serviceFormGroup">
-        <form [formGroup]="serviceFormGroup">
+      <mat-step [stepControl]="productCategoryFormGroup">
+        <form [formGroup]="productCategoryFormGroup">
           <ng-template matStepLabel>Select package</ng-template>
           <mat-form-field>
-            <mat-select formControlName="service" [value]="selectedService"
+            <mat-select formControlName="productCategory" [value]="selectedProductCategory"
                         (selectionChange)="afterServiceFormGroupSelection($event.value)">
               <mat-option [value]="primalService"
-                          *ngFor="let primalService of membershipServices">
+                          *ngFor="let primalService of allProductCategories">
                 {{primalService.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <div>
-            <button [disabled]="!serviceFormGroup.valid" mat-button matStepperNext>Next</button>
+            <button [disabled]="!productCategoryFormGroup.valid" mat-button matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
-      <mat-step [stepControl]="serviceItemFormGroup">
-        <form [formGroup]="serviceItemFormGroup">
-          <ng-template matStepLabel>Select package item</ng-template>
+      <mat-step [stepControl]="productFormGroup">
+        <form [formGroup]="productFormGroup">
+          <ng-template matStepLabel>Select Product</ng-template>
           <mat-form-field>
-            <mat-select formControlName="serviceItem" [value]="selectedServiceItem"
-                        (selectionChange)="afterServiceItemFormGroupSelection($event.value)">
-              <mat-option [value]="serviceItem" *ngFor="let serviceItem of serviceItems$ | async">
-                {{serviceItem.name}}
+            <mat-select formControlName="product" [value]="selectedProduct"
+                        (selectionChange)="afterProductFormGroupSelection($event.value)">
+              <mat-option [value]="product" *ngFor="let product of products$ | async">
+                {{product.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <div>
-            <button [disabled]="!serviceItemFormGroup.valid" mat-button matStepperNext>Next</button>
+            <button [disabled]="!productFormGroup.valid" mat-button matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
@@ -39,10 +39,10 @@
           <ng-template matStepLabel>Sale Price</ng-template>
           <mat-form-field>
             <mat-label>Input a price</mat-label>
-            <input type="number" formControlName="price" matInput>
+            <input maxlength="8" type="number" formControlName="price" matInput>
           </mat-form-field>
           <div>
-            <button mat-button matStepperNext>Next</button>
+            <button [disabled]="salePriceFormGroup.invalid" mat-button matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
@@ -52,10 +52,11 @@
           <ng-template matStepLabel>Note</ng-template>
           <mat-form-field>
             <mat-label>Input a note</mat-label>
-            <textarea formControlName="note" matInput></textarea>
+            <textarea [maxLength]="500" formControlName="note" matInput></textarea>
+            <mat-error *ngIf="noteFormGroup.errors?.note?.maxLength">Max note size is 500 characters</mat-error>
           </mat-form-field>
           <div>
-            <button mat-button matStepperNext>Next</button>
+            <button [disabled]="noteFormGroup.invalid" mat-button matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
@@ -95,12 +96,12 @@
         <div class="summary">
           <div class="form-row">
             <div class="form-label">Selected Package:</div>
-            <div class="form-value">{{selectedService.name}}</div>
+            <div class="form-value">{{selectedProductCategory.name}}</div>
           </div>
           <div class="form-row">
             <div class="form-label">Selected Package Item:</div>
             <div
-              class="form-value">{{selectedServiceItem.name + " " + (salePriceFormGroup.value.price | currency: 'AED')}}</div>
+              class="form-value">{{selectedProduct.name + " " + (salePriceFormGroup.value.price | currency: 'AED')}}</div>
           </div>
           <div class="form-row">
             <div class="form-label">Payment Method:</div>
@@ -109,7 +110,7 @@
           <div class="form-row">
             <div class="form-label">Expiration Date:</div>
             <div
-              class="form-value">{{selectedServiceItem | membershipExpiration:startDateFormGroup.value.startDate}}</div>
+              class="form-value">{{selectedProduct | membershipExpiration:startDateFormGroup.value.startDate}}</div>
           </div>
           <div class="form-row">
             <div class="form-label">Subtotal:</div>

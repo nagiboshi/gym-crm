@@ -10,6 +10,8 @@ import {MatTableDataSource} from '@angular/material/table';
 import {Subscription} from 'rxjs';
 import {ClassDialogData, CreateClassDialogComponent} from './create-class-dialog/create-class-dialog.component';
 import {Branch} from '@models/branch';
+import {ClassesService} from '../../../../classes/classes.service';
+
 
 @Component({
   selector: 'class-settings',
@@ -22,21 +24,21 @@ export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit 
   classCategories: ClassCategory[] = [{id: -1, name: 'All'}];
   branches: Branch[] = [{id: -1, name: 'All'}];
   classesSub: Subscription;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
 
-  constructor(private communicationService: CommunicationService, private dialog: MatDialog) {
+  constructor(private classesService: ClassesService, private communicationService: CommunicationService, private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
-    this.classCategories = [...this.classCategories, ...this.communicationService.getClassCategories()];
-    this.branches = [...this.branches, ...this.communicationService.getBranches()];
-    this.dataSource = new MatTableDataSource<ClassModel>(this.communicationService.getClasses());
-    this.dataSource.filterPredicate = (data, filter: any) => !filter || filter == -1 || data.classCategoryId == filter;
-    this.classesSub = this.communicationService.classes$.subscribe(classes => this.dataSource.data = classes);
+    this.classCategories = [...this.classCategories, ...this.classesService.getClassCategories()];
+    this.dataSource = new MatTableDataSource<ClassModel>(this.classesService.getClasses());
+    this.dataSource.filterPredicate = (data, filter: any) => !filter || filter == -1 || data.categoryId == filter;
+    this.classesSub = this.classesService.classes$.subscribe(classes => this.dataSource.data = classes);
   }
 
   filterOutClassesByType(categoryId: number) {
@@ -44,7 +46,7 @@ export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   _newClass(): ClassModel {
-    return {id: 0, classCategoryId: first(this.communicationService.getClassCategories()).id, name: '', branchId: null};
+    return {id: 0, categoryId: first(this.classesService.getClassCategories()).id, name: '', branchId: null};
   }
 
   addNewClass() {
@@ -53,12 +55,12 @@ export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit 
 
   showMergeClassDialog(classModel?: ClassModel) {
     const data: ClassDialogData = {
-      classCategories: this.communicationService.getClassCategories(),
+      classCategories: this.classesService.getClassCategories(),
       classData: classModel ? classModel : this._newClass()
     };
     this.dialog.open(CreateClassDialogComponent, {data}).afterClosed().subscribe((classToCreate) => {
       if (classToCreate) {
-        this.communicationService
+        this.classesService
           .addClass(classToCreate);
       }
     });
@@ -67,7 +69,7 @@ export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit 
   remove(classToRemove: ClassModel) {
     this.dialog.open(DeletePromptDialogComponent, {data: `Are you sure you want to delete class ${classToRemove.name}`}).afterClosed().subscribe((doAction) => {
       if (doAction) {
-        this.communicationService.removeClass(classToRemove.id);
+        this.classesService.removeClass(classToRemove.id);
       }
     });
 
@@ -81,7 +83,4 @@ export class ClassSettingsComponent implements OnInit, OnDestroy, AfterViewInit 
     this.classesSub.unsubscribe();
   }
 
-  filterOutClassesByBranch($event: any) {
-    
-  }
 }

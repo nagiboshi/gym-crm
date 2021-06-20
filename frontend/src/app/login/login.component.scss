@@ -1,3 +1,21 @@
 .login-page {
   height: 100vh;
+  position: relative;
+  z-index: 10;
+}
+
+.main-sign {
+   &.blue {
+    color: #0773B2;
+   }
+
+  &.gray {
+    color: #414143;
+  }
+}
+
+.primal-logo {
+  //position: absolute;
+  //top: 0;
+  //left:0;
 }

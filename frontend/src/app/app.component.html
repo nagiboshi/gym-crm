@@ -1,23 +1,26 @@
-  <section class="page-wrapper">
-    <mat-progress-spinner id="cache-loading-spinner" [mode]="'indeterminate'" [strokeWidth]="1"  *ngIf="cacheLoadingStatus"></mat-progress-spinner>
+<section class="page-wrapper">
+<!--  <ng-container *ngIf="selectedBranchId; else mainContent">-->
+    <mat-progress-spinner id="cache-loading-spinner" [mode]="'indeterminate'" [strokeWidth]="1"
+                          *ngIf="cacheLoadingStatus"></mat-progress-spinner>
     <header *ngIf="userService.token$ | async" fxLayoutAlign="space-between center">
-    <nav mat-tab-nav-bar>
-      <a [ngClass]="{'primal-route': true, 'active': appRoute.isActive}" *ngFor="let appRoute of appRoutes$ | async"
-         mat-tab-link
-         [routerLink]="appRoute.path">{{appRoute.label}}</a>
-    </nav>
-    <app-find-member placeholder="Find member..." (memberSelected)="onMemberFound($event)"></app-find-member>
-    <div fxLayoutAlign="space-between center">
-      <a fxLayoutAlign="center center" fxLayout="row" routerLinkActive="active" mat-button [routerLink]="'/settings'">
-        <mat-icon>settings</mat-icon>
-      </a>
-      <button (click)="logout()" mat-button>
-        <mat-icon>exit_to_app</mat-icon>
-      </button>
+      <nav mat-tab-nav-bar>
+        <a [ngClass]="{'primal-route': true, 'active': appRoute.isActive}" *ngFor="let appRoute of appRoutes$ | async"
+           mat-tab-link
+           [routerLink]="appRoute.path">{{appRoute.label}}</a>
+      </nav>
+      <app-find-member placeholder="Find member..." (memberSelected)="onMemberFound($event)"></app-find-member>
+      <div fxLayoutAlign="space-between center">
+        <a fxLayoutAlign="center center" fxLayout="row" routerLinkActive="active" mat-button [routerLink]="'/settings'">
+          <mat-icon>settings</mat-icon>
+        </a>
+        <button (click)="logout()" mat-button>
+          <mat-icon>exit_to_app</mat-icon>
+        </button>
 
-    </div>
-  </header>
+      </div>
+    </header>
+<!--  </ng-container>-->
   <div class="main-content">
-   <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
   </div>
 </section>

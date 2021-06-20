@@ -1,14 +1,17 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {first} from 'lodash';
-import {Package} from '../../models/package';
-import {PackageItem} from '../../models/package-item';
+import {ProductCategory} from '@models/product-category';
+import {Product} from '@models/product';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {CommunicationService} from '@shared/communication.service';
 import * as _moment from 'moment';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {PaymentMethod} from '../../models/payment-method';
+import {PaymentMethod} from '@models/payment-method';
+import {PaymentMethodService} from '../../settings/settings-page/payment-methods-settings/payment-method.service';
+import {ProductCategoriesService} from '@shared/product-categories.service';
+import {Member} from '@models/member';
 const moment = _moment;
 
 @Component({
@@ -19,40 +22,42 @@ const moment = _moment;
 })
 export class PurchaseFormComponent implements OnInit {
 
-  serviceFormGroup: FormGroup;
-  serviceItemFormGroup: FormGroup;
+  productCategoryFormGroup: FormGroup;
+  productFormGroup: FormGroup;
   selectPaymentFormGroup: FormGroup;
   startDateFormGroup: FormGroup;
   salePriceFormGroup: FormGroup;
   noteFormGroup: FormGroup;
-  selectedService: Package;
-  membershipServices: Package[];
-  selectedServiceItem: PackageItem;
-  serviceItems$: Observable<PackageItem[]>;
+  selectedProductCategory: ProductCategory;
+  allProductCategories: ProductCategory[];
+  selectedProduct: Product;
+  products$: Observable<Product[]>;
   paymentMethods: PaymentMethod[];
 
   constructor(private dialogRef: MatDialogRef<PurchaseFormComponent>,
               private fb: FormBuilder,
+              public paymentService: PaymentMethodService,
+              public productCategoriesService: ProductCategoriesService,
               public communicationService: CommunicationService,
-              @Inject(MAT_DIALOG_DATA) private memberId: number) {
+              @Inject(MAT_DIALOG_DATA) private member: Member) {
   }
 
   ngOnInit(): void {
 
-    this.membershipServices = this.communicationService.getPackages();
-    this.paymentMethods = this.communicationService.getPaymentMethods();
-    this.selectedService = first(this.membershipServices);
-    this.selectedServiceItem = first(this.selectedService.items);
-    this.serviceItems$ = of(this.selectedService.items);
+    this.allProductCategories = this.productCategoriesService.getProductCategories();
+    this.paymentMethods = this.paymentService.getPaymentMethods();
+    this.selectedProductCategory = first(this.allProductCategories);
+    this.selectedProduct = first(this.selectedProductCategory.products);
+    this.products$ = of(this.selectedProductCategory.products);
     // service selection step form
-    this.serviceFormGroup = this.fb.group({
-        service: [this.selectedService, Validators.required]
+    this.productCategoryFormGroup = this.fb.group({
+        productCategory: [this.selectedProductCategory, Validators.required]
       }
     );
 
     // service item selection step form
-    this.serviceItemFormGroup = this.fb.group({
-      serviceItem: [this.selectedServiceItem, Validators.required]
+    this.productFormGroup = this.fb.group({
+      product: [this.selectedProduct, Validators.required]
     });
 
     this.selectPaymentFormGroup = this.fb.group({
@@ -60,11 +65,11 @@ export class PurchaseFormComponent implements OnInit {
     });
 
     this.salePriceFormGroup = this.fb.group({
-      price: [0, Validators.required]
+      price: [0, [Validators.required, Validators.min(0), Validators.max(999999999)]]
     });
 
     this.noteFormGroup = this.fb.group({
-      note: ['']
+      note: ['', Validators.maxLength(500)]
     });
 
     this.startDateFormGroup = this.fb.group({
@@ -72,9 +77,9 @@ export class PurchaseFormComponent implements OnInit {
     });
   }
 
-  afterServiceFormGroupSelection(membershipService: Package) {
-    this.selectedService = membershipService;
-    this.serviceItems$ = of(this.selectedService.items);
+  afterServiceFormGroupSelection(membershipService: ProductCategory) {
+    this.selectedProductCategory = membershipService;
+    this.products$ = of(this.selectedProductCategory.products);
   }
 
   getSubtotal() {
@@ -85,8 +90,8 @@ export class PurchaseFormComponent implements OnInit {
     return Math.round(parseFloat(this.salePriceFormGroup.value.price) * environment.vat);
   }
 
-  afterServiceItemFormGroupSelection(membershipItem: PackageItem) {
-    this.selectedServiceItem = membershipItem;
+  afterProductFormGroupSelection(product: Product) {
+    this.selectedProduct = product;
   }
 
   submitPurchase(): void {
@@ -96,14 +101,15 @@ export class PurchaseFormComponent implements OnInit {
     this.dialogRef.close({
       id: 0,
       price: this.salePriceFormGroup.value.price,
-      memberId: this.memberId,
+      members: [this.member],
+      // memberId: this.memberId,
       note,
-      isFreezed: false,
+      // isFreezed: false,
       saleDate: moment.now(),
       startDate: startDateMoment.toDate().getTime(),
       paymentMethodId: this.selectPaymentFormGroup.value.paymentMethod.id,
-      item: this.selectedServiceItem,
+      productId: this.selectedProduct.id,
     });
-  }
 
+  }
 }

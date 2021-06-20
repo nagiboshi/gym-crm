@@ -1,8 +1,8 @@
-import { MemberPhotoLinkPipe } from './member-photo-link.pipe';
+import { LocalImageLinkPipe } from './member-photo-link.pipe';
 
 describe('MemberPhotoLinkPipe', () => {
   it('create an instance', () => {
-    const pipe = new MemberPhotoLinkPipe();
+    const pipe = new LocalImageLinkPipe();
     expect(pipe).toBeTruthy();
   });
 });

@@ -1,0 +1,29 @@
+.membership-name {
+  font-size: 25px;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.shared-title {
+  font-weight: bold;
+}
+
+.shared-member {
+  cursor: pointer;
+  .shared-member-avatar {
+    object-fit: scale-down;
+    margin-right: 15px;
+  }
+}
+
+.row {
+  height: 30px;
+  .label {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+
+  .value {}
+}
+
+

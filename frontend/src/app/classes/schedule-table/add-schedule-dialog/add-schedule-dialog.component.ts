@@ -8,6 +8,7 @@ import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import {Moment} from 'moment';
 import {MAT_DATE_FORMATS} from '@angular/material/core';
+import {ClassesService} from '../../classes.service';
 
 const moment =  _moment;
 export interface PrimalClassSchedule {
@@ -37,7 +38,9 @@ export class AddScheduleDialogComponent implements OnInit {
   scheduleFromDate: Moment;
 
   // selectedDays: DaySelection[] = [];
-  constructor(@Inject(MAT_DIALOG_DATA) public day: string, private fb: FormBuilder, private communicationService: CommunicationService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public day: string, private fb: FormBuilder,
+              private classesService: ClassesService,
+              private communicationService: CommunicationService) {
   }
 
   ngOnInit(): void {
@@ -49,7 +52,7 @@ export class AddScheduleDialogComponent implements OnInit {
     this.scheduleFromDate = moment();
     this.scheduleUntilDate = scheduleUntilDateMoment;
     this.dayMappings = this.communicationService.getDayMappings();
-    this.existingClasses = this.communicationService.getClasses();
+    this.existingClasses = this.classesService.getClasses();
     if (this.day) {
       this.selectedDays.next([...this.selectedDays.getValue(), parseInt(this.day, 10)]);
     }

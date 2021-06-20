@@ -4,7 +4,16 @@
 
   <form [formGroup]="form" fxLayout="row" class="member">
     <div class="member-photo">
-      <img (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg width="220" height="250" [src]="loadedMember.photoLink | memberPhotoLink"/>
+      <img *ngIf="_activeMembership$ | async as activeMembership; else expiredMembership"
+           [ngClass]="{'status-green': !activeMembership.isNearlyExpire && !activeMembership.isExpired ,
+                       'status-yellow': activeMembership.isNearlyExpire,
+                       'status-red': !activeMembership || activeMembership.isExpired,
+                       'status-freeze': activeMembership.isFreezed}"
+                        (error)="avatarImg.src='/assets/member-not-found.png'"
+                        #avatarImg width="220" height="220" [src]="loadedMemberValue.photoLink | localImageLink"/>
+      <ng-template #expiredMembership>
+        <img class="status-red" (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg width="220" height="220" [src]="loadedMemberValue.photoLink | localImageLink"/>
+      </ng-template>
     </div>
     <div class="member-info-right-part">
       <div fxLayout="row" class="member-info">
@@ -44,9 +53,8 @@
           </div>
         </div>
         <div fxFlex="33">
-
+          <membership-status *ngIf="_activeMembership$ | async as activeMembership" [member]="loadedMemberValue" [activeMembership]="activeMembership"></membership-status>
         </div>
-
       </div>
     </div>
     <div class="member-profile-save" fxLayoutAlign="start end" *ngIf="form.touched">
@@ -57,6 +65,6 @@
 
   </form>
   <div fxLayoutAlign="start">
-  <app-purchase-history [memberId]="loadedMember.id"></app-purchase-history>
+  <app-purchase-history (purchaseUpdated)="onNewPurchase($event)"  *ngIf="loadedMember$ | async as member"  [member]="member"></app-purchase-history>
 </div>
 </div>

@@ -1,6 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {PurchaseItem} from '../../models/purchase';
+import {PurchaseHistoryItem} from '@models/purchase';
+import * as _moment from 'moment';
+import {HelpersService} from '@shared/helpers.service';
+
+
+const moment = _moment;
 
 @Component({
   selector: 'app-freeze-membership-dialog',
@@ -8,15 +13,31 @@ import {PurchaseItem} from '../../models/purchase';
   styleUrls: ['./freeze-membership-dialog.component.scss']
 })
 export class FreezeMembershipDialogComponent implements OnInit {
-
-  constructor(public dialog: MatDialogRef<FreezeMembershipDialogComponent>, @Inject(MAT_DIALOG_DATA) public purchase: PurchaseItem) { }
+  now: number = moment.now();
+  constructor(public dialog: MatDialogRef<FreezeMembershipDialogComponent>,
+              public helpers: HelpersService,
+              @Inject(MAT_DIALOG_DATA) public purchase: PurchaseHistoryItem) { }
 
   ngOnInit(): void {
+    if( !this.purchase.freeze ) {
+      this.purchase.freeze = {id: 0, note: "", startDate: moment.now(), endDate: null, purchaseId: this.purchase.id, totalDays: null};
+    }
   }
 
+
   toggleFreeze() {
-    const toggledPurchase = {...this.purchase};
-    toggledPurchase.isFreezed = !toggledPurchase.isFreezed;
-    this.dialog.close(toggledPurchase);
+    const purchaseCopy = {...this.purchase};
+      const prevFreeze = purchaseCopy.freeze;
+      // updating existing freeze
+      if( this.purchase.isFreezed ) {
+        prevFreeze.endDate = moment.now();
+        prevFreeze.totalDays =this.helpers.getTotalFreezeDays(prevFreeze.endDate, prevFreeze.startDate);
+        prevFreeze.note = "";
+      } else {
+        prevFreeze.startDate = moment.now();
+        prevFreeze.endDate = null;
+      }
+
+    this.dialog.close(purchaseCopy);
   }
 }

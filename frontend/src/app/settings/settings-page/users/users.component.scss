@@ -1,0 +1,11 @@
+@import "../../../shared/crud-table/crud-table.component";
+
+
+.user-settings-container {
+  height: 353px;
+  max-height: 353px;
+}
+
+.user-image {
+  object-fit: scale-down;
+}

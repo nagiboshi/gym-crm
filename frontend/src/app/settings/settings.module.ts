@@ -11,6 +11,8 @@ import {SalesDialogComponent} from './settings-page/sales-settings/sales-dialog/
 import {CreateClassDialogComponent} from './settings-page/classes/class-settings/create-class-dialog/create-class-dialog.component';
 import {UsersComponent} from './settings-page/users/users.component';
 import {UserMergeDialogComponent} from './settings-page/users/user-merge-dialog/user-merge-dialog.component';
+import {PaymentMethodService} from './settings-page/payment-methods-settings/payment-method.service';
+import { UserRolePipe } from './settings-page/users/user-role.pipe';
 
 
 @NgModule({
@@ -22,7 +24,8 @@ import {UserMergeDialogComponent} from './settings-page/users/user-merge-dialog/
     SalesSettingsComponent,
     UserMergeDialogComponent,
     SalesDialogComponent,
-    UsersComponent],
+    UsersComponent,
+    UserRolePipe],
   imports: [
     CommonModule,
     SharedModule,

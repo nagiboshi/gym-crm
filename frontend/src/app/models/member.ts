@@ -1,3 +1,5 @@
+import {PurchaseItemModel} from '@models/purchase';
+
 export interface Member {
   id: number;
   firstName: string;
@@ -9,5 +11,5 @@ export interface Member {
   notes?: string;
   referalType?: string;
   referalMember?: Member;
-
+  purchaseItems?: PurchaseItemModel[];
 }

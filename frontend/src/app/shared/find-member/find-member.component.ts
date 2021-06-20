@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {CommunicationService} from '../communication.service';
-import {fromEvent, Observable} from 'rxjs';
+import {fromEvent, Observable, of} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Member} from '../../models/member';
 import {Router} from '@angular/router';
@@ -8,7 +8,7 @@ import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {FormControl} from '@angular/forms';
 import {AddMemberDialogComponent} from '../add-member-dialog/add-member-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-
+import {isEmpty} from 'lodash';
 @Component({
   selector: 'app-find-member',
   templateUrl: './find-member.component.html',
@@ -67,7 +67,10 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
   }
 
   loadMembers(search): Observable<Member[]> {
-    return this.communicationService.findMembers(search);
+    if( !isEmpty(search)) {
+      return this.communicationService.findMembers(search);
+    }
+    return of([]);
   }
 
   openUserRegistrationForm() {
@@ -78,9 +81,10 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
       .afterClosed()
       .subscribe((newMember: Member) => {
         if ( newMember ) {
-          // this.communicationService.newMember(newMember).toPromise().then((savedMember) => {
-          //   this.memberSelected.emit(savedMember);
-          // });
+          this.communicationService.saveMember(newMember).toPromise().then((savedMember) => {
+            this.communicationService.memberCreated.next(savedMember);
+            this.memberSelected.emit(savedMember);
+          });
         }
       });
   }

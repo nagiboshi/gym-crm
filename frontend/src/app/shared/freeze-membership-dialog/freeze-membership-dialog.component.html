@@ -1,4 +1,15 @@
-<div mat-dialog-content>Do you want to {{!purchase.isFreezed ? 'freeze':'defreeze'}} {{purchase.item.name}} ? </div>
+<div mat-dialog-content>
+  <div mat-dialog-title>
+    Do you want to {{!purchase.isFreezed ? 'freeze':'defreeze'}} {{purchase.product.name}} ?
+      <div *ngIf="purchase.isFreezed">Days to pay:
+      <span class="red">{{helpers.getTotalFreezeDays(now, purchase.freeze.startDate )}}</span>
+      </div>
+      <div *ngIf="purchase.isFreezed && purchase.freeze.note">{{purchase.freeze.note}}</div>
+  </div>
+  <mat-form-field *ngIf="!purchase.isFreezed" class="freeze-note">
+    <textarea matInput [(ngModel)]="purchase.freeze.note"></textarea>
+  </mat-form-field>
+</div>
 <div mat-dialog-actions>
   <button mat-button mat-dialog-close>No</button>
   <button mat-raised-button color="primary" (click)="toggleFreeze()">Yes</button>

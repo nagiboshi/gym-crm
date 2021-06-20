@@ -1,0 +1,16 @@
+<mat-dialog-content>
+  <h1>Share membership</h1>
+  <app-find-member [clearAfterSelection]="true" (memberSelected)="addMemberToShared($event)"></app-find-member>
+  <div *ngIf="sharedMembers" class="purchase-item-title">Shared with: </div>
+  <div class="added-members">
+      <div fxLayoutAlign="start center" *ngFor="let member of sharedMembers">
+        <img class="member-picture" (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg  width="60" height="90" [src]="member.photoLink | localImageLink"> {{member.firstName + " " + member.lastName}}
+      </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button color="primary" mat-raised-button [mat-dialog-close]="sharedMembers">Save</button>
+  <button mat-button color="warn" mat-dialog-close>Cancel</button>
+</mat-dialog-actions>
+

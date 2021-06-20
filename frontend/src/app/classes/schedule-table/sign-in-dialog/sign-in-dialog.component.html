@@ -31,7 +31,7 @@
             *matCellDef="let signInMember">
                 <span matTooltip="Membership is nearly expired"
                       class="nearly-expired-membership"
-                      *ngIf="signInMember.activeMembership.isNearlyExpire">!</span>
+                      *ngIf="!signInMember.activeMembership || signInMember.activeMembership?.isNearlyExpire">!</span>
           <a
             routerLink="/members/{{signInMember.scheduleMember.member.id}}">{{signInMember.scheduleMember.member.firstName + ' ' + signInMember.scheduleMember.member.lastName}}</a>
         </td>
@@ -40,14 +40,18 @@
       <!-- Package -->
       <ng-container matColumnDef="package">
         <th mat-header-cell *matHeaderCellDef> Package</th>
-        <td mat-cell *matCellDef="let signInMember"> {{signInMember.activeMembership.item.name}} </td>
+        <td mat-cell *matCellDef="let signInMember"><span
+          *ngIf="signInMember.activeMembership; else noMembership">{{signInMember.activeMembership.item.name}}</span>
+        </td>
       </ng-container>
 
       <!-- Weight Column -->
       <ng-container matColumnDef="expiryDate">
         <th mat-header-cell *matHeaderCellDef> Expiry Date</th>
         <td mat-cell
-            *matCellDef="let signInMember"> {{signInMember.activeMembership.item | membershipExpiration:signInMember.activeMembership.startDate }} </td>
+            *matCellDef="let signInMember"><ng-container
+          *ngIf="signInMember.activeMembership"> {{signInMember.activeMembership.item | membershipExpiration:signInMember.activeMembership.startDate }}</ng-container>
+        </td>
       </ng-container>
 
       <!-- Symbol Column -->
@@ -55,7 +59,7 @@
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let signInMember">
           <mat-icon (click)="openSellDialog(signInMember)" [ngClass]="{'sell-button': true}"
-                    *ngIf="signInMember.activeMembership.isExpired || signInMember.activeMembership.isNearlyExpire">
+                    *ngIf="!signInMember.activeMembership || signInMember.activeMembership.isExpired || signInMember.activeMembership.isNearlyExpire">
             attach_money
           </mat-icon>
         </td>
@@ -70,3 +74,5 @@
     </div>
   </div>
 </div>
+
+<ng-template #noMembership><span class="no-membership-msg">Member has no membership</span></ng-template>

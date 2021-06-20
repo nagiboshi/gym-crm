@@ -26,8 +26,9 @@ import {
 import {DateSelectionStrategy} from './schedule-calendar/date-selection.strategy';
 import {ScheduleCalendarHeaderComponent} from './schedule-calendar/schedule.calendar-header.component';
 import {SelectionStrategyEventEmitter} from './schedule-calendar/selection-strategy.event-emitter';
-import {ScheduleMember} from '../../models/schedule-member';
-import {PurchaseItem} from '../../models/purchase';
+import {ScheduleMember} from '@models/schedule-member';
+import {ClassesService} from '../classes.service';
+import {PurchaseItemModel} from '@models/purchase';
 
 const moment = _moment;
 
@@ -45,7 +46,7 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
   today: Date = new Date();
   schedules$: BehaviorSubject<ClassSchedule[]> = new BehaviorSubject<ClassSchedule[]>([]);
   scheduleDate: DateRange<Moment>;
-  purchaseItems$: BehaviorSubject<PurchaseItem[]> = new BehaviorSubject<PurchaseItem[]>([]);
+  purchaseItems$: BehaviorSubject<PurchaseItemModel[]> = new BehaviorSubject<PurchaseItemModel[]>([]);
   scheduleCalendarHeader = ScheduleCalendarHeaderComponent;
   subscriptions: Subscription[] = [];
   @ViewChild(MatCalendar)
@@ -60,7 +61,7 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
     }
   };
 
-  constructor(private communicationService: CommunicationService, private cd: ChangeDetectorRef, private dialog: MatDialog,
+  constructor(private communicationService: CommunicationService, private classesService: ClassesService, private cd: ChangeDetectorRef, private dialog: MatDialog,
               private selectionStrategyEventEmitter: SelectionStrategyEventEmitter<Moment>) {
   }
 
@@ -107,7 +108,7 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // this.dayMapping = this.communicationService.getDayMappings();
-    this.classes = this.communicationService.getClasses();
+    this.classes = this.classesService.getClasses();
     // By default we are using current date
     const fromDate = moment(new Date());
     const toDate = moment(new Date());
@@ -119,13 +120,13 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
       this.schedules$.next(schedules);
     });
 
-    this.subscriptions.push(this.communicationService.newPurchase$.subscribe((newPurchaseItem: PurchaseItem) => {
+    this.subscriptions.push(this.communicationService.newPurchase$.subscribe((newPurchaseItem: PurchaseItemModel) => {
       this.purchaseItems$.next([newPurchaseItem, ...this.purchaseItems$.getValue()]);
     }));
 
-    this.communicationService.getPurchaseItems(from.toDate().getTime(), to.toDate().getTime()).subscribe((purchaseItems) => {
-      this.purchaseItems$.next(purchaseItems);
-    });
+    // this.communicationService.getPurchaseItems(from.toDate().getTime(), to.toDate().getTime()).subscribe((purchaseItems) => {
+    //   this.purchaseItems$.next(purchaseItems);
+    // });
 
     this.subscriptions.push(this.selectionStrategyEventEmitter.selectMonth$.subscribe(() => {
       this.filterScheduleDates(this.calendar.activeDate, 'month');
@@ -175,15 +176,19 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
       }
     })
       .afterClosed().subscribe((scheduleMembers: ScheduleMember[]) => {
+      if (!scheduleMembers) {
+        return;
+      }
       scheduleMembers = scheduleMembers || daySchedule.signedMembers$.getValue();
       if (scheduleMembers && scheduleMembers) {
         const membersToSign = differenceBy(scheduleMembers, daySchedule.signedMembers$.getValue(), diffMember => diffMember.member.id);
         const membersIds = membersToSign.map(m => m.member.id);
         this.communicationService
-                .signIn(daySchedule.scheduleId, membersIds, signInDate.toDate().getTime() )
-                .toPromise().then((newSignedMembers: ScheduleMember[]) => {
-            daySchedule.signedMembers$.next([...newSignedMembers, ...daySchedule.signedMembers$.getValue()]);
-            this.cd.markForCheck();
+          .signIn(daySchedule.scheduleId, membersIds, signInDate.toDate().getTime())
+          .toPromise().then((newSignedMembers: ScheduleMember[]) => {
+            console.log('schedule-table-component newSignedMembers ! ' ,newSignedMembers);
+          daySchedule.signedMembers$.next([...newSignedMembers, ...daySchedule.signedMembers$.getValue()]);
+          this.cd.markForCheck();
         });
       }
 
@@ -217,7 +222,9 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
             scheduleUntil: schedule.scheduleUntil,
             signedMembers: [],
             day: newDay,
-            capacity: schedule.capacity
+            capacity: schedule.capacity,
+            //TODO:: TAKE BRANCH ID HERE
+            branchId: null
           };
         });
 

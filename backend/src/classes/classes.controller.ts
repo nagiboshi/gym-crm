@@ -6,7 +6,8 @@ import {ClassesService} from './classes.service';
 @Crud({
   model: {
     type: ClassModel
-  }
+  },
+
 })
 @Controller('classes')
 export class ClassesController {

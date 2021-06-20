@@ -42,6 +42,11 @@
       cursor: pointer;
     }
 
+    &.column-share {
+      width: 24px;
+      cursor: pointer;
+    }
+
     &.column-discount {
       width: 5%;
       min-width: 60px;
@@ -54,7 +59,13 @@
 
 
   .purchase-row {
+    height: 60px;
     position: relative;
+
+    .column-share {
+      margin-right: 20px;
+    }
+
     &.freezed {
       background-color: rgba(0, 117, 169, 0.1);
 

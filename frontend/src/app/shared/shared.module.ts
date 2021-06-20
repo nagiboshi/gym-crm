@@ -32,15 +32,18 @@ import {MatTreeModule} from '@angular/material/tree';
 import {ClassCategoryNamePipe} from './pipes/class-category-name.pipe';
 import {DeletePromptDialogComponent} from './delete-prompt-dialog/delete-prompt-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import { MemberPhotoLinkPipe } from './pipes/member-photo-link.pipe';
+import { LocalImageLinkPipe } from './pipes/member-photo-link.pipe';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { BranchNamePipe } from './pipes/branch-name.pipe';
+import {HelpersService} from '@shared/helpers.service';
+import { SharePurchaseDialogComponent } from './share-purchase-dialog/share-purchase-dialog.component';
 
 
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent,
     AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent,
-    MembershipExpirationPipe, ClassCategoryNamePipe, DeletePromptDialogComponent, FreezeMembershipDialogComponent, MemberPhotoLinkPipe],
-  providers: [ MatIconRegistry, DatePipe, {
+    MembershipExpirationPipe, ClassCategoryNamePipe, DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent],
+  providers: [ MatIconRegistry, DatePipe, HelpersService, {
     provide: MAT_DATE_FORMATS, useValue: {
       parse: {
         dateInput: 'LL',
@@ -104,13 +107,16 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
         FindMemberComponent,
         YearMonthSelectorComponent,
         MembershipExpirationPipe,
+        BranchNamePipe,
         ClassCategoryNamePipe,
         DeletePromptDialogComponent,
-        MemberPhotoLinkPipe
+        LocalImageLinkPipe
     ]
 })
 export class SharedModule {
   constructor(private iconRegistry: MatIconRegistry, private sanitizer: DomSanitizer) {
     iconRegistry.addSvgIcon('schedule-icon', sanitizer.bypassSecurityTrustResourceUrl('/assets/schedule-icon.svg'));
+    iconRegistry.addSvgIcon('sharePeople', sanitizer.bypassSecurityTrustResourceUrl("/assets/share-people.svg") );
+
   }
 }

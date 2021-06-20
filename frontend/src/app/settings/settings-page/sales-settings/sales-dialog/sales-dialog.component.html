@@ -2,9 +2,16 @@
   <mat-dialog-content fxLayout="column" class="sales-dialog">
     <h6 class="unsaved-changes" *ngIf="formGroup.dirty">*You have unsaved changes</h6>
     <mat-form-field>
-      <input matInput formControlName="name" placeholder="Input package name">
+      <mat-select formControlName="type">
+        <mat-option [value]="0">Membership</mat-option>
+        <mat-option [value]="1">Other</mat-option>
+      </mat-select>
+<!--      matInput formControlName="name" placeholder="Input product type">-->
     </mat-form-field>
-    <ng-container formArrayName="items">
+    <mat-form-field>
+      <input matInput formControlName="name" placeholder="Name">
+    </mat-form-field>
+    <ng-container formArrayName="products">
       <div class="sales-grid">
         <div class="sales-grid-header">Name</div>
         <div class="sales-grid-header">Is Shared ?</div>
@@ -12,7 +19,7 @@
         <div class="sales-grid-header">Expiration</div>
         <div class="sales-grid-header"></div>
         <div class="sales-grid-header"></div>
-        <ng-container *ngFor="let _ of packageItemsArray.controls; let i=index">
+        <ng-container *ngFor="let _ of productsArray.controls; let i=index">
           <ng-container [formGroupName]="i">
             <div class="sales-grid-body">
               <mat-form-field class="package-variation-name">
@@ -23,7 +30,7 @@
               <mat-checkbox formControlName="isShared"></mat-checkbox>
             </div>
             <div class="sales-grid-body">
-              <mat-form-field [style.visibility]="!packageItemsArray.controls[i].value.isShared? 'hidden':'visible'"
+              <mat-form-field [style.visibility]="!productsArray.controls[i].value.isShared? 'hidden':'visible'"
                               class="number-of-participants">
                 <input min="1" type="number" formControlName="numberOfParticipants" matInput/>
               </mat-form-field>
@@ -43,7 +50,7 @@
                 <input min="1" formControlName="expirationLength" type="number" matInput>
               </mat-form-field>
             </div>
-            <div (click)="showDeletePrompt(i, packageItemsArray.controls[i].value)" class="sales-grid-body remove">
+            <div (click)="showDeletePrompt(i, productsArray.controls[i].value)" class="sales-grid-body remove">
               <mat-icon>delete</mat-icon>
             </div>
           </ng-container>
@@ -54,6 +61,6 @@
   <mat-dialog-actions>
     <button mat-dialog-close mat-button>Cancel</button>
     <button type="submit" [disabled]="formGroup.invalid" mat-raised-button color="primary">Save</button>
-    <button type="button" (click)="addPackageItem()" mat-raised-button>Add Package Item</button>
+    <button type="button" (click)="addProduct()" mat-raised-button>Add Package Item</button>
   </mat-dialog-actions>
 </form>

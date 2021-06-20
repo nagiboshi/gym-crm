@@ -1,12 +1,15 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute} from '@angular/router';
-import {Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, of, Subject, Subscription} from 'rxjs';
 import {CommunicationService} from '@shared/communication.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Member} from '../../models/member';
+import {Member} from '@models/member';
 import * as _moment from 'moment';
-import {first} from 'lodash';
+import {first, sortBy, isEmpty } from 'lodash';
+import {PurchaseHistoryItem} from '@models/purchase';
+import {SalesService} from '../../sales/sales.service';
+
 const moment = _moment;
 
 @Component({
@@ -16,13 +19,17 @@ const moment = _moment;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberProfileComponent implements OnDestroy, OnInit {
-  loadedMember: Member;
+  _loadedMemberSubject: BehaviorSubject<Member>;
+  _activeMembership: BehaviorSubject<PurchaseHistoryItem>;
+  _activeMembership$: Observable<PurchaseHistoryItem>;
   private routeChangeSub: Subscription;
   form: FormGroup;
+  todayMoment = moment().startOf('day');
 
   constructor(public dialog: MatDialog, private fb: FormBuilder,
               private communicationService: CommunicationService,
               private activatedRoute: ActivatedRoute,
+              private salesService: SalesService,
               private cd: ChangeDetectorRef) {
   }
 
@@ -35,30 +42,51 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    const id = parseInt(this.activatedRoute.snapshot.params.id, 10);
-    this.loadProfile(id);
-    this.routeChangeSub = this.activatedRoute.url.subscribe(urlSegment => this.loadProfile(parseInt(first(urlSegment).path, 10)) );
+    this._loadedMemberSubject = new BehaviorSubject(null);
+    this._activeMembership = new BehaviorSubject(null);
+    this._activeMembership$ = this._activeMembership.asObservable();
+    this.routeChangeSub = this.activatedRoute.url.subscribe(urlSegment => this.loadProfile(parseInt(first(urlSegment).path)) );
   }
 
   initForm() {
+    const member = this.loadedMemberValue;
     return this.fb.group(
       {
-        firstName: new FormControl(this.loadedMember.firstName, Validators.required),
-        lastName: new FormControl(this.loadedMember.lastName, Validators.required),
-        notes: new FormControl(this.loadedMember.notes),
-        referalType: new FormControl(this.loadedMember.referalType),
-        email: new FormControl(this.loadedMember.email, Validators.email),
-        phoneNumber: new FormControl(this.loadedMember.phoneNumber, Validators.required)
+        firstName: new FormControl(member.firstName, Validators.required),
+        lastName: new FormControl(member.lastName, Validators.required),
+        notes: new FormControl(member.notes),
+        referalType: new FormControl(member.referalType),
+        email: new FormControl(member.email, Validators.email),
+        phoneNumber: new FormControl(member.phoneNumber, Validators.required)
       }
     );
   }
 
   loadProfile(memberId: number) {
-    this.communicationService.getMember(memberId.toString()).toPromise().then((member) => {
-      this.loadedMember = member;
-      this.form = this.initForm();
-      this.cd.markForCheck();
+    this.communicationService.getMemberWithPurchases(memberId.toString()).toPromise().then((member) => {
+      if( member ) {
+        this._loadedMemberSubject.next( member );
+        this._activeMembership.next(this.getActiveMembership(member));
+        this.form = this.initForm();
+        this.cd.markForCheck();
+      }
     });
+  }
+
+  get loadedMemberValue() {
+    return this._loadedMemberSubject.getValue();
+  }
+
+
+  get loadedMember$(): Observable<Member> {
+    return this._loadedMemberSubject.asObservable();
+  }
+
+  getActiveMembership(member: Member) {
+    if( isEmpty(member.purchaseItems)) {
+      return null;
+    }
+   return this.salesService.toPurchaseHistoryItem(first(member.purchaseItems), this.todayMoment);
   }
 
   ngOnDestroy() {
@@ -67,11 +95,15 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
 
   updateMember() {
     if (this.form.valid) {
-      this.loadedMember = Object.assign(this.loadedMember, this.form.value);
-      this.communicationService.updateMember(this.loadedMember);
+      this._loadedMemberSubject.next(Object.assign(this.loadedMemberValue, this.form.value));
+      this.communicationService.updateMember(this.loadedMemberValue);
+      this._activeMembership.next(this.getActiveMembership(this.loadedMemberValue));
       this.form = this.initForm();
       this.cd.markForCheck();
     }
   }
 
+  onNewPurchase(purchaseHistoryItem: PurchaseHistoryItem) {
+      this._activeMembership.next(purchaseHistoryItem);
+  }
 }

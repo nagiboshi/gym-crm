@@ -1,0 +1,21 @@
+<div fxFill fxLayout="row" fxLayoutAlign="start">
+  <div>
+    <div class="membership-name">{{activeMembership.product.name}}</div>
+    <div class="row">
+      <span class="label">Active Date:</span>
+      <span class="value">{{activeMembership.startDate | date}}
+        - {{activeMembership.product | membershipExpiration: activeMembership.startDate }}
+    </span></div>
+    <div *ngIf="activeMembership.product.isShared && activeMembership.members.length > 1" class="row">
+      <div class="shared-title">Shared With:</div>
+      <ng-container *ngFor="let sharedMember of activeMembership.members">
+        <div (click)="openMemberPage(sharedMember)" fxLayoutAlign="start center" *ngIf="sharedMember.id != member.id" class="shared-member">
+          <img class="shared-member-avatar" #avatarImg (error)="avatarImg.src='/assets/member-not-found.png'"
+               alt="shared-member" [src]="sharedMember.photoLink | localImageLink" width="40" height="70"/>
+          <div>{{sharedMember.firstName + " " + sharedMember.lastName}}</div>
+        </div>
+      </ng-container>
+    </div>
+
+  </div>
+</div>

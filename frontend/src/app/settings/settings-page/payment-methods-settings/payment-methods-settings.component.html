@@ -16,7 +16,7 @@
   <ng-container matColumnDef="delete">
     <th mat-header-cell *matHeaderCellDef></th>
     <td class="delete-cell" mat-cell *matCellDef="let row">
-      <mat-icon>delete</mat-icon>
+      <mat-icon (click)="removePaymentMethod(row)">delete</mat-icon>
     </td>
   </ng-container>
 

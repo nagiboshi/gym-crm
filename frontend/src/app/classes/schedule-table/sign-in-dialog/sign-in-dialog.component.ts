@@ -1,19 +1,21 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog} from '@angular/material/dialog';
 import {CommunicationService, DaySchedule} from '@shared/communication.service';
-import {Member} from '../../../models/member';
-import {ScheduleMember} from '../../../models/schedule-member';
+import {Member} from '@models/member';
+import {ScheduleMember} from '@models/schedule-member';
 import {Moment} from 'moment';
 import * as _moment from 'moment';
-import {remove, groupBy, sortBy, Dictionary, first} from 'lodash';
-import {PurchaseHistoryItem, PurchaseItem, toPurchaseHistoryItem} from '../../../models/purchase';
+import {remove,  sortBy, Dictionary, first} from 'lodash';
+import {PurchaseHistoryItem, PurchaseItemModel} from '@models/purchase';
 import {PurchaseFormComponent} from '../../../sales/purchase-form/purchase-form.component';
 import {Router} from '@angular/router';
+import {map, tap} from 'rxjs/operators';
+import {SalesService} from '../../../sales/sales.service';
 
 export interface SignInDialogData {
   daySchedule: DaySchedule;
   signInDate: Moment;
-  purchaseItems: PurchaseItem[];
+  // purchaseItems: PurchaseItem[];
 }
 
 export interface SignInMember {
@@ -38,29 +40,30 @@ export class SignInDialogComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) public signInDialogData: SignInDialogData,
               private communicationService: CommunicationService,
               private router: Router,
+              private salesService: SalesService,
               private dialog: MatDialog) {
   }
 
 
   ngOnInit(): void {
-    this.scheduleMembers = [...this.signInDialogData.daySchedule.signedMembers$.getValue()];
-    this.purchaseItems = [...this.signInDialogData.purchaseItems].map( p => toPurchaseHistoryItem(p, this.today ), moment());
 
-    this.memberIdToPurchaseItem = groupBy(this.purchaseItems, 'memberId');
+    this.scheduleMembers = []; // [...this.signInDialogData.daySchedule.signedMembers$.getValue()];
+    this.purchaseItems =  []; // [...this.signInDialogData.purchaseItems].map( p => toPurchaseHistoryItem(p, this.today ), moment());
+    this.memberIdToPurchaseItem = {}; // groupBy(this.purchaseItems, 'memberId');
     this.signInMembers = this.scheduleMembers.map<SignInMember>( scheduleMember => this.scheduleMemberToSignInMember(scheduleMember));
   }
 
   scheduleMemberToSignInMember( scheduleMember: ScheduleMember ): SignInMember {
-    const memberPurchases: PurchaseItem[] = this.memberIdToPurchaseItem[scheduleMember.member.id];
+    const memberPurchases: PurchaseItemModel[] = this.memberIdToPurchaseItem[scheduleMember.member.id];
     const activeMembership: PurchaseHistoryItem = this.getLatestPurchase(memberPurchases);
     return {scheduleMember, activeMembership };
   }
 
-  getLatestPurchase(memberPurchases: PurchaseItem[]): PurchaseHistoryItem {
+  getLatestPurchase(memberPurchases: PurchaseItemModel[]): PurchaseHistoryItem {
     const sortedPurchases = sortBy(memberPurchases,
      purchase => moment(purchase.startDate)
-                            .add(purchase.item.expirationLength, purchase.item.expirationType).toDate().getTime(),  ['desc']);
-    return sortedPurchases && sortedPurchases.length > 0 ? toPurchaseHistoryItem(first(sortedPurchases), this.today ) : null;
+                            .add(purchase.product.expirationLength, purchase.product.expirationType).toDate().getTime(),  ['desc']);
+    return sortedPurchases && sortedPurchases.length > 0 ? this.salesService.toPurchaseHistoryItem(first(sortedPurchases), this.today ) : null;
   }
 
   removeFromSchedule(signedMember: ScheduleMember) {
@@ -74,6 +77,7 @@ export class SignInDialogComponent implements OnInit {
 
 
   addMemberToSchedule(member: Member) {
+    debugger;
     const isMemberAlreadyThere = this.scheduleMembers.findIndex(scheduleMember => scheduleMember.member.id == member.id) != -1;
     if (isMemberAlreadyThere) {
       return;
@@ -89,14 +93,20 @@ export class SignInDialogComponent implements OnInit {
     const memberId = signInMember.scheduleMember.member.id;
     this.dialog.open(PurchaseFormComponent,
           {data: memberId })
-            .afterClosed().subscribe((purchase: PurchaseItem) => {
+            .afterClosed().subscribe((purchase: PurchaseItemModel) => {
       if (purchase) {
-          this.communicationService.savePurchase(purchase).toPromise().then((savedPurchaseItem) => {
-            const purchaseHistoryItem = toPurchaseHistoryItem(savedPurchaseItem, this.today);
-            this.purchaseItems.push(purchaseHistoryItem);
-            this.memberIdToPurchaseItem[memberId].push(purchaseHistoryItem);
-            signInMember.activeMembership = purchaseHistoryItem;
-            this.communicationService.newPurchase.next(savedPurchaseItem);
+          // const purchaseModel = toPurchaseItemModel(purchase);
+          this.salesService.savePurchase(purchase)
+                                   .pipe( map( p =>  this.salesService.toPurchaseHistoryItem(p, this.today),
+                                        tap((historyItem: PurchaseHistoryItem) => {
+                                          this.purchaseItems.push(historyItem);
+                                          this.memberIdToPurchaseItem[memberId].push(historyItem);
+                                        } )))
+                                   .toPromise().then((savedPurchaseItem) => {
+          //   const purchaseHistoryItem = toPurchaseHistoryItem(savedPurchaseItem, this.today);
+          //   this.purchaseItems.push(purchaseHistoryItem);
+          //   this.memberIdToPurchaseItem[memberId].push(purchaseHistoryItem);
+          //   this.communicationService.newPurchase.next(savedPurchaseItem);
           });
       }
     });

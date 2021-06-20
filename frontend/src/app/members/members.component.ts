@@ -1,15 +1,15 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatDialog} from '@angular/material/dialog';
 import {Router} from '@angular/router';
 import {CommunicationService} from '@shared/communication.service';
-import {MembersDataSource} from './members-data-source';
-import {Member} from '../models/member';
+import {Member} from '@models/member';
 import {AddMemberDialogComponent} from '@shared/add-member-dialog/add-member-dialog.component';
 import {MatTableDataSource} from '@angular/material/table';
 import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
 import {remove} from 'lodash';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-members',
@@ -17,10 +17,10 @@ import {remove} from 'lodash';
   styleUrls: ['./members.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MembersComponent implements AfterViewInit, OnInit {
+export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
   displayedColumns: string[] = ['firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'delete'];
   dataSource: MatTableDataSource<Member>;
-
+  memberCreatedSub: Subscription;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -39,9 +39,9 @@ export class MembersComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource<Member>();
-
-    // (this.communicationService);
-    // this.dataSource.loadMembers();
+    this.memberCreatedSub = this.communicationService.memberCreated$.subscribe((createdMember) => {
+      this.dataSource.data = [createdMember, ...this.dataSource.data];
+    })
   }
 
 
@@ -51,14 +51,8 @@ export class MembersComponent implements AfterViewInit, OnInit {
       .afterClosed()
       .subscribe((newMember: Member) => {
         if (newMember) {
-          const formData = new FormData();
-          for (let newMemberKey in newMember) {
-            formData.set(newMemberKey, newMember[newMemberKey]);
-          }
-
-
-          this.communicationService.newMember(formData).toPromise().then((savedMember) => {
-            this.dataSource.data = [savedMember, ...this.dataSource.data];
+          this.communicationService.saveMember(newMember).toPromise().then((savedMember) => {
+            this.communicationService.memberCreated.next(savedMember);
           });
         }
       });
@@ -85,6 +79,10 @@ export class MembersComponent implements AfterViewInit, OnInit {
         });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.memberCreatedSub.unsubscribe();
   }
 }
 

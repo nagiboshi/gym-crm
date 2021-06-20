@@ -1,11 +1,12 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {PackageItem} from '../../models/package-item';
+import {Product} from '@models/product';
 import {Moment} from 'moment';
 import {DatePipe} from '@angular/common';
 import {isNumber} from 'lodash';
 import * as _moment from 'moment';
 import {CommunicationService} from '../communication.service';
 import {ClassModel} from '../../classes/class.model';
+import {ClassesService} from '../../classes/classes.service';
 
 const moment = _moment;
 
@@ -15,12 +16,12 @@ const moment = _moment;
 export class ClassCategoryNamePipe implements PipeTransform {
 
 
-  constructor(private communicationService: CommunicationService) {
+  constructor(private classesService: ClassesService) {
   }
 
   transform(classModel: ClassModel, ...args: any[]): any {
     let [categoryId] = args;
-    return this.communicationService.getClassCategories().find( c => c.id == categoryId).name;
+    return this.classesService.getClassCategories().find( c => c.id == categoryId).name;
   }
 
 }

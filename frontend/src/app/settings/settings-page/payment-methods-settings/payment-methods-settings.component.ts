@@ -6,6 +6,7 @@ import {PaymentMethodCreateDialogComponent} from './payment-method-create-dialog
 import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
+import {PaymentMethodService} from './payment-method.service';
 
 @Component({
   selector: 'payment-methods-settings',
@@ -16,12 +17,17 @@ export class PaymentMethodsSettingsComponent implements OnInit, AfterViewInit {
   displayColumns = ['name', 'edit', 'delete'];
   dataSource: MatTableDataSource<PaymentMethod>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  constructor(private dialog: MatDialog, private communicationService: CommunicationService) {
+  constructor(private dialog: MatDialog, private paymentService: PaymentMethodService) {
   }
 
   ngOnInit(): void {
-    this.dataSource = new MatTableDataSource<PaymentMethod>(this.communicationService.getPaymentMethods());
+    this.dataSource = new MatTableDataSource<PaymentMethod>();
+    this.paymentService.paymentMethods$.subscribe(paymentMethods => this.dataSource.data = paymentMethods);
+    // this.paymentService.getPaymentMethods();
   }
+
+  // ngAfterViewInit() {
+  // }
 
 
   _newPaymentMethod() {
@@ -36,7 +42,7 @@ export class PaymentMethodsSettingsComponent implements OnInit, AfterViewInit {
   remove(paymentMethodToRemove: PaymentMethod) {
     this.dialog.open(DeletePromptDialogComponent, {data: `Are you sure you want to delete class ${paymentMethodToRemove.name}`}).afterClosed().subscribe((doAction) => {
       if (doAction) {
-        this.communicationService.removePaymentMethod(paymentMethodToRemove.id);
+        this.paymentService.removePaymentMethod(paymentMethodToRemove.id);
       }
     });
 
@@ -46,9 +52,15 @@ export class PaymentMethodsSettingsComponent implements OnInit, AfterViewInit {
     paymentMethod = paymentMethod ?? this._newPaymentMethod();
     this.dialog.open(PaymentMethodCreateDialogComponent, {data: paymentMethod}).afterClosed().subscribe((paymentMethodToCreate) => {
       if (paymentMethodToCreate) {
-        this.communicationService
+        this.paymentService
           .addPaymentMethod(paymentMethodToCreate);
       }
     });
+  }
+
+  removePaymentMethod(paymentMethodToRemove: PaymentMethod) {
+      this.dialog.open(DeletePromptDialogComponent, {data: `Are you sure you want to remove ${paymentMethodToRemove.name} ?`}).afterClosed().subscribe(() => {
+          this.paymentService.removePaymentMethod(paymentMethodToRemove.id);
+      });
   }
 }

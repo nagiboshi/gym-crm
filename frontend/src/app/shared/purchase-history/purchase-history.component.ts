@@ -1,16 +1,16 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {PurchaseHistoryItem, PurchaseItem, toPurchaseHistoryItem} from '../../models/purchase';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {PurchaseHistoryItem, PurchaseItemModel} from '@models/purchase';
 import {FreezeMembershipDialogComponent} from '../freeze-membership-dialog/freeze-membership-dialog.component';
-import {Freeze} from '../../models/freeze';
-import {CommunicationService} from '../communication.service';
+import {clone} from 'lodash';
 import {MatDialog} from '@angular/material/dialog';
 import {PurchaseFormComponent} from '../../sales/purchase-form/purchase-form.component';
-import {BehaviorSubject, forkJoin, Observable, of} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import * as _moment from 'moment';
-import {combineAll, concatAll, concatMap, map, mapTo} from 'rxjs/operators';
+import {SharePurchaseDialogComponent} from '@shared/share-purchase-dialog/share-purchase-dialog.component';
+import {Member} from '@models/member';
+import {SalesService} from '../../sales/sales.service';
 
 const moment = _moment;
-
 
 
 @Component({
@@ -19,80 +19,87 @@ const moment = _moment;
   styleUrls: ['./purchase-history.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PurchaseHistoryComponent implements OnInit {
+export class PurchaseHistoryComponent implements OnChanges {
   purchasesSubj: BehaviorSubject<PurchaseHistoryItem[]> = new BehaviorSubject(null);
   todayMoment = moment().startOf('day');
+
+  @Output()
+  purchaseUpdated: EventEmitter<PurchaseHistoryItem> = new EventEmitter();
+
   @Input()
-  memberId: number;
+  member: Member;
 
-  ngOnInit(): void {
-    const memberPurcases$ = this.communicationService.getMemberPurchases(this.memberId)
-      .pipe(
-        concatMap((purchaceItems) => of(...purchaceItems)),
-        map<PurchaseItem, Observable<PurchaseHistoryItem>>((purchaseItem: PurchaseItem, _: number) => {
-        return of(toPurchaseHistoryItem({...purchaseItem}, this.todayMoment));
-    }));
 
-    memberPurcases$.pipe(combineAll<PurchaseHistoryItem>()).subscribe((res) => {
-        this.purchasesSubj.next(res);
-      });
-
+  ngOnChanges(changes: SimpleChanges): void {
+    if( !changes.member?.previousValue || changes.member?.currentValue.id != changes.member?.previousValue.id ) {
+        this.purchasesSubj.next(this.member.purchaseItems?.map((purchaseItem) => {
+          const {saleDate, startDate, ...rest} = <any> purchaseItem;
+          return {saleDate: parseInt(saleDate), startDate: parseInt(startDate), ...rest};
+        }).map(purchaseItem => this.salesService.toPurchaseHistoryItem(purchaseItem, this.todayMoment)));
+    }
   }
 
   addNewPurchase() {
-    this.dialog.open(PurchaseFormComponent, {data: this.memberId}).afterClosed().subscribe((purchase: PurchaseItem) => {
+    this.dialog.open(PurchaseFormComponent, {data: this.member}).afterClosed().subscribe((purchase: PurchaseItemModel) => {
       if (purchase) {
-        const savedPurchaseItem = this.communicationService.savePurchase(purchase);
+        const savedPurchaseItem = this.salesService.savePurchase(purchase);
         savedPurchaseItem.toPromise().then((purchaseItem) => {
-          this.purchasesSubj.next([toPurchaseHistoryItem(purchaseItem, this.todayMoment), ...this.purchasesSubj.getValue()]);
+          const newPurchaseHistoryItem = this.salesService.toPurchaseHistoryItem(purchaseItem, this.todayMoment);
+          this.purchasesSubj.next([newPurchaseHistoryItem, ...this.purchasesSubj.getValue()]);
+          this.purchaseUpdated.next(newPurchaseHistoryItem);
+
         });
       }
     });
   }
 
 
-  constructor(public dialog: MatDialog, private communicationService: CommunicationService) {
+  constructor(public dialog: MatDialog, private salesService: SalesService) {
   }
 
-  freezePurchase(purchase: PurchaseItem) {
+  freezePurchase(purchase: PurchaseHistoryItem) {
     // const freeze = !this.isFreezed(purchase);
-    this.dialog.open(FreezeMembershipDialogComponent, {data: purchase}).afterClosed().subscribe((changedPurchase: PurchaseItem) => {
+    this.dialog.open(FreezeMembershipDialogComponent, {data: purchase}).afterClosed().subscribe((changedPurchase: PurchaseHistoryItem) => {
         if (changedPurchase) {
-          purchase.isFreezed = changedPurchase.isFreezed;
+          this.salesService.savePurchase(this.salesService.toPurchaseItemModel(changedPurchase)).toPromise().then((savedPurchase) => {
+              const purchases = this.purchasesSubj.getValue();
+              const foundPurchaseIndex = purchases.findIndex( p => savedPurchase.id == p.id);
 
-
-          // purchase.lastFreezeTs = currentTs;
-          const currentTs = moment.now();
-          const freezePromise = new Promise<Freeze>((resolve, reject) => {
-
-            // in case if purchase just got frizzed - we should create new Freeze ;
-            // otherwise we are found previously freezed item from server history
-            if (changedPurchase.isFreezed) {
-              resolve({id: 0, startDate: currentTs, purchaseId: changedPurchase.id});
-            } else {
-              const startTs = changedPurchase.lastFreezeTs;
-              this.communicationService.findFreeze(purchase.id, startTs).toPromise().then(freeze => resolve(freeze));
-            }
-          });
-
-          freezePromise.then((freeze) => {
-            // if new freze  -we are updating purchase, otherwise we are updating freeze endDate
-            if (freeze.id == 0) {
-              purchase.lastFreezeTs = currentTs;
-            } else {
-              freeze.endDate = currentTs;
-            }
-            // updating freeze and updating purchase
-            const updateFreezeMembershipPromise = this.communicationService.freezeMembership(freeze).toPromise();
-            const updatePurchasePromise = this.communicationService.savePurchase(purchase).toPromise();
-            Promise.all([updateFreezeMembershipPromise, updatePurchasePromise]).then(() => {
-              this.purchasesSubj.next([...this.purchasesSubj.getValue()]);
-            });
+              if( foundPurchaseIndex != -1 ) {
+                purchases[foundPurchaseIndex] = this.salesService.toPurchaseHistoryItem(savedPurchase, this.todayMoment);
+                this.purchasesSubj.next([...purchases]);
+                this.purchaseUpdated.next(purchases[foundPurchaseIndex]);
+              }
           });
         }
 
       }
     );
   }
+
+  sharePurchase(purchaseHistoryItem: PurchaseHistoryItem) {
+    this.dialog.open(SharePurchaseDialogComponent, {data: purchaseHistoryItem}).afterClosed().subscribe((sharedMembers) => {
+
+      if (sharedMembers) {
+        const clonedPurchaseHistoryItem = clone(purchaseHistoryItem);
+        clonedPurchaseHistoryItem.members = sharedMembers;
+        const purchaseItemModel = this.salesService.toPurchaseItemModel(clonedPurchaseHistoryItem);
+        this.salesService.savePurchase(purchaseItemModel).subscribe((purchaseItemModel) => {
+          const updatedPurchase = this.salesService.toPurchaseHistoryItem(purchaseItemModel, this.todayMoment);
+          const purchaseHistoryItems = this.purchasesSubj.getValue();
+
+          const foundPurchaseIndex = purchaseHistoryItems.findIndex( p => p.id == updatedPurchase.id);
+          if( foundPurchaseIndex != -1 ) {
+            purchaseHistoryItems[foundPurchaseIndex] = updatedPurchase;
+          } else {
+            purchaseHistoryItems.unshift(updatedPurchase);
+          }
+          this.purchasesSubj.next([...purchaseHistoryItems]);
+          this.purchaseUpdated.next(updatedPurchase);
+        });
+      }
+    });
+  }
+
 
 }

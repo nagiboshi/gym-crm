@@ -19,7 +19,6 @@ import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 export class UserController {
 
   constructor(public service: UserService) {
-    bcrypt.hash('admin', 10).then(console.log);
   }
 
   @Override()

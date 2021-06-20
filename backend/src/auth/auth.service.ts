@@ -11,21 +11,25 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
+
+    console.log("yopta ", user);
+    const payload = { username: user.username, firstName: user.firstName, lastName: user.lastName, branches: user.branches  };
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.userService.findOne({where: {username}});
-    if( user ) {
-      const isValidUser = await bcrypt.compare(pass, user.password);
-      if (isValidUser) {
-        const {password, ...result} = user;
-        return result;
+  async validateUser(username: string, pass: string, branchId: number): Promise<any> {
+    // FIXME::  MAKE SINGLE QUERY FOR searching  USER WITH PARTICULAR BRANCHES   !
+    const user = await this.userService.findOne({ where: {username}});
+      const isPasswordMatch = await bcrypt.compare(pass, user.password);
+      if (isPasswordMatch) {
+        const branch = user.branches.find( b => b.id == branchId);
+        if( branch ) {
+          const {password, ...result} = user;
+          return result;
+        }
       }
-    }
     return null;
   }
 }

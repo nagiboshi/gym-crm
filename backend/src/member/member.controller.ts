@@ -16,6 +16,18 @@ import {AuthGuard} from '@nestjs/passport';
     join: {
       referalMember: {
         eager: false
+      },
+      purchaseItems: {
+        eager: false
+      },
+      'purchaseItems.product': {
+        alias: 'product'
+      },
+      'purchaseItems.members': {
+        alias: 'purchaseMembers'
+      },
+      'purchaseItems.freeze': {
+        alias: 'purchaseFreeze'
       }
     }
   },

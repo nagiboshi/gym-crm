@@ -1,5 +1,6 @@
-import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {IsEmail, IsMobilePhone, IsNotEmpty, MinLength} from 'class-validator';
+import {PurchaseItem} from '../purchase-item/purchase-item';
 
 @Entity()
 export class Member {
@@ -41,4 +42,6 @@ export class Member {
   @JoinColumn({referencedColumnName: "id"})
   referalMember: Member;
 
+  @ManyToMany( type => PurchaseItem, purchaseItem => purchaseItem.members, {onDelete: "CASCADE", onUpdate: "CASCADE", cascade: true})
+  purchaseItems: PurchaseItem[];
 }

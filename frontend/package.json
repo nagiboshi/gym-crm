@@ -30,6 +30,7 @@
     "@angular/router": "~12.0.0",
     "@nestjsx/crud-request": "*",
     "express": "4.17.1",
+    "jwt-decode": "^3.1.2",
     "moment": "^2.29.1",
     "moment-range": "^4.0.2",
     "rxjs": "~6.5.5",

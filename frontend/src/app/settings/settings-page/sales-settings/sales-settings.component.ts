@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CommunicationService} from '@shared/communication.service';
-import {Package} from '../../../models/package';
+import {ProductCategory} from '@models/product-category';
 import {BehaviorSubject, Observable, of, Subscription} from 'rxjs';
 import {concatMap, flatMap, last, map, mergeMap, reduce, scan, take, takeLast, toArray} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
@@ -8,36 +8,32 @@ import {SalesDialogComponent} from './sales-dialog/sales-dialog.component';
 import {MatTableDataSource} from '@angular/material/table';
 import {ClassModel} from '../../../classes/class.model';
 import {MatPaginator} from '@angular/material/paginator';
-
-
-interface ExpandablePackage extends Package {
-  isExpandable: boolean;
-  isExpanded: boolean;
-}
+import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
+import {ProductCategoriesService} from '@shared/product-categories.service';
 
 @Component({
   selector: 'sales-settings',
   templateUrl: './sales-settings.component.html',
   styleUrls: ['./sales-settings.component.scss']
 })
-export class SalesSettingsComponent implements OnInit, AfterViewInit, OnDestroy{
+export class SalesSettingsComponent implements OnInit, AfterViewInit{
   columns = ['name', 'items', 'edit', 'delete'];
-  dataSource: MatTableDataSource<Package>;
+  dataSource: MatTableDataSource<ProductCategory>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   packageUpdateSub: Subscription;
 
-  constructor(private communicationService: CommunicationService, private dialog: MatDialog) {
+  constructor(private productService: ProductCategoriesService, private dialog: MatDialog) {
   }
 
-  _newPackage(): Package {
-    return {items: [], id: 0, name: ''};
+  _newProductCategory(): ProductCategory {
+    return {products: [], id: 0, name: '', type: 0};
   }
 
-  openSalesDialog(packageElement?: Package) {
-    const packageToSave = packageElement ? packageElement : this._newPackage();
-    this.dialog.open(SalesDialogComponent, {data: packageToSave}).afterClosed().subscribe((packageToSave: Package) => {
-      if (packageToSave) {
-        this.communicationService.savePackage(packageToSave);
+  openSalesDialog(productCategory?: ProductCategory) {
+    const tempProductCategory = productCategory ? productCategory : this._newProductCategory();
+    this.dialog.open(SalesDialogComponent, {data: tempProductCategory}).afterClosed().subscribe((productCategoryToSave: ProductCategory) => {
+      if (productCategoryToSave) {
+        this.productService.saveProductCategory(productCategoryToSave);
       }
     });
   }
@@ -46,11 +42,15 @@ export class SalesSettingsComponent implements OnInit, AfterViewInit, OnDestroy{
     this.dataSource.paginator = this.paginator;
   }
 
-  ngOnDestroy(): void {
+  ngOnInit(): void {
+    this.dataSource = new MatTableDataSource<ProductCategory>([]);
+    this.packageUpdateSub = this.productService.getProductCategory$().subscribe(productCategories => this.dataSource.data = productCategories);
   }
 
-  ngOnInit(): void {
-    this.dataSource = new MatTableDataSource<Package>(this.communicationService.getPackages());
-    this.packageUpdateSub = this.communicationService.getPackages$().subscribe(packages => this.dataSource.data = packages);
+  openDeletePromptDialog(productCategory: ProductCategory) {
+    this.dialog.open(DeletePromptDialogComponent, {data: `Are you sure you want to delete ${productCategory.name} ?`}).afterClosed().subscribe(() => {
+      this.productService.removeProductCategory(productCategory);
+    });
+
   }
 }

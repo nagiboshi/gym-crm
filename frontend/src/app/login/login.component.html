@@ -1,11 +1,28 @@
-<div fxLayout="column" fxLayoutAlign="center center" class="login-page">
-  <form fxLayout="column" (ngSubmit)="authenticate()"  [formGroup]="form">
-    <mat-form-field>
-      <input placeholder="Username" matInput formControlName="username">
-    </mat-form-field>
-    <mat-form-field>
-      <input placeholder="Password" type="password" matInput formControlName="password">
-    </mat-form-field>
-    <button type="submit" [disabled]="form.invalid" mat-raised-button color="primary">Login</button>
-  </form>
+<div fxLayout="row" fxLayoutAlign="center center" class="login-page">
+  <div fxLayoutAlign="center start">
+    <div class="left-part"><img width="400" src="/assets/primal-logo.svg" class="primal-logo"/>
+    </div>
+    <div class="right-part">
+      <div fxLayout="row"><h1 class="main-sign gray">primal </h1>
+        <h1 class="main-sign blue">gym</h1></div>
+
+      <form fxLayout="column" (ngSubmit)="authenticate()" [formGroup]="form">
+        <mat-form-field>
+          <mat-select placeholder="Please select branch" formControlName="branchId">
+            <mat-option [value]="branch.id" *ngFor="let branch of branches$ | async">
+              {{branch.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <input placeholder="Username" matInput formControlName="username">
+        </mat-form-field>
+        <mat-form-field>
+          <input placeholder="Password" type="password" matInput formControlName="password">
+        </mat-form-field>
+        <button type="submit" [disabled]="form.invalid" mat-raised-button color="primary">Login</button>
+      </form>
+    </div>
+  </div>
+
 </div>

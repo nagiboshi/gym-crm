@@ -1,6 +1,7 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique} from 'typeorm';
 import {IsMobilePhone, IsNotEmpty} from 'class-validator';
 import {Branch} from '../branch/branch';
+import {JoinTable} from 'typeorm';
 
 
 enum UserRole{
@@ -8,6 +9,7 @@ enum UserRole{
 }
 
 @Entity()
+@Unique(['username'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -40,8 +42,7 @@ export class User {
   @IsNotEmpty()
   role: UserRole;
 
-
-  @OneToOne(() => Branch)
-  @JoinColumn()
-  branch: Branch;
+  @ManyToMany(() => Branch, branch => branch.users, {nullable: true, eager: true} )
+  @JoinTable()
+  branches: Branch[];
 }

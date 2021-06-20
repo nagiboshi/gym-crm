@@ -11,12 +11,6 @@
             </mat-select>
 
           </mat-form-field>
-          <mat-form-field>
-            <mat-select placeholder="Branch" (valueChange)="filterOutClassesByBranch($event)">
-              <mat-option *ngFor="let branch of branches"
-                          [value]="branch.id">{{branch.name}}</mat-option>
-            </mat-select>
-          </mat-form-field>
         </div>
       </th>
       <td mat-cell *matCellDef="let row"> {{row.name}}
@@ -24,7 +18,7 @@
     </ng-container>
 
     <ng-container matColumnDef="classCategory">
-      <th mat-header-cell *matHeaderCellDef></th>
+      <th mat-header-cell *matHeaderCellDef>Category</th>
       <td mat-cell *matCellDef="let row">
         {{row | classCategoryName:row.categoryId}}
       </td>

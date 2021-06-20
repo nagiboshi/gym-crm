@@ -1,12 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'memberPhotoLink'
+  name: 'localImageLink'
 })
-export class MemberPhotoLinkPipe implements PipeTransform {
+export class LocalImageLinkPipe implements PipeTransform {
 
   transform(value: string, ...args: unknown[]): string {
-    console.log(value);
     if( value.startsWith("public")) {
       return value.replace("public", "/api");
     }
