@@ -37,13 +37,18 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { BranchNamePipe } from './pipes/branch-name.pipe';
 import {HelpersService} from '@shared/helpers.service';
 import { SharePurchaseDialogComponent } from './share-purchase-dialog/share-purchase-dialog.component';
+import { GlobalErrorDialogComponent } from './global-error-dialog/global-error-dialog.component';
+import {GlobalErrorHandlerService} from '@shared/global-error-handler.service';
+import { InputPromptDialogComponent } from './input-prompt-dialog/input-prompt-dialog.component';
+import {MatChipsModule} from '@angular/material/chips';
+import { DelimeterSeparatedValuePipe } from './pipes/delimeter-separated-value.pipe';
 
 
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent,
     AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent,
-    MembershipExpirationPipe, ClassCategoryNamePipe, DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent],
-  providers: [ MatIconRegistry, DatePipe, HelpersService, {
+    MembershipExpirationPipe, ClassCategoryNamePipe, DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe],
+  providers: [ MatIconRegistry, DatePipe, HelpersService,GlobalErrorHandlerService, {
     provide: MAT_DATE_FORMATS, useValue: {
       parse: {
         dateInput: 'LL',
@@ -72,6 +77,7 @@ import { SharePurchaseDialogComponent } from './share-purchase-dialog/share-purc
     MatProgressSpinnerModule,
     MatButtonModule,
     MatCheckboxModule,
+    MatChipsModule,
     MatMomentDateModule,
     MatPaginatorModule,
     FormsModule
@@ -105,12 +111,15 @@ import { SharePurchaseDialogComponent } from './share-purchase-dialog/share-purc
         AddMemberDialogComponent,
         PurchaseHistoryComponent,
         FindMemberComponent,
+        MatChipsModule,
+        InputPromptDialogComponent,
         YearMonthSelectorComponent,
         MembershipExpirationPipe,
         BranchNamePipe,
         ClassCategoryNamePipe,
         DeletePromptDialogComponent,
-        LocalImageLinkPipe
+        LocalImageLinkPipe,
+        DelimeterSeparatedValuePipe
     ]
 })
 export class SharedModule {

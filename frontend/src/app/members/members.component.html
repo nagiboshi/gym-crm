@@ -2,6 +2,14 @@
   <div>
     <table mat-table [dataSource]="dataSource" matSort>
 
+      <!-- Avatar column -->
+      <ng-container matColumnDef="avatar">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+        <td (click)="openProfile(row)" mat-cell *matCellDef="let row">
+            <img (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg class="avatar" width="60" height="90" [src]="row.photoLink | localImageLink">
+        </td>
+      </ng-container>
+
       <!-- First name column -->
       <ng-container matColumnDef="firstName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> First Name</th>

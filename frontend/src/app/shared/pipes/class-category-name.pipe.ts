@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {Product} from '@models/product';
+import {Membership} from '@models/membership';
 import {Moment} from 'moment';
 import {DatePipe} from '@angular/common';
 import {isNumber} from 'lodash';

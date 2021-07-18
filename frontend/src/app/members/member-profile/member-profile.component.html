@@ -1,6 +1,6 @@
 <div *ngIf="form" fxLayout="column" fxFlex fxLayoutAlign="start"
      class="member-profile-container">
-  <h1>Profile of {{form.value.firstName + " " + form.value.lastName}}</h1>
+  <h1>{{form.value.firstName + " " + form.value.lastName}}</h1>
 
   <form [formGroup]="form" fxLayout="row" class="member">
     <div class="member-photo">

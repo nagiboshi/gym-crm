@@ -15,17 +15,24 @@ import {ClassesModule} from './classes/classes.module';
 import {ClassCategoryModule} from './class-category/class-category.module';
 import {ClassCategory} from './class-category/class-category';
 import {ClassModel} from './classes/class-model';
-import {ProductCategoryModule} from './product-category/product-category.module';
-import {ProductCategory} from './product-category/product-category';
+import {MembershipGroupModule} from './membership-group/membership-group.module';
+import {MembershipGroup} from './membership-group/membership-group';
 import {PaymentMethodModule} from './payment-method/payment-method.module';
 import {PaymentMethod} from './payment-method/payment-method';
-import {PurchaseItemModule} from './purchase-item/purchase-item.module';
-import {PurchaseFreeze} from './purchase-item/purchase-freeze';
-import {PurchaseItem} from './purchase-item/purchase-item';
-import {Product} from './product-category/product';
+import {MembershipPurchaseModule} from './membership-purchase/membership-purchase.module';
+import {MembershipFreeze} from './membership-purchase/membership-freeze';
+import {MembershipPurchase} from './membership-purchase/membership-purchase';
+import {Membership} from './membership-group/membership';
 import {ClassScheduleModule} from './class-schedule/class-schedule.module';
 import {ClassSchedule} from './class-schedule/class-schedule.model';
 import {ScheduleMember} from './schedule-member/schedule-member';
+import {SalesModule} from './sales/sales.module';
+import {ProductCategory} from './sales/product-category/product-category';
+import {ProductSubcategory} from './sales/product-category/product-subcategory';
+import {ProductTag} from './sales/tags/product-tag';
+import {Product} from './sales/product/product';
+import {ProductField} from './sales/product-fields/product-field';
+import {ProductFieldOption} from './sales/product-property/product-field-option';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -48,7 +55,7 @@ import {ScheduleMember} from './schedule-member/schedule-member';
       password: configService.get('POSTGRES_PASSWORD'),
       database: configService.get('POSTGRES_DB'),
       schema: 'public',
-      logging: true,
+      logging: false,
       keepConnectionAlive: true,
       entities: [
         Member,
@@ -57,12 +64,18 @@ import {ScheduleMember} from './schedule-member/schedule-member';
         ClassCategory,
         ScheduleMember,
         ClassModel,
-        Product,
+        Membership,
         ClassSchedule,
-        ProductCategory,
+        MembershipGroup,
         PaymentMethod,
-        PurchaseItem,
-        PurchaseFreeze
+        MembershipPurchase,
+        MembershipFreeze,
+        ProductCategory,
+        ProductSubcategory,
+        ProductTag,
+        Product,
+        ProductFieldOption,
+        ProductField,
       ],
       synchronize: true,
     })
@@ -73,9 +86,10 @@ import {ScheduleMember} from './schedule-member/schedule-member';
     BranchModule,
     ClassesModule,
     ClassCategoryModule,
-    ProductCategoryModule,
+    MembershipGroupModule,
     PaymentMethodModule,
-    PurchaseItemModule,
+    MembershipPurchaseModule,
+    SalesModule,
     ClassScheduleModule],
   controllers: [AppController,],
   providers: [AppService],

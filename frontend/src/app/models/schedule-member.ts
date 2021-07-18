@@ -1,7 +1,7 @@
-import {Member} from './member';
+import {Member} from '@models/member';
 
 export interface ScheduleMember {
   id: number;
-  member: Member;
-  scheduleDate: number;
+  memberId: number;
+  member?: Member;
 }

@@ -1,6 +1,6 @@
 <div fxFill fxLayout="column">
   <div fxLayout="column">
-    <h1 class="sign-in-title">Sign in to {{this.signInDialogData.daySchedule.primalClass.name}}: </h1>
+    <h1 class="sign-in-title">Sign in to {{this.signInDialogData.daySchedule.classId | classNameById}}: </h1>
     <div fxLayout="row" class="sign-in-dialog-row">
       <span class="sign-in-label">Date:</span>
       <div>{{signInDialogData.signInDate.toDate() | date}}</div>
@@ -12,7 +12,7 @@
     </div>
     <div fxLayout="row" class="sign-in-dialog-row">
       <span class="sign-in-label">Capacity:</span> <span
-      [ngClass]="{warn: scheduleMembers.length > this.signInDialogData.daySchedule.capacity}">{{scheduleMembers.length}}</span>&nbsp;
+      [ngClass]="{warn: dataSource.data.length > this.signInDialogData.daySchedule.capacity}">{{dataSource.data.length}}</span>&nbsp;
       of {{this.signInDialogData.daySchedule.capacity}}</div>
     <div fxLayout="row" class="sign-in-dialog-row">
       <span class="sign-in-label">Sign in:</span>
@@ -21,7 +21,7 @@
                        [placeholder]="'First, Last name of phone number '"></app-find-member>
     </div>
 
-    <table mat-table [dataSource]="signInMembers">
+    <table mat-table [dataSource]="dataSource">
 
       <!-- Full name -->
       <ng-container matColumnDef="fullName">
@@ -33,7 +33,7 @@
                       class="nearly-expired-membership"
                       *ngIf="!signInMember.activeMembership || signInMember.activeMembership?.isNearlyExpire">!</span>
           <a
-            routerLink="/members/{{signInMember.scheduleMember.member.id}}">{{signInMember.scheduleMember.member.firstName + ' ' + signInMember.scheduleMember.member.lastName}}</a>
+            routerLink="/members/{{signInMember.member.id}}">{{signInMember.member.firstName + ' ' + signInMember.member.lastName}}</a>
         </td>
       </ng-container>
 
@@ -41,7 +41,7 @@
       <ng-container matColumnDef="package">
         <th mat-header-cell *matHeaderCellDef> Package</th>
         <td mat-cell *matCellDef="let signInMember"><span
-          *ngIf="signInMember.activeMembership; else noMembership">{{signInMember.activeMembership.item.name}}</span>
+          *ngIf="signInMember.activeMembership; else noMembership">{{signInMember.activeMembership.membership.name}}</span>
         </td>
       </ng-container>
 
@@ -50,7 +50,7 @@
         <th mat-header-cell *matHeaderCellDef> Expiry Date</th>
         <td mat-cell
             *matCellDef="let signInMember"><ng-container
-          *ngIf="signInMember.activeMembership"> {{signInMember.activeMembership.item | membershipExpiration:signInMember.activeMembership.startDate }}</ng-container>
+          *ngIf="signInMember.activeMembership"> {{signInMember.activeMembership.membership | membershipExpiration:signInMember.activeMembership.startDate }}</ng-container>
         </td>
       </ng-container>
 
@@ -69,7 +69,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
     <div class="control-buttons">
-      <button color="primary" [mat-dialog-close]="scheduleMembers" mat-raised-button>Save</button>
+      <button color="primary" [mat-dialog-close]="dataSource.data" mat-raised-button>Save</button>
       <button mat-button mat-dialog-close>Cancel</button>
     </div>
   </div>

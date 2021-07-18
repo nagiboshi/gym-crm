@@ -1,16 +1,15 @@
 import {Injectable} from '@angular/core';
-import {PurchaseItemModel} from '@models/purchase';
+import {MembershipPurchaseModel} from '@models/purchase';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
 import {Member} from '@models/member';
-import {ClassModel} from '../classes/class.model';
 import {HttpClient} from '@angular/common/http';
-import {isEmpty} from 'lodash';
+import {isEmpty, first} from 'lodash';
 import {ScheduleMember} from '@models/schedule-member';
 import {Branch} from '@models/branch';
 import {map, tap} from 'rxjs/operators';
 import {CondOperator, QueryFilter, RequestQueryBuilder} from '@nestjsx/crud-request';
 import {HelpersService} from '@shared/helpers.service';
-import {ProductCategoriesService} from '@shared/product-categories.service';
+import {MembershipGroupService} from '@shared/membership-group.service';
 
 export interface UserRole {
   key: number;
@@ -36,32 +35,46 @@ export interface ScheduleWeekDay {
   date: Date;
 }
 
-export interface DaySchedule {
-  scheduleId: number;
-  dayOfWeek: number;
-  primalClass: ClassModel;
-  timeStart: number;
-  timeEnd: number;
-  capacity: number;
+export interface DaySchedule extends ClassSchedule {
+  // scheduleId: number;
+  // dayOfWeek: number;
+  // primalClass: ClassModel;
   signedMembers$?: BehaviorSubject<ScheduleMember[]>;
 }
 
 @Injectable({providedIn: 'root'})
 export class CommunicationService {
   schedulesSubj = new BehaviorSubject<ClassSchedule[]>([]);
-  newPurchase = new Subject<PurchaseItemModel>();
-  newPurchase$: Observable<PurchaseItemModel> = this.newPurchase.asObservable();
+  newPurchase = new Subject<MembershipPurchaseModel>();
+  newPurchase$: Observable<MembershipPurchaseModel> = this.newPurchase.asObservable();
   branchesSubj = new BehaviorSubject<Branch[]>([]);
   memberCreated = new Subject<Member>();
   memberCreated$ = this.memberCreated.asObservable();
   userRoles: Map<number, UserRole>;
 
-  constructor(private httpClient: HttpClient, private packageService: ProductCategoriesService, private helpers: HelpersService) {
+  constructor(private httpClient: HttpClient,
+              private packageService: MembershipGroupService,
+              private helpers: HelpersService) {
     this.userRoles = new Map();
     this.userRoles.set(0, {key: 0, label: 'Operator'});
     this.userRoles.set(1, {key: 1, label: 'Accountant'});
     this.userRoles.set(2, {key: 2, label: 'Administrator'});
-    this.userRoles.set(3, {key: 0, label: 'Super Administrator'});
+    this.userRoles.set(3, {key: 3, label: 'Super Administrator'});
+  }
+
+  getMembersByIds(ids: number[]): Observable<Member[]> {
+    if (ids.length != 0) {
+      let url = '/api/member';
+      const query = '/?' + RequestQueryBuilder.create().setFilter({
+        field: 'id',
+        value: ids,
+        operator: CondOperator.IN
+      }).setJoin({field: 'membershipPurchases'})
+        .setJoin({field: 'membershipPurchases.membership'})
+        .sortBy({field: 'membershipPurchases.saleDate', order: 'DESC'}).query(false);
+      return this.httpClient.get<Member[]>(url + query);
+    }
+    return of(new Array<Member>());
   }
 
   getMembers(size: number, filterNameLastNameOrPhone: string, offset: number): Observable<Member[]> {
@@ -105,26 +118,63 @@ export class CommunicationService {
   }
 
 
-  getSchedules(startDate: Date, endDate: Date): Observable<ClassSchedule[]> {
-    const {from, to} = {from: startDate.getTime(), to: endDate.getTime()};
-
-    const firstQueryPart: QueryFilter = {
-      field: 'scheduleFrom',
-      operator: CondOperator.BETWEEN,
-      value: [from, to]
+  private _getSchedulesQuery(startDate: Date | number, endDate: Date | number) {
+    const {from, to} = {
+      from: startDate instanceof Date ? startDate.getTime() : startDate,
+      to: endDate instanceof Date ? endDate.getTime() : endDate
     };
-    const secondQueryPart: QueryFilter =
+
+
+    const scheduleFromLowerThenScheduleUntil = {
+      field: 'scheduleFrom',
+      operator: CondOperator.LOWER_THAN_EQUALS,
+      value: to
+    };
+
+
+    const query1: Array<QueryFilter> = [scheduleFromLowerThenScheduleUntil,
       {
         field: 'scheduleUntil',
         operator: CondOperator.BETWEEN,
         value: [from, to]
-      };
+      }];
 
-    const query = RequestQueryBuilder.create().setOr([firstQueryPart, secondQueryPart]).setJoin({
+    const query2: Array<QueryFilter> = [
+      scheduleFromLowerThenScheduleUntil,
+      {
+        field: 'scheduleUntil',
+        operator: CondOperator.GREATER_THAN,
+        value: to
+      }];
+
+    return RequestQueryBuilder.create().setOr(query1).setOr(query2).setJoin({
       field: 'signedMembers',
       select: ['memberId']
     }).query(false);
-    return this.httpClient.get<ClassSchedule[]>('/api/class-schedule/?' + query).pipe(tap(res => this.schedulesSubj.next(res)));
+  }
+
+  getSchedules(startDate: Date, endDate: Date): Observable<DaySchedule[]> {
+    const query = this._getSchedulesQuery(startDate, endDate);
+    return this.httpClient.get<ClassSchedule[]>('/api/class-schedule/?' + query).pipe(
+      map<ClassSchedule[], DaySchedule[]>((schedules) => {
+        return schedules.map<DaySchedule>( s => this.classScheduleToDaySchedule(s))}),
+      tap(res => this.schedulesSubj.next(res)));
+  }
+
+  classScheduleToDaySchedule( classSchedule: ClassSchedule) {
+    classSchedule.scheduleFrom = this.helpers.bigIntStringToNumber(classSchedule.scheduleFrom);
+    classSchedule.scheduleUntil = this.helpers.bigIntStringToNumber(classSchedule.scheduleUntil);
+    return {...classSchedule, ...{signedMembers$:new BehaviorSubject(classSchedule.signedMembers)}};
+  }
+
+  addSchedules(schedules: ClassSchedule[]) {
+    // when we are adding schedules they would have the same scheduleFrom, scheduleUntil.
+    const scheduleExmpl = first(schedules);
+    const query = this._getSchedulesQuery(scheduleExmpl.scheduleFrom, scheduleExmpl.scheduleUntil);
+    return this.httpClient.post<ClassSchedule[]>('/api/class-schedule/bulk?' + query, {bulk: schedules}).pipe(
+      // map( /**/s => {...s, {..}})
+      map( newSchedules => newSchedules.map( s => this.classScheduleToDaySchedule(s)) )
+    );
   }
 
   signIn(scheduleId: number, memberIds: number[], scheduleDate: number): Observable<ScheduleMember[]> {
@@ -140,7 +190,7 @@ export class CommunicationService {
     return this.httpClient.post<ScheduleMember[]>('/api/schedule-member/bulk', {bulk: scheduleMembers});
   }
 
-  emitNewPurchase(purchase: PurchaseItemModel) {
+  emitNewPurchase(purchase: MembershipPurchaseModel) {
     this.newPurchase.next(purchase);
   }
 
@@ -148,21 +198,29 @@ export class CommunicationService {
     return this.httpClient.delete('/api/member/' + id);
   }
 
-  getMemberWithPurchases(id: string) {
-    const query = '/?' + RequestQueryBuilder.create()
-      .setJoin({field: 'purchaseItems'})
-      .setJoin({field: 'purchaseItems.product'})
-      .setJoin({field: 'purchaseItems.freeze'})
-      .setJoin({field: 'purchaseItems.members'}).sortBy({
-        field: 'purchaseItems.saleDate',
-        order: 'DESC'
-      }).query(false);
-    return this.httpClient.get<Member>('/api/member/' + id + query).pipe(map<Member, Member>(member => {
-      member.purchaseItems?.forEach(p => {
+  getMemberWithPurchases(id: string | number, joinPurchaseFreeze = true, joinPurchaseProduct = true, joinPurchaseMembers = true) {
+    const query = RequestQueryBuilder.create()
+      .setJoin({field: 'membershipPurchases'})
+      .setJoin({field: 'membershipPurchases.membership'});
+    if (joinPurchaseFreeze) {
+      query.setJoin({field: 'membershipPurchases.freeze'});
+    }
+
+
+    if (joinPurchaseMembers) {
+      query.setJoin({field: 'membershipPurchases.members'});
+    }
+    query.sortBy({
+      field: 'membershipPurchases.saleDate',
+      order: 'DESC'
+    });
+    const resultedQuery = '/?' + query.query(false);
+    return this.httpClient.get<Member>('/api/member/' + id + resultedQuery).pipe(map<Member, Member>(member => {
+      member.membershipPurchases?.forEach(p => {
         p.startDate = this.helpers.bigIntStringToNumber(p.startDate);
-        p.saleDate =  this.helpers.bigIntStringToNumber(p.saleDate);
+        p.saleDate = this.helpers.bigIntStringToNumber(p.saleDate);
         if (p.freeze) {
-          p.freeze.startDate =  this.helpers.bigIntStringToNumber(p.freeze.startDate);
+          p.freeze.startDate = this.helpers.bigIntStringToNumber(p.freeze.startDate);
           p.freeze.endDate = this.helpers.bigIntStringToNumber(p.freeze.endDate);
         }
       });
@@ -170,10 +228,6 @@ export class CommunicationService {
     }));
   }
 
-
-  addSchedules(schedules: ClassSchedule[]) {
-    return this.httpClient.put<ClassSchedule[]>('/schedules', schedules);
-  }
 
   findMembers(firstLastNamePhoneNumber: string): Observable<Member[]> {
     return this.getMembers(20, firstLastNamePhoneNumber, 0);
@@ -196,19 +250,8 @@ export class CommunicationService {
   }
 
 
-
   updateMember(member: Member) {
     return this.httpClient.patch<Member>('/member', JSON.stringify(member));
   }
-
-  // freezeMembership(freeze: PurchaseFreeze): Observable<PurchaseFreeze> {
-  //   return this.httpClient.post<PurchaseFreeze>('/freeze', freeze);
-  // }
-
-  // findFreeze(purchaseId: number, startDate: number): Observable<PurchaseFreeze> {
-  //   const params = new HttpParams().append('purchaseId', purchaseId.toString())
-  //     .append('startDate', startDate.toString());
-  //   return this.httpClient.get<PurchaseFreeze>('/freeze', {params});
-  // }
 
 }

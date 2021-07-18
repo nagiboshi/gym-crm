@@ -28,9 +28,12 @@ import {ScheduleCalendarHeaderComponent} from './schedule-calendar/schedule.cale
 import {SelectionStrategyEventEmitter} from './schedule-calendar/selection-strategy.event-emitter';
 import {ScheduleMember} from '@models/schedule-member';
 import {ClassesService} from '../classes.service';
-import {PurchaseItemModel} from '@models/purchase';
+import {MembershipPurchaseModel} from '@models/purchase';
+import {HelpersService} from '@shared/helpers.service';
+import {map, mapTo} from 'rxjs/operators';
 
 const moment = _moment;
+
 
 @Component({
   selector: 'app-classes',
@@ -44,9 +47,8 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
   classes: ClassModel[];
   scheduleWeekDays: ScheduleWeekDay[];
   today: Date = new Date();
-  schedules$: BehaviorSubject<ClassSchedule[]> = new BehaviorSubject<ClassSchedule[]>([]);
+  schedules$: BehaviorSubject<DaySchedule[]> = new BehaviorSubject<DaySchedule[]>([]);
   scheduleDate: DateRange<Moment>;
-  purchaseItems$: BehaviorSubject<PurchaseItemModel[]> = new BehaviorSubject<PurchaseItemModel[]>([]);
   scheduleCalendarHeader = ScheduleCalendarHeaderComponent;
   subscriptions: Subscription[] = [];
   @ViewChild(MatCalendar)
@@ -61,7 +63,10 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
     }
   };
 
-  constructor(private communicationService: CommunicationService, private classesService: ClassesService, private cd: ChangeDetectorRef, private dialog: MatDialog,
+  constructor(private communicationService: CommunicationService,
+              private classesService: ClassesService,
+              private cd: ChangeDetectorRef,
+              private dialog: MatDialog,
               private selectionStrategyEventEmitter: SelectionStrategyEventEmitter<Moment>) {
   }
 
@@ -78,12 +83,19 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
     // console.log("startMonth", startDate.month(), "endDateMonth ", endDate.month() );
     let startDay; //  = startDate.date();
     let endDay; //  =
+
+    if( tmpMoment.month() != startDate.month() ) {
+      tmpMoment.month(startDate.month());
+    }
+
     if (startDate.month() != endDate.month()) {
       startDay = startDate.date();
       endDay = startDate.daysInMonth();
+
+
       for (let day = startDay; day <= endDay; day++) {
-        const newMoment = tmpMoment.month(startDate.month()).date(day); // .month(startMonthIdx);
-        this.scheduleWeekDays.push({day: newMoment.date(), label: moment.weekdaysShort()[newMoment.day()], date: newMoment.toDate()});
+        const newMoment = tmpMoment.date(day); // .month(startMonthIdx);
+        this.scheduleWeekDays.push({day: newMoment.day(), label: moment.weekdaysShort()[newMoment.day()], date: newMoment.startOf('day').toDate()});
       }
 
       startDay = 1;
@@ -96,15 +108,23 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
 
     for (let day = startDay; day <= endDay; day++) {
       const newMoment = tmpMoment.date(day); // .month(startMonthIdx);
-      this.scheduleWeekDays.push({day: newMoment.day(), label: moment.weekdaysShort()[newMoment.day()], date: newMoment.toDate()});
+      this.scheduleWeekDays.push({day: newMoment.day(), label: moment.weekdaysShort()[newMoment.day()], date: newMoment.startOf('day').toDate()});
     }
 
   }
 
 
-  getSchedules(from: Moment, to: Moment): Observable<ClassSchedule[]> {
-    return this.communicationService.getSchedules(from.toDate(), to.toDate());
-  }
+
+  // getSchedules(from: Moment, to: Moment): Observable<DaySchedule[]> {
+  //   return this.communicationService.getSchedules(from.toDate(), to.toDate()).pipe(
+  //     map<ClassSchedule[], DaySchedule[]>( classSchedule => {
+  //     return classSchedule.map(
+  //         schedule => {
+  //           return {...schedule, ...{signedMembers$: new BehaviorSubject(schedule.signedMembers)}}
+  //         });
+  //     }
+  //   ))
+  // }
 
   ngOnInit(): void {
     // this.dayMapping = this.communicationService.getDayMappings();
@@ -116,13 +136,15 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
     const to = toDate.endOf('week');
     this.scheduleDate = new DateRange(from, to);
     this.updateScheduleWeekDates(this.scheduleDate);
-    this.getSchedules(from, to).subscribe((schedules) => {
+
+    this.communicationService.getSchedules(from.toDate(), to.toDate()).subscribe((schedules) => {
+      // console.log(new Date(schedules[0].scheduleFrom), new Date(schedules[0].scheduleUntil));
       this.schedules$.next(schedules);
     });
 
-    this.subscriptions.push(this.communicationService.newPurchase$.subscribe((newPurchaseItem: PurchaseItemModel) => {
-      this.purchaseItems$.next([newPurchaseItem, ...this.purchaseItems$.getValue()]);
-    }));
+    // this.subscriptions.push(this.communicationService.newPurchase$.subscribe((newPurchaseItem: PurchaseItemModel) => {
+    //   this.purchaseItems$.next([newPurchaseItem, ...this.purchaseItems$.getValue()]);
+    // }));
 
     // this.communicationService.getPurchaseItems(from.toDate().getTime(), to.toDate().getTime()).subscribe((purchaseItems) => {
     //   this.purchaseItems$.next(purchaseItems);
@@ -157,22 +179,20 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
 
     this.scheduleDate = new DateRange(start, end);
     this.updateScheduleWeekDates(this.scheduleDate);
-    this.getSchedules(start, end).subscribe((schedules) => {
+    this.communicationService.getSchedules(start.toDate(), end.toDate()).subscribe((schedules) => {
       this.schedules$.next(schedules);
     });
   }
 
   signIn(daySchedule: DaySchedule) {
     const signInDate = this.scheduleDate.start.clone()
-      .add(daySchedule.dayOfWeek, 'days')
+      .add(daySchedule.day, 'days')
       .startOf('day')
       .add(daySchedule.timeStart, 'milliseconds');
-
     this.dialog.open(SignInDialogComponent, {
       width: '800px',
       data: {
         daySchedule, signInDate,
-        purchaseItems: this.purchaseItems$.getValue()
       }
     })
       .afterClosed().subscribe((scheduleMembers: ScheduleMember[]) => {
@@ -184,9 +204,8 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
         const membersToSign = differenceBy(scheduleMembers, daySchedule.signedMembers$.getValue(), diffMember => diffMember.member.id);
         const membersIds = membersToSign.map(m => m.member.id);
         this.communicationService
-          .signIn(daySchedule.scheduleId, membersIds, signInDate.toDate().getTime())
+          .signIn(daySchedule.id, membersIds, signInDate.toDate().getTime())
           .toPromise().then((newSignedMembers: ScheduleMember[]) => {
-            console.log('schedule-table-component newSignedMembers ! ' ,newSignedMembers);
           daySchedule.signedMembers$.next([...newSignedMembers, ...daySchedule.signedMembers$.getValue()]);
           this.cd.markForCheck();
         });
@@ -195,19 +214,19 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
     });
   }
 
-  groupSchedulesByDay(day: string, schedules: ClassSchedule[]): DaySchedule[] {
-    return schedules.filter(s => s.day == parseInt(day, 10)).sort(this.sortSchedulesFunction).map<DaySchedule>((s) => {
-      return {
-        scheduleId: s.id,
-        dayOfWeek: s.day,
-        timeStart: s.timeStart,
-        timeEnd: s.timeEnd,
-        capacity: s.capacity,
-        signedMembers$: new BehaviorSubject(s.signedMembers || []),
-        primalClass: this.classes.find(c => c.id == s.classId),
-      };
-    });
-  }
+  // groupSchedulesByDay(day: string, schedules: ClassSchedule[]): DaySchedule[] {
+  //   return schedules.filter(s => s.day == parseInt(day, 10)).sort(this.sortSchedulesFunction).map<DaySchedule>((s) => {
+  //     return {
+  //       scheduleId: s.id,
+  //       dayOfWeek: s.day,
+  //       timeStart: s.timeStart,
+  //       timeEnd: s.timeEnd,
+  //       capacity: s.capacity,
+  //       signedMembers$: new BehaviorSubject(s.signedMembers || []),
+  //       primalClass: this.classes.find(c => c.id == s.classId),
+  //     };
+  //   });
+  // }
 
   addSchedule(day?: string) {
     this.dialog.open(AddScheduleDialogComponent).afterClosed().subscribe((schedule: PrimalClassSchedule) => {
@@ -229,10 +248,8 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
         });
 
 
-        this.communicationService.addSchedules(newSchedules).subscribe(classSchedules => {
-          const updatedSchedules = [...this.schedules$.getValue(), ...classSchedules];
-          updatedSchedules.sort(this.sortSchedulesFunction);
-          this.schedules$.next(updatedSchedules);
+        this.communicationService.addSchedules(newSchedules).subscribe(daySchedules => {
+          this.schedules$.next([...this.schedules$.getValue(), ...daySchedules]);
         });
       }
 

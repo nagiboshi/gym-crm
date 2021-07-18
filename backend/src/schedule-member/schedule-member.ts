@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {Member} from '../member/member';
 import {ClassSchedule} from '../class-schedule/class-schedule.model';
 
@@ -7,7 +7,7 @@ export class ScheduleMember {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(type => Member)
+  @ManyToOne(type => Member, )
   @JoinColumn({referencedColumnName: 'id', name: 'memberId'})
   member: Member;
 
@@ -18,7 +18,7 @@ export class ScheduleMember {
   scheduleDate: number;
 
 
-  @OneToOne(type => ClassSchedule)
+  @ManyToOne(type => ClassSchedule)
   @JoinColumn({referencedColumnName: 'id', name: 'scheduleId'})
   schedule: ClassSchedule;
 

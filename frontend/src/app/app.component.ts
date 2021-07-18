@@ -4,12 +4,10 @@ import {NavigationEnd, Router} from '@angular/router';
 import {BehaviorSubject } from 'rxjs';
 import {UserService} from '@shared/user.service';
 import {HttpClient} from '@angular/common/http';
-import {CommunicationService} from '@shared/communication.service';
 import {PaymentMethodService} from './settings/settings-page/payment-methods-settings/payment-method.service';
 import {ClassesService} from './classes/classes.service';
-import {ProductCategoriesService} from '@shared/product-categories.service';
-import {DomSanitizer} from '@angular/platform-browser';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MembershipGroupService} from '@shared/membership-group.service';
+import {ProductService} from './sales/sales-settings/product-settings/product.service';
 
 interface AppRoute {
   label: string;
@@ -24,20 +22,20 @@ interface AppRoute {
 })
 export class AppComponent implements OnInit {
   cacheLoadingStatus: boolean = false;
-  appRoutes$: BehaviorSubject<AppRoute[]> = new BehaviorSubject([{label: 'Schedules', isActive: false, path: '/classes/schedules'},
-    {label: 'Members', isActive: false, path: '/members'}
+  appRoutes$: BehaviorSubject<AppRoute[]> = new BehaviorSubject([//{label: 'Schedules', isActive: false, path: '/classes/schedules'},
+    {label: 'Members', isActive: false, path: '/members'},
+    {label: 'Reports', isActive: false, path: '/reports'},
+    {label: 'Sales', isActive: false, path: '/sales'}
   ]);
   title = 'primal-accounting';
 
   constructor(private router: Router,
               public userService: UserService,
               private http: HttpClient,
-              private productCategoriesService: ProductCategoriesService,
+              private membershipGroupService: MembershipGroupService,
+              private productService: ProductService,
               private paymentService: PaymentMethodService,
-              private classesService: ClassesService,
-              private domSanitizer: DomSanitizer,
-              private matIconRegistry: MatIconRegistry,
-              private commService: CommunicationService) {
+              private classesService: ClassesService) {
     router.events.subscribe(e => {
       if (e instanceof NavigationEnd) {
         const appRoutes = this.appRoutes$.getValue();
@@ -71,10 +69,12 @@ export class AppComponent implements OnInit {
   loadCache() {
     this.cacheLoadingStatus = true;
     Promise.all([
-      this.classesService.fetchClasses().toPromise(),
+      // this.classesService.fetchClasses().toPromise(),
+      this.productService.fetchProductCategories().toPromise(),
       this.paymentService.fetchPaymentMethods().toPromise(),
-      this.productCategoriesService.fetchProductCategories().toPromise(),
-      this.classesService.fetchClassCategories().toPromise()]).finally(() => {
+      this.membershipGroupService.fetchMembershipGroups().toPromise()]) // ,
+  //    this.classesService.fetchClassCategories().toPromise()])
+  .finally(() => {
       this.cacheLoadingStatus = false;
     });
   }

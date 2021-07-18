@@ -5,7 +5,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {remove} from 'lodash';
 import {tap} from 'rxjs/operators';
 import {ClassCategory} from './class.category';
-import {ProductCategory} from '@models/product-category';
+import {MembershipGroup} from '@models/membership-group';
 
 @Injectable({
   providedIn: 'root'

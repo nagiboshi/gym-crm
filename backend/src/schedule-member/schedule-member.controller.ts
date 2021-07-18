@@ -8,9 +8,13 @@ import {ScheduleMemberService} from './schedule-member.service';
   model: {
     type: ScheduleMember
   },
-  // query: {
-  //   join:
-  // }
+  query: {
+    join: {
+      member: {eager: false},
+      "member.membershipPurchases": {eager: false, alias: 'memberPurchaseItems'},
+      "member.membershipPurchases.membership": {eager: false, alias: 'membershipPurchase'}
+    }
+  }
 })
 @UseGuards(JwtAuthGuard)
 @Controller('schedule-member')

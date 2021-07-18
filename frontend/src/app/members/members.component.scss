@@ -24,6 +24,10 @@
       }
     }
 
+    .avatar {
+     object-fit:cover;
+    }
+
     .edit-cell, .delete-cell {
       width: 70px;
 

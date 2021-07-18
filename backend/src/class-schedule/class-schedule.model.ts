@@ -22,10 +22,10 @@ export class ClassSchedule {
   @Column()
   timeEnd: number;
 
-  @Column()
+  @Column({type: 'smallint'})
   day: number;
 
-  @Column()
+  @Column({type: 'smallint'})
   capacity: number;
 
   @Column({type: 'bigint'})

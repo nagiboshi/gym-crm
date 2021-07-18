@@ -7,7 +7,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Member} from '@models/member';
 import * as _moment from 'moment';
 import {first, sortBy, isEmpty } from 'lodash';
-import {PurchaseHistoryItem} from '@models/purchase';
+import {MembershipPurchaseHistoryItem} from '@models/purchase';
 import {SalesService} from '../../sales/sales.service';
 
 const moment = _moment;
@@ -20,8 +20,8 @@ const moment = _moment;
 })
 export class MemberProfileComponent implements OnDestroy, OnInit {
   _loadedMemberSubject: BehaviorSubject<Member>;
-  _activeMembership: BehaviorSubject<PurchaseHistoryItem>;
-  _activeMembership$: Observable<PurchaseHistoryItem>;
+  _activeMembership: BehaviorSubject<MembershipPurchaseHistoryItem>;
+  _activeMembership$: Observable<MembershipPurchaseHistoryItem>;
   private routeChangeSub: Subscription;
   form: FormGroup;
   todayMoment = moment().startOf('day');
@@ -83,10 +83,10 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
   }
 
   getActiveMembership(member: Member) {
-    if( isEmpty(member.purchaseItems)) {
+    if( isEmpty(member.membershipPurchases)) {
       return null;
     }
-   return this.salesService.toPurchaseHistoryItem(first(member.purchaseItems), this.todayMoment);
+   return this.salesService.toPurchaseHistoryItem(first(member.membershipPurchases), this.todayMoment);
   }
 
   ngOnDestroy() {
@@ -103,7 +103,7 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
     }
   }
 
-  onNewPurchase(purchaseHistoryItem: PurchaseHistoryItem) {
+  onNewPurchase(purchaseHistoryItem: MembershipPurchaseHistoryItem) {
       this._activeMembership.next(purchaseHistoryItem);
   }
 }

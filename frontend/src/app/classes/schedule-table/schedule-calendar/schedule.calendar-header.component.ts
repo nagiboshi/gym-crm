@@ -91,6 +91,7 @@ export class ScheduleCalendarHeaderComponent<D> implements OnDestroy {
     const activeDate = (this._calendar.activeDate as unknown as Moment).clone();
     activeDate.month(newMonth);
     this._calendar.activeDate = activeDate as any;
+    this._calendar.monthSelected.emit(activeDate as any);
   }
 
   ngOnDestroy() {

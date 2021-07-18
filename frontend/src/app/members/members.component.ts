@@ -18,7 +18,7 @@ import {Subscription} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
-  displayedColumns: string[] = ['firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'delete'];
+  displayedColumns: string[] = ['avatar', 'firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'delete'];
   dataSource: MatTableDataSource<Member>;
   memberCreatedSub: Subscription;
   @ViewChild(MatPaginator) paginator: MatPaginator;

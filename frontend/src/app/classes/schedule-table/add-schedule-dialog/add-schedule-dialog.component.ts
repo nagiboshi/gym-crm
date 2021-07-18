@@ -49,7 +49,8 @@ export class AddScheduleDialogComponent implements OnInit {
     const scheduleUntilDateMoment = moment();
     scheduleUntilDateMoment.add(1, 'month');
     scheduleUntilDateMoment.subtract(new Date().getDay(), 'days');
-    this.scheduleFromDate = moment();
+    scheduleUntilDateMoment.endOf('day');
+    this.scheduleFromDate = moment().startOf('day');
     this.scheduleUntilDate = scheduleUntilDateMoment;
     this.dayMappings = this.communicationService.getDayMappings();
     this.existingClasses = this.classesService.getClasses();

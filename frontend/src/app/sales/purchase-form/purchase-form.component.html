@@ -1,35 +1,35 @@
-  <mat-dialog-content>
+  <mat-dialog-content *ngIf="membershipGroupFormGroup">
     <mat-vertical-stepper #stepper [linear]="true">
-      <mat-step [stepControl]="productCategoryFormGroup">
-        <form [formGroup]="productCategoryFormGroup">
+      <mat-step [stepControl]="membershipGroupFormGroup">
+        <form [formGroup]="membershipGroupFormGroup">
           <ng-template matStepLabel>Select package</ng-template>
           <mat-form-field>
-            <mat-select formControlName="productCategory" [value]="selectedProductCategory"
+            <mat-select formControlName="membershipGroup" [value]="selectedMembershipGroup"
                         (selectionChange)="afterServiceFormGroupSelection($event.value)">
               <mat-option [value]="primalService"
-                          *ngFor="let primalService of allProductCategories">
+                          *ngFor="let primalService of allMembershipGroups">
                 {{primalService.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <div>
-            <button [disabled]="!productCategoryFormGroup.valid" mat-button matStepperNext>Next</button>
+            <button [disabled]="!membershipGroupFormGroup.valid" mat-button matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
-      <mat-step [stepControl]="productFormGroup">
-        <form [formGroup]="productFormGroup">
-          <ng-template matStepLabel>Select Product</ng-template>
+      <mat-step [stepControl]="membershipFormGroup">
+        <form [formGroup]="membershipFormGroup">
+          <ng-template matStepLabel>Select Membership</ng-template>
           <mat-form-field>
-            <mat-select formControlName="product" [value]="selectedProduct"
-                        (selectionChange)="afterProductFormGroupSelection($event.value)">
-              <mat-option [value]="product" *ngFor="let product of products$ | async">
-                {{product.name}}
+            <mat-select formControlName="membership" [value]="selectedMembership"
+                        (selectionChange)="afterMembershipFormGroupSelection($event.value)">
+              <mat-option [value]="membership" *ngFor="let membership of memberships$ | async">
+                {{membership.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <div>
-            <button [disabled]="!productFormGroup.valid" mat-button matStepperNext>Next</button>
+            <button [disabled]="!membershipFormGroup.valid" mat-button matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
@@ -96,12 +96,12 @@
         <div class="summary">
           <div class="form-row">
             <div class="form-label">Selected Package:</div>
-            <div class="form-value">{{selectedProductCategory.name}}</div>
+            <div class="form-value">{{selectedMembershipGroup.name}}</div>
           </div>
           <div class="form-row">
             <div class="form-label">Selected Package Item:</div>
             <div
-              class="form-value">{{selectedProduct.name + " " + (salePriceFormGroup.value.price | currency: 'AED')}}</div>
+              class="form-value">{{selectedMembership.name + " " + (salePriceFormGroup.value.price | currency: 'AED')}}</div>
           </div>
           <div class="form-row">
             <div class="form-label">Payment Method:</div>
@@ -110,7 +110,7 @@
           <div class="form-row">
             <div class="form-label">Expiration Date:</div>
             <div
-              class="form-value">{{selectedProduct | membershipExpiration:startDateFormGroup.value.startDate}}</div>
+              class="form-value">{{selectedMembership | membershipExpiration:startDateFormGroup.value.startDate}}</div>
           </div>
           <div class="form-row">
             <div class="form-label">Subtotal:</div>

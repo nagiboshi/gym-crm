@@ -17,17 +17,17 @@ import {AuthGuard} from '@nestjs/passport';
       referalMember: {
         eager: false
       },
-      purchaseItems: {
+      membershipPurchases: {
         eager: false
       },
-      'purchaseItems.product': {
-        alias: 'product'
+      'membershipPurchases.membership': {
+        alias: 'membership'
       },
-      'purchaseItems.members': {
-        alias: 'purchaseMembers'
+      'membershipPurchases.members': {
+        alias: 'membershipPurchaseMembers'
       },
-      'purchaseItems.freeze': {
-        alias: 'purchaseFreeze'
+      'membershipPurchases.freeze': {
+        alias: 'membershipPurchaseFreeze'
       }
     }
   },

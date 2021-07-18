@@ -1,0 +1,22 @@
+.product-crud-dialog {
+  .product-form {
+      .left-part, .right-part {
+        width: 35%;
+      }
+
+
+      .right-part {
+        margin-left: 5%;
+      }
+  }
+
+  .product-property-name {
+    width: 100px;
+    max-width: 100px;
+    margin-right: 20px;
+
+    mat-form-field {
+      width: 100px;
+    }
+  }
+}

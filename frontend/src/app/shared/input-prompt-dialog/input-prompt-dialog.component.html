@@ -1,0 +1,11 @@
+<div mat-dialog-title>{{data.title}}</div>
+<div mat-dialog-content>
+  <mat-form-field>
+    <input matInput placeholder="Input property name" [formControl]="inputControl">
+  </mat-form-field>
+
+</div>
+<div mat-dialog-actions>
+  <button [disabled]="inputControl.valid" mat-raised-button color="primary" [mat-dialog-close]="inputControl.value">Save</button>
+  <button mat-flat-button color="warn" [mat-dialog-close]="">Cancel</button>
+</div>

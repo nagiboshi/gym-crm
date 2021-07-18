@@ -15,16 +15,16 @@
     <div class="purchase-row"
          [ngClass]="{'freezed': purchase.isFreezed, 'expired': purchase.isExpired, 'nearly-expiration': purchase.isNearlyExpire}"
          fxLayout="row" *ngFor="let purchase of purchasesSubj | async">
-      <div [matTooltip]="purchase.product.name + ' is almost expired!'" *ngIf="purchase.isNearlyExpire"
+      <div [matTooltip]="purchase.membership.name + ' is almost expired!'" *ngIf="purchase.isNearlyExpire"
 		   class="nearly-expired-exclamation">!
       </div>
-      <div fxLayoutAlign="start center" class="purchase-column column-body column-name">{{purchase.product.name}}</div>
+      <div fxLayoutAlign="start center" class="purchase-column column-body column-name">{{purchase.membership.name}}</div>
       <div fxLayoutAlign="start center"
            class="purchase-column column-body column-sale-date">{{purchase.saleDate | date}}</div>
       <div fxLayoutAlign="start center"
            class="purchase-column column-body column-start-date">{{purchase.startDate | date}}</div>
       <div fxLayoutAlign="start center"
-           class="purchase-column column-body column-expiry-date">{{purchase.product | membershipExpiration:purchase.startDate}}</div>
+           class="purchase-column column-body column-expiry-date">{{purchase.membership | membershipExpiration:purchase.startDate}}</div>
       <div fxLayoutAlign="start center"
            class="purchase-column column-body column-price">{{purchase.price | currency: 'AED'}}</div>
       <div fxLayoutAlign="start center" class="purchase-column column-body column-note">
@@ -36,7 +36,7 @@
         </mat-icon>
       </div>
       <div fxLayoutAlign="start center" class="purchase-column column-body column-share">
-        <mat-icon svgIcon="sharePeople" *ngIf="purchase.product.isShared"
+        <mat-icon svgIcon="sharePeople" *ngIf="purchase.membership.isShared"
                   (click)="sharePurchase(purchase)">
         </mat-icon>
       </div>

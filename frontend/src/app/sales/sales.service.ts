@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {PurchaseHistoryItem, PurchaseItemModel} from '@models/purchase';
+import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/purchase';
 import {Observable} from 'rxjs';
 import {RequestQueryBuilder} from '@nestjsx/crud-request';
 import {HttpClient} from '@angular/common/http';
@@ -16,24 +16,31 @@ export class SalesService {
   constructor(private httpClient: HttpClient, private helpers: HelpersService) {
   }
 
-  savePurchase(purchase: PurchaseItemModel): Observable<PurchaseItemModel> {
+  savePurchase(purchase: MembershipPurchaseModel): Observable<MembershipPurchaseModel> {
     const query = '/?' + RequestQueryBuilder.create()
       .setJoin({field: 'members'})
-      .setJoin({field: 'product'})
+      .setJoin({field: 'membership'})
       .setJoin({field: 'freeze'})
       .query(false);
-    return this.httpClient.post<PurchaseItemModel>('/api/purchase-item' + query, purchase);
+    return this.httpClient.post<MembershipPurchaseModel>('/api/membership-purchase' + query, purchase);
   }
 
 
+  // getActiveMembership(memberId: number): Observable<PurchaseHistoryItem> {
+  //   const query = '/?' + RequestQueryBuilder.create()
+  //     .setJoin({field: 'product'})
+  //     .setFilter({field: 'members.id', })
+  //     .query(false)
+  // }
 
 
-  toPurchaseItemModel(purchaseHistoryItem: PurchaseHistoryItem ): PurchaseItemModel {
+
+  toPurchaseItemModel(purchaseHistoryItem: MembershipPurchaseHistoryItem ): MembershipPurchaseModel {
     return {
       id: purchaseHistoryItem.id,
       members: purchaseHistoryItem.members,
-      productId: purchaseHistoryItem.productId,
-      product: purchaseHistoryItem.product,
+      membershipId: purchaseHistoryItem.membershipId,
+      membership: purchaseHistoryItem.membership,
       note: purchaseHistoryItem.note,
       freeze: purchaseHistoryItem.freeze,
       freezeId: purchaseHistoryItem.freezeId,
@@ -45,7 +52,7 @@ export class SalesService {
   }
 
 
-  toPurchaseHistoryItem(purchaseItem: PurchaseItemModel, expirationMoment: Moment): PurchaseHistoryItem {
+  toPurchaseHistoryItem(purchaseItem: MembershipPurchaseModel, expirationMoment: Moment): MembershipPurchaseHistoryItem {
     if( !purchaseItem ) {
       return;
     }
@@ -59,7 +66,7 @@ export class SalesService {
     purchaseItem.saleDate = this.helpers.bigIntStringToNumber(purchaseItem.saleDate);
 
     const purchaseExpiration = moment(purchaseItem.startDate)
-      .add(purchaseItem.product.expirationLength, purchaseItem.product.expirationType).startOf('day')
+      .add(purchaseItem.membership.expirationLength, purchaseItem.membership.expirationType).startOf('day')
       .toDate().getTime();
 
     const expirationTimeLeft = expirationMoment.clone().subtract(purchaseExpiration, 'milliseconds').startOf('day').toDate().getTime();

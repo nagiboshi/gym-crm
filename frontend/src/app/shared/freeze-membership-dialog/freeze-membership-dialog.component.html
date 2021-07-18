@@ -1,6 +1,6 @@
 <div mat-dialog-content>
   <div mat-dialog-title>
-    Do you want to {{!purchase.isFreezed ? 'freeze':'defreeze'}} {{purchase.product.name}} ?
+    Do you want to {{!purchase.isFreezed ? 'freeze':'defreeze'}} {{purchase.membership.name}} ?
       <div *ngIf="purchase.isFreezed">Days to pay:
       <span class="red">{{helpers.getTotalFreezeDays(now, purchase.freeze.startDate )}}</span>
       </div>

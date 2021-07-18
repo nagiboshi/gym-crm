@@ -1,11 +1,12 @@
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 import {AuthGuard} from './helpers/auth.guard';
+import {MembersComponent} from './members/members.component';
 
 
 const routes: Routes = [{
   path: '',
-  loadChildren: () => import('./classes/classes.module').then(m => m.ClassesModule),
+  component: MembersComponent,
   canActivate: [AuthGuard]
 },
   {path: 'login', loadChildren: () => import('./login/login.module').then(m => m.LoginModule)},
@@ -16,8 +17,14 @@ const routes: Routes = [{
     path: 'classes', loadChildren: () => import('./classes/classes.module').then(m => m.ClassesModule), canActivate: [AuthGuard]
   },
   {
+    path: 'sales', loadChildren: () => import('./sales/sales.module').then(m => m.SalesModule), canActivate: [AuthGuard]
+  },
+  {
     path: 'settings', loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule), canActivate: [AuthGuard]
-  }
+  },
+  // {
+  //   path: 'sales', loadChildren: () => import('./sales/sal')
+  // }
 ];
 
 @NgModule({

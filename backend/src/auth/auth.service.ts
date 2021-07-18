@@ -11,8 +11,6 @@ export class AuthService {
   }
 
   async login(user: any) {
-
-    console.log("yopta ", user);
     const payload = { username: user.username, firstName: user.firstName, lastName: user.lastName, branches: user.branches  };
     return {
       access_token: this.jwtService.sign(payload),

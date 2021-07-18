@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {first} from 'lodash';
-import {ProductCategory} from '@models/product-category';
-import {Product} from '@models/product';
+import {first, isEmpty} from 'lodash';
+import {MembershipGroup} from '@models/membership-group';
+import {Membership} from '@models/membership';
 import {Observable, of} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {CommunicationService} from '@shared/communication.service';
@@ -10,7 +10,7 @@ import * as _moment from 'moment';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {PaymentMethod} from '@models/payment-method';
 import {PaymentMethodService} from '../../settings/settings-page/payment-methods-settings/payment-method.service';
-import {ProductCategoriesService} from '@shared/product-categories.service';
+import {MembershipGroupService} from '@shared/membership-group.service';
 import {Member} from '@models/member';
 const moment = _moment;
 
@@ -22,42 +22,46 @@ const moment = _moment;
 })
 export class PurchaseFormComponent implements OnInit {
 
-  productCategoryFormGroup: FormGroup;
-  productFormGroup: FormGroup;
+  membershipGroupFormGroup: FormGroup;
+  membershipFormGroup: FormGroup;
   selectPaymentFormGroup: FormGroup;
   startDateFormGroup: FormGroup;
   salePriceFormGroup: FormGroup;
   noteFormGroup: FormGroup;
-  selectedProductCategory: ProductCategory;
-  allProductCategories: ProductCategory[];
-  selectedProduct: Product;
-  products$: Observable<Product[]>;
+  selectedMembershipGroup: MembershipGroup;
+  allMembershipGroups: MembershipGroup[];
+  selectedMembership: Membership;
+  memberships$: Observable<Membership[]>;
   paymentMethods: PaymentMethod[];
 
   constructor(private dialogRef: MatDialogRef<PurchaseFormComponent>,
               private fb: FormBuilder,
               public paymentService: PaymentMethodService,
-              public productCategoriesService: ProductCategoriesService,
+              public membershipGroupService: MembershipGroupService,
               public communicationService: CommunicationService,
               @Inject(MAT_DIALOG_DATA) private member: Member) {
   }
 
   ngOnInit(): void {
 
-    this.allProductCategories = this.productCategoriesService.getProductCategories();
+    this.allMembershipGroups = this.membershipGroupService.getMembershipGroups();
     this.paymentMethods = this.paymentService.getPaymentMethods();
-    this.selectedProductCategory = first(this.allProductCategories);
-    this.selectedProduct = first(this.selectedProductCategory.products);
-    this.products$ = of(this.selectedProductCategory.products);
+    if ( isEmpty(this.allMembershipGroups)) {
+        this.dialogRef.close();
+        throw Error('Memberships not created yet! Please configure memberships first');
+    }
+    this.selectedMembershipGroup = first(this.allMembershipGroups);
+    this.selectedMembership = first(this.selectedMembershipGroup.memberships);
+    this.memberships$ = of(this.selectedMembershipGroup.memberships);
     // service selection step form
-    this.productCategoryFormGroup = this.fb.group({
-        productCategory: [this.selectedProductCategory, Validators.required]
+    this.membershipGroupFormGroup = this.fb.group({
+        membershipGroup: [this.selectedMembershipGroup, Validators.required]
       }
     );
 
     // service item selection step form
-    this.productFormGroup = this.fb.group({
-      product: [this.selectedProduct, Validators.required]
+    this.membershipFormGroup = this.fb.group({
+      membership: [this.selectedMembership, Validators.required]
     });
 
     this.selectPaymentFormGroup = this.fb.group({
@@ -77,9 +81,9 @@ export class PurchaseFormComponent implements OnInit {
     });
   }
 
-  afterServiceFormGroupSelection(membershipService: ProductCategory) {
-    this.selectedProductCategory = membershipService;
-    this.products$ = of(this.selectedProductCategory.products);
+  afterServiceFormGroupSelection(membershipService: MembershipGroup) {
+    this.selectedMembershipGroup = membershipService;
+    this.memberships$ = of(this.selectedMembershipGroup.memberships);
   }
 
   getSubtotal() {
@@ -90,8 +94,8 @@ export class PurchaseFormComponent implements OnInit {
     return Math.round(parseFloat(this.salePriceFormGroup.value.price) * environment.vat);
   }
 
-  afterProductFormGroupSelection(product: Product) {
-    this.selectedProduct = product;
+  afterMembershipFormGroupSelection(membership: Membership) {
+    this.selectedMembership = membership;
   }
 
   submitPurchase(): void {
@@ -102,13 +106,12 @@ export class PurchaseFormComponent implements OnInit {
       id: 0,
       price: this.salePriceFormGroup.value.price,
       members: [this.member],
-      // memberId: this.memberId,
       note,
       // isFreezed: false,
       saleDate: moment.now(),
       startDate: startDateMoment.toDate().getTime(),
       paymentMethodId: this.selectPaymentFormGroup.value.paymentMethod.id,
-      productId: this.selectedProduct.id,
+      membershipId: this.selectedMembership.id,
     });
 
   }

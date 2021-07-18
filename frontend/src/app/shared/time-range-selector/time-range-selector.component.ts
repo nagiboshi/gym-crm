@@ -1,7 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
 import {MatSelectChange} from '@angular/material/select';
+import * as _moment from 'moment';
+
+const moment = _moment;
 
 const MAX_VALUE = 86340000;
+const MIN_VALUE = 2.16e+7;
 @Component({
   selector: 'time-range-selector',
   templateUrl: './time-range-selector.component.html',
@@ -9,7 +13,6 @@ const MAX_VALUE = 86340000;
   encapsulation: ViewEncapsulation.None
 })
 export class TimeRangeSelectorComponent implements OnInit {
-  @Input() startTime: number;
   @Input() startValue: number;
   @Input() endValue: number;
   @Input() interval: number;
@@ -21,7 +24,7 @@ export class TimeRangeSelectorComponent implements OnInit {
 
   ngOnInit(): void {
     if ( !this.startValue ) {
-      this.startValue = 0;
+      this.startValue = MIN_VALUE;
     }
 
     if ( !this.endValue ) {

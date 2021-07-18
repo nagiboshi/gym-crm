@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {PurchaseHistoryItem} from '@models/purchase';
+import {MembershipPurchaseHistoryItem} from '@models/purchase';
 import {Member} from '@models/member';
 import {Router} from '@angular/router';
 
@@ -13,7 +13,7 @@ export class MembershipStatusComponent implements OnInit {
   member: Member;
 
   @Input()
-  activeMembership: PurchaseHistoryItem;
+  activeMembership: MembershipPurchaseHistoryItem;
 
   constructor(private router: Router) { }
 

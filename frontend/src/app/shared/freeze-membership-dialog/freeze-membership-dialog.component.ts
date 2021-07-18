@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {PurchaseHistoryItem} from '@models/purchase';
+import {MembershipPurchaseHistoryItem} from '@models/purchase';
 import * as _moment from 'moment';
 import {HelpersService} from '@shared/helpers.service';
 
@@ -16,7 +16,7 @@ export class FreezeMembershipDialogComponent implements OnInit {
   now: number = moment.now();
   constructor(public dialog: MatDialogRef<FreezeMembershipDialogComponent>,
               public helpers: HelpersService,
-              @Inject(MAT_DIALOG_DATA) public purchase: PurchaseHistoryItem) { }
+              @Inject(MAT_DIALOG_DATA) public purchase: MembershipPurchaseHistoryItem) { }
 
   ngOnInit(): void {
     if( !this.purchase.freeze ) {

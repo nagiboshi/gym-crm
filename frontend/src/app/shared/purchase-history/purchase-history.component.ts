@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {PurchaseHistoryItem, PurchaseItemModel} from '@models/purchase';
+import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/purchase';
 import {FreezeMembershipDialogComponent} from '../freeze-membership-dialog/freeze-membership-dialog.component';
 import {clone} from 'lodash';
 import {MatDialog} from '@angular/material/dialog';
@@ -20,11 +20,11 @@ const moment = _moment;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PurchaseHistoryComponent implements OnChanges {
-  purchasesSubj: BehaviorSubject<PurchaseHistoryItem[]> = new BehaviorSubject(null);
+  purchasesSubj: BehaviorSubject<MembershipPurchaseHistoryItem[]> = new BehaviorSubject([]);
   todayMoment = moment().startOf('day');
 
   @Output()
-  purchaseUpdated: EventEmitter<PurchaseHistoryItem> = new EventEmitter();
+  purchaseUpdated: EventEmitter<MembershipPurchaseHistoryItem> = new EventEmitter();
 
   @Input()
   member: Member;
@@ -32,7 +32,7 @@ export class PurchaseHistoryComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if( !changes.member?.previousValue || changes.member?.currentValue.id != changes.member?.previousValue.id ) {
-        this.purchasesSubj.next(this.member.purchaseItems?.map((purchaseItem) => {
+        this.purchasesSubj.next(this.member.membershipPurchases?.map((purchaseItem) => {
           const {saleDate, startDate, ...rest} = <any> purchaseItem;
           return {saleDate: parseInt(saleDate), startDate: parseInt(startDate), ...rest};
         }).map(purchaseItem => this.salesService.toPurchaseHistoryItem(purchaseItem, this.todayMoment)));
@@ -40,11 +40,11 @@ export class PurchaseHistoryComponent implements OnChanges {
   }
 
   addNewPurchase() {
-    this.dialog.open(PurchaseFormComponent, {data: this.member}).afterClosed().subscribe((purchase: PurchaseItemModel) => {
+    this.dialog.open(PurchaseFormComponent, {data: this.member}).afterClosed().subscribe((purchase: MembershipPurchaseModel) => {
       if (purchase) {
-        const savedPurchaseItem = this.salesService.savePurchase(purchase);
-        savedPurchaseItem.toPromise().then((purchaseItem) => {
-          const newPurchaseHistoryItem = this.salesService.toPurchaseHistoryItem(purchaseItem, this.todayMoment);
+        const savedMembershipPurchase = this.salesService.savePurchase(purchase);
+        savedMembershipPurchase.toPromise().then((newMembershipPurchase) => {
+          const newPurchaseHistoryItem = this.salesService.toPurchaseHistoryItem(newMembershipPurchase, this.todayMoment);
           this.purchasesSubj.next([newPurchaseHistoryItem, ...this.purchasesSubj.getValue()]);
           this.purchaseUpdated.next(newPurchaseHistoryItem);
 
@@ -57,9 +57,9 @@ export class PurchaseHistoryComponent implements OnChanges {
   constructor(public dialog: MatDialog, private salesService: SalesService) {
   }
 
-  freezePurchase(purchase: PurchaseHistoryItem) {
+  freezePurchase(purchase: MembershipPurchaseHistoryItem) {
     // const freeze = !this.isFreezed(purchase);
-    this.dialog.open(FreezeMembershipDialogComponent, {data: purchase}).afterClosed().subscribe((changedPurchase: PurchaseHistoryItem) => {
+    this.dialog.open(FreezeMembershipDialogComponent, {data: purchase}).afterClosed().subscribe((changedPurchase: MembershipPurchaseHistoryItem) => {
         if (changedPurchase) {
           this.salesService.savePurchase(this.salesService.toPurchaseItemModel(changedPurchase)).toPromise().then((savedPurchase) => {
               const purchases = this.purchasesSubj.getValue();
@@ -77,7 +77,7 @@ export class PurchaseHistoryComponent implements OnChanges {
     );
   }
 
-  sharePurchase(purchaseHistoryItem: PurchaseHistoryItem) {
+  sharePurchase(purchaseHistoryItem: MembershipPurchaseHistoryItem) {
     this.dialog.open(SharePurchaseDialogComponent, {data: purchaseHistoryItem}).afterClosed().subscribe((sharedMembers) => {
 
       if (sharedMembers) {

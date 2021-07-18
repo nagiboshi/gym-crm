@@ -6,40 +6,45 @@
         <div fxLayoutAlign="start center" class="day-of-week">
           <div class="day" fxLayoutAlign="center center">{{scheduleWeekDay.label}}</div>
 
-          <div [ngClass]="{'highlighted-day': scheduleWeekDay.date.getDate() == today.getDate() && scheduleWeekDay.date.getFullYear() == today.getFullYear() && scheduleWeekDay.date.getMonth() == scheduleWeekDay.date.getMonth(), 'schedule-date': true}">{{scheduleWeekDay.date | date}}</div>
+          <div
+            [ngClass]="{'highlighted-day': scheduleWeekDay.date.getDate() == today.getDate() && scheduleWeekDay.date.getFullYear() == today.getFullYear() && scheduleWeekDay.date.getMonth() == today.getMonth(), 'schedule-date': true}">{{scheduleWeekDay.date | date}}</div>
         </div>
         <div class="class-schedules">
-
-          <div class="schedule-row" fxLayout="row" fxLayoutAlign="start"
-               *ngFor="let daySchedule of groupSchedulesByDay(scheduleWeekDay.day.toString(), schedules)">
-            <div (click)="signIn(daySchedule)" fxLayoutAlign="center center" fxLayout="row" class="schedule-time">
-              <div class="schedule-start">
-                {{daySchedule.timeStart | date: 'HH:mm': '+0000' }}
+          <ng-container
+            *ngFor="let daySchedule of schedules">
+            <div
+              *ngIf="daySchedule.day == scheduleWeekDay.day && scheduleWeekDay.date.getTime() >= daySchedule.scheduleFrom && scheduleWeekDay.date.getTime() <= daySchedule.scheduleUntil "
+              class="schedule-row" fxLayout="row" fxLayoutAlign="start">
+              <div (click)="signIn(daySchedule)" fxLayoutAlign="center center" fxLayout="row" class="schedule-time">
+                <div class="schedule-start">
+                  {{daySchedule.timeStart | date: 'HH:mm': '+0000' }}
+                </div>
+                <span class="schedule-dash">&mdash;</span>
+                <div class="schedule-end">
+                  {{daySchedule.timeEnd | date: 'HH:mm':'+0000' }}
+                </div>
               </div>
-              <span class="schedule-dash">&mdash;</span>
-              <div class="schedule-end">
-                {{daySchedule.timeEnd | date: 'HH:mm':'+0000' }}
+              <!--            <button [ngClass]="'sign-in-button'" mat-button (click)="signIn(daySchedule)" color="primary">Sign in-->
+              <!--            </button>-->
+              <div (click)="signIn(daySchedule)" fxLayoutAlign="center center" class="class-sign">
+                <span class="signed-user">{{daySchedule.signedMembers$.value.length}} of {{daySchedule.capacity}}</span>
               </div>
+              <div (click)="signIn(daySchedule)" fxLayoutAlign="center center" class="class-name">
+                {{daySchedule.classId | classNameById}}
+              </div>
+              <button [ngClass]="'remove-schedule'" mat-icon-button (click)="remove(daySchedule)">
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
-<!--            <button [ngClass]="'sign-in-button'" mat-button (click)="signIn(daySchedule)" color="primary">Sign in-->
-<!--            </button>-->
-            <div (click)="signIn(daySchedule)" fxLayoutAlign="center center" class="class-sign">
-              <span class="signed-user">{{daySchedule.signedMembers$.value.length}} of {{daySchedule.capacity}}</span>
-            </div>
-            <div (click)="signIn(daySchedule)" fxLayoutAlign="center center" class="class-name">
-              {{daySchedule.primalClass.name}}
-            </div>
-            <button [ngClass]="'remove-schedule'" mat-icon-button (click)="remove(daySchedule)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
+          </ng-container>
         </div>
       </div>
     </ng-container>
   </div>
   <div fxFlex="40">
     <div id="schedule-datepicker" fxLayout="column" fxLayoutAlign="space-between">
-      <mat-calendar [headerComponent]="scheduleCalendarHeader" (selectedChange)="filterScheduleDates($event)"
+      <mat-calendar (monthSelected)="filterScheduleDates($event)" [headerComponent]="scheduleCalendarHeader"
+                    (selectedChange)="filterScheduleDates($event)"
                     [selected]="scheduleDate"></mat-calendar>
       <div fxLayoutAlign="end" id="add-schedule-container">
         <button (click)="addSchedule()" id="add-schedule" mat-fab color="primary">
