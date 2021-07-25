@@ -119,7 +119,7 @@ import { DelimeterSeparatedValuePipe } from './pipes/delimeter-separated-value.p
         ClassCategoryNamePipe,
         DeletePromptDialogComponent,
         LocalImageLinkPipe,
-        DelimeterSeparatedValuePipe
+        DelimeterSeparatedValuePipe,
     ]
 })
 export class SharedModule {

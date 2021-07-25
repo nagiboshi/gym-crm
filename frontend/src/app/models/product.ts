@@ -1,4 +1,8 @@
 
+export enum ProductFieldType {
+  COLOR, SELECT,RADIO_GROUP, CHECKBOXES
+}
+
 export interface ProductTag {
   id: number;
   name: string;
@@ -27,6 +31,7 @@ export interface ProductSubcategory {
 export interface ProductField {
   id: number;
   name: string;
+  fieldType: number;
   options: ProductFieldOption[];
 }
 

@@ -1,88 +1,123 @@
-<div class="product-crud-dialog">
-  <div mat-dialog-title> {{ product.id == 0 ? 'New' : 'Edit' }} Product "{{formGroup.value.name}}"</div>
-  <div mat-dialog-content>
-    <form class="product-form" fxLayout="row" [formGroup]="formGroup">
-      <div class="left-part">
+<form [formGroup]="formGroup">
+  <div class="product-crud-dialog">
+    <div mat-dialog-title> {{ product.id == 0 ? 'New' : 'Edit' }} Product "{{formGroup.value.name}}"</div>
+    <div class="product-form" mat-dialog-content>
+      <div class="column-1">
+        <input #productImageChoose class="product-file-target" multiple type="file" accept="image/*"
+               (change)="handleProductImage($event)">
+        <div class="product-image-container" fxLayout="column">
+          <div fxLayoutAlign="space-between center" *ngFor="let imgSrc of productImageSources; let index=index"
+               class="preview-container">
+            <img class="image-small-preview" [src]="imgSrc" width="120"/>
+            <button type="button" mat-raised-button color="warn" (click)="removeProductImage(index)"
+                    class="remove-button">Delete
+            </button>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="column" class="column-2">
+        <mat-form-field>
+          <input placeholder="Enter product name" matInput formControlName="name">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select placeholder="Select product category" (selectionChange)="updateSubcategories($event)">
+            <mat-option [value]="category" *ngFor="let category of categories"> {{category.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select placeholder="Select subcategory" formControlName="subcategory">
+            <mat-option [value]="subcategory"
+                        *ngFor="let subcategory of subcategories$ | async">{{subcategory.name}}</mat-option>
+            <!--          <mat-option *ngFor="let prodsuct of produc"></mat-option>-->
+          </mat-select>
+        </mat-form-field>
+        <ng-container formArrayName="tags">
+          <ng-container>
+            <mat-form-field>
+              <mat-label>Tags</mat-label>
+              <mat-chip-list #tagList aria-label="Field Value">
+                <ng-container *ngFor="let _ of productTags.controls; let i=index">
+                  <mat-chip
+                    [selectable]="true"
+                    [removable]="true"
+                    (removed)="removeTag(i)">
+                    {{productTags.controls[i].controls.value.value}}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                </ng-container>
+                <input placeholder="New product tag..."
+                       #fieldValueElRef
+                       [matChipInputFor]="tagList"
+                       [matChipInputSeparatorKeyCodes]="[13]"
+                       (matChipInputTokenEnd)="addTag($event, fieldValueElRef)">
+              </mat-chip-list>
+            </mat-form-field>
+          </ng-container>
+        </ng-container>
+        <ng-container formArrayName="fields">
+          <ng-container *ngFor="let _ of productFields.controls; let i=index">
+            <div fxLayout="row" fxLayoutGap="20" fxLayoutAlign="start center" [formGroupName]="i">
+              <div class="product-property-name">
+                <mat-form-field>
+                  <input placeholder="Field name" matInput formControlName="name">
+                </mat-form-field>
+              </div>
+              <div class="product-property-field-type">
+                <mat-form-field>
+                  <mat-select placeholder="Field Type" formControlName="fieldType">
+                    <mat-option value="0">Color</mat-option>
+                    <mat-option value="1">Select</mat-option>
+                    <mat-option value="2">Radio group</mat-option>
+                    <mat-option value="3">Checkboxes</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <!-- Product Fields -->
+              <div fxFlex="1 1 auto" class="product-property-field-value">
+                <mat-form-field>
+                  <mat-label>Field value</mat-label>
+                  <mat-chip-list formArrayName="options" #chipList aria-label="Field Value">
+                    <mat-chip
+                      *ngFor="let productField of productFields.controls[i].controls.options.value; let propertyValueIndex=index"
+                      [selectable]="true"
+                      [removable]="true"
+                      (removed)="removeFieldValue(productFields.controls[i].controls.options, propertyValueIndex)">
+                      {{productField.value}}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="New field value..."
+                           #fieldValueElRef
+                           [matChipInputFor]="chipList"
+                           [matChipInputSeparatorKeyCodes]="[32, 13]"
+                           (matChipInputTokenEnd)="addField(productFields.controls[i].controls.options, $event, fieldValueElRef)">
+                  </mat-chip-list>
+                </mat-form-field>
+              </div>
+
+              <button mat-raised-button color="warn" (click)="removeField(i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+            </div>
+          </ng-container>
+        </ng-container>
 
       </div>
-     <div fxLayout="column" class="right-part">
-       <mat-form-field>
-         <input placeholder="Enter product name" matInput formControlName="name">
-       </mat-form-field>
-       <mat-form-field>
-         <mat-select placeholder="Select product category" (selectionChange)="updateSubcategories($event)">
-           <mat-option [value]="category" *ngFor="let category of categories"> {{category.name}}</mat-option>
-         </mat-select>
-       </mat-form-field>
-       <mat-form-field>
-         <mat-select placeholder="Select subcategory" formControlName="subcategory">
-           <mat-option [value]="subcategory" *ngFor="let subcategory of subcategories$ | async">{{subcategory.name}}</mat-option>
-           <!--          <mat-option *ngFor="let prodsuct of produc"></mat-option>-->
-         </mat-select>
-       </mat-form-field>
-       <ng-container formArrayName="tags">
-         <ng-container>
-           <mat-form-field>
-             <mat-label>Tags</mat-label>
-             <mat-chip-list #tagList aria-label="Field Value">
-               <ng-container *ngFor="let _ of productTags.controls; let i=index">
-                 <mat-chip
-                   [selectable]="true"
-                   [removable]="true"
-                   (removed)="removeTag(i)">
-                   {{productTags.controls[i].controls.value.value}}
-                   <mat-icon matChipRemove>cancel</mat-icon>
-                 </mat-chip>
-               </ng-container>
-               <input placeholder="New product tag..."
-                      #fieldValueElRef
-                      [matChipInputFor]="tagList"
-                      [matChipInputSeparatorKeyCodes]="[13]"
-                      (matChipInputTokenEnd)="addTag($event, fieldValueElRef)">
-             </mat-chip-list>
-           </mat-form-field>
-         </ng-container>
-       </ng-container>
-       <ng-container formArrayName="fields">
-         <ng-container *ngFor="let _ of productFields.controls; let i=index">
-           <div fxLayoutAlign="row" [formGroupName]="i">
-             <div class="product-property-name">
-               <mat-form-field>
-                 <input placeholder="Field name" matInput formControlName="name">
-               </mat-form-field>
-             </div>
+    </div>
 
-             <!-- Product Fields -->
-             <mat-form-field>
-               <mat-label>Field value</mat-label>
-               <mat-chip-list formArrayName="options" #chipList aria-label="Field Value">
-                 <mat-chip
-                   *ngFor="let productField of productFields.controls[i].controls.options.value; let propertyValueIndex=index"
-                   [selectable]="true"
-                   [removable]="true"
-                   (removed)="removeField(productFields.controls[i].controls.options, propertyValueIndex)">
-                   {{productField.value}}
-                   <mat-icon matChipRemove>cancel</mat-icon>
-                 </mat-chip>
-                 <input placeholder="New field value..."
-                        #fieldValueElRef
-                        [matChipInputFor]="chipList"
-                        [matChipInputSeparatorKeyCodes]="[32, 13]"
-                        (matChipInputTokenEnd)="addField(productFields.controls[i].controls.options, $event, fieldValueElRef)">
-               </mat-chip-list>
-             </mat-form-field>
-           </div>
-         </ng-container>
-       </ng-container>
-       <div (click)="addProductPropertyType()" fxLayoutAlign="start center">Add new field
-         <mat-icon>add</mat-icon>
-       </div>
-     </div>
-    </form>
-  </div>
+    <div fxLayoutAlign="space-between" mat-dialog-actions>
+      <div fxLayoutGap="10" class="button-container" fxLayout="row">
 
-  <div mat-dialog-actions>
-    <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
-    <button mat-raised-button color="primary" mat-dialog-close="">Save</button>
+        <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
+        <button mat-raised-button color="primary" [mat-dialog-close]="formGroup.value">Save</button>
+        <button class="add-image-button" type="button" mat-flat-button
+                (click)="productImageChoose.click()">Add Image
+        </button>
+        <button mat-flat-button type="button" (click)="addProductPropertyType()"
+                fxLayoutAlign="start center">Add new field
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
   </div>
-</div>
+</form>

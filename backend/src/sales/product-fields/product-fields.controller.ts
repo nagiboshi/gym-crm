@@ -7,6 +7,11 @@ import {ProductField} from './product-field';
 @Crud({
   model: {
     type: ProductField
+  },
+  query: {
+    join: {
+      options: {eager: false}
+    }
   }
 })
 @Controller('product-fields')

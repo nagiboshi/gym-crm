@@ -1,6 +1,6 @@
 import {Controller, UseGuards} from '@nestjs/common';
 import {JwtAuthGuard} from '../../auth/jwt-auth.guard';
-import {ProductPropertyService} from './product-property.service';
+import {ProductFieldOptionService} from './product-field-option.service';
 import {Crud} from '@nestjsx/crud';
 import {ProductFieldOption} from './product-field-option';
 
@@ -13,7 +13,7 @@ import {ProductFieldOption} from './product-field-option';
 @UseGuards(JwtAuthGuard)
 export class ProductPropertyController {
 
-  constructor( public service: ProductPropertyService) {
+  constructor( public service: ProductFieldOptionService) {
   }
 
 }

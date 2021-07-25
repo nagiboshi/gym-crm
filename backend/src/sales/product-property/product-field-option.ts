@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {ProductField} from '../product-fields/product-field';
 
 @Entity()
@@ -9,6 +9,7 @@ export class ProductFieldOption {
   @Column()
   value: string;
 
-  @ManyToOne(type => ProductField)
+  @ManyToOne(type => ProductField, {cascade:true})
+  @JoinColumn()
   productField: ProductField;
 }

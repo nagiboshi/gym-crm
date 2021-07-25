@@ -1,11 +1,12 @@
-import {Component, ElementRef, Inject, OnInit} from '@angular/core';
+import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {Product, ProductCategory, ProductField, ProductSubcategory} from '@models/product';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Product, ProductCategory, ProductField, ProductFieldType, ProductSubcategory} from '@models/product';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips/chip-input';
 import {ProductService} from '../product.service';
 import {Observable, of} from 'rxjs';
 import {MatSelectChange} from '@angular/material/select';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-product-crud-dialog',
@@ -13,19 +14,23 @@ import {MatSelectChange} from '@angular/material/select';
   styleUrls: ['./product-crud-dialog.component.scss']
 })
 export class ProductCrudDialogComponent implements OnInit {
+  @ViewChild('productImageChoose')
+  productImageChoose: ElementRef;
+  @ViewChild('productPreview')
+  productPreviewElRef: ElementRef;
   formGroup: FormGroup;
   productFields: FormArray;
   categories: ProductCategory[];
   subcategories$: Observable<ProductSubcategory[]> = of([]);
-  // propertiesArray: FormArray;
-  // productSubcategories: Array<ProductSubcategory>;
+  productImageSources = [];
   productTags: FormArray;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public product: Product, private fb: FormBuilder, private service: ProductService) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public product: Product, private fb: FormBuilder,
+                private domSanitizer: DomSanitizer, private service: ProductService) { }
 
   _newProductFieldFormGroup(productField?: ProductField) {
     if( !productField ) {
-      productField = {id: 0, name: "", options: []};
+      productField = {id: 0, name: "", fieldType: ProductFieldType.SELECT, options: []};
     }
 
     const fieldValues = new FormArray([]);
@@ -38,6 +43,7 @@ export class ProductCrudDialogComponent implements OnInit {
    return this.fb.group({
            id: [productField.id],
            name: [productField.name, Validators.required],
+           fieldType: [productField.fieldType, Validators.required],
            options: fieldValues
          })
   }
@@ -74,7 +80,8 @@ export class ProductCrudDialogComponent implements OnInit {
       name: [this.product.name, Validators.required],
       subcategory: [this.product.subcategory, Validators.required],
       fields: this.productFields,
-      tags: this.productTags
+      tags: this.productTags,
+      images: []
     })
   }
 
@@ -100,7 +107,7 @@ export class ProductCrudDialogComponent implements OnInit {
     inputFieldElRef.value = "";
   }
 
-  removeField(productFieldValuesFormArray: FormArray, index: number) {
+  removeFieldValue(productFieldValuesFormArray: FormArray, index: number) {
     productFieldValuesFormArray.removeAt(index);
   }
 
@@ -109,8 +116,44 @@ export class ProductCrudDialogComponent implements OnInit {
   }
 
   updateSubcategories(e: MatSelectChange) {
-      console.log("subcategories update ! " , e);
       const category = e.value as ProductCategory;
       this.subcategories$ = of(category.subcategories);
+  }
+
+
+
+  handleProductImage(e: Event ) {
+    const imgs = (<any>e.target).files;
+    this.handleProductImagesChange(imgs);
+  }
+
+  handleProductImagesChange(imageList: FileList) {
+    if( imageList ) {
+      this.formGroup.patchValue({images: imageList});
+      for (let imageObj of Object.values(imageList)) {
+        this.productImageSources.push(this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(imageObj)) as string);
+      }
+    }
+  }
+
+  openProductImageFileChoose() {
+    this.productImageChoose.nativeElement.click();
+  }
+
+  removeProductImage(imgIndex: number) {
+      this.productImageSources.splice(imgIndex, 1);
+      const imageList = this.formGroup.value.images;
+      const imageListArr = Array.from(imageList)
+      imageListArr.splice(imgIndex, 1);
+      const dt = new DataTransfer();
+      for( const file of imageListArr ) {
+        dt.items.add(file as File);
+      }
+      this.productImageChoose.nativeElement.files = dt.files;
+      this.formGroup.patchValue({images: dt.files});
+  }
+
+  removeField(index: number) {
+    this.productFields.removeAt(index);
   }
 }

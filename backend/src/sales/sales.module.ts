@@ -5,7 +5,7 @@ import {ProductCategory} from './product-category/product-category';
 import {ProductSubcategory} from './product-category/product-subcategory';
 import {Product} from './product/product';
 import {ProductTag} from './tags/product-tag';
-import {ProductPropertyService} from './product-property/product-property.service';
+import {ProductFieldOptionService} from './product-property/product-field-option.service';
 import {ProductFieldsService} from './product-fields/product-fields.service';
 import {ProductService} from './product/product.service';
 import {ProductFieldOption} from './product-property/product-field-option';
@@ -16,10 +16,11 @@ import {ProductCategoryController} from './product-category/product-category.con
 import {ProductCategoryService} from './product-category/product-category.service';
 import {ProductSubcategoryService} from './product-category/product-subcategory.service';
 import {ProductSubcategoryController} from './product-category/product-subcategory.controller';
+import {TagService} from './tags/tag.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ProductField, ProductFieldOption, ProductCategory, ProductSubcategory, Product, ProductTag])],
-  providers: [ProductPropertyService, ProductFieldsService, ProductService, ProductSubcategoryService, ProductCategoryService],
+  providers: [ProductFieldOptionService, ProductFieldsService,  TagService, ProductService, ProductSubcategoryService, ProductCategoryService],
   controllers: [ProductPropertyController,ProductSubcategoryController, ProductFieldsController, ProductController, ProductCategoryController]
 })
 export class SalesModule {}

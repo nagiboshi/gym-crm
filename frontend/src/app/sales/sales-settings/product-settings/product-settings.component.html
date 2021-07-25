@@ -35,7 +35,7 @@
     </tr>
   </table>
   <div fxLayoutAlign="space-between center">
-    <mat-paginator [hidePageSize]="true" [pageSizeOptions]="[5]" showFirstLastButtons></mat-paginator>
+    <mat-paginator (page)="onChangePage($event)" [hidePageSize]="true" [pageSizeOptions]="[limit]" showFirstLastButtons></mat-paginator>
     <button (click)="openCrudDialog()" class="add-button" mat-mini-fab>
       <mat-icon>add
       </mat-icon>

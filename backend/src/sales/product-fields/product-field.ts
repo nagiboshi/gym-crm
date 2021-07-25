@@ -1,5 +1,6 @@
-import {Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {ProductFieldOption} from '../product-property/product-field-option';
+import {Product} from '../product/product';
 
 @Entity()
 export class ProductField {
@@ -9,6 +10,13 @@ export class ProductField {
   @Column()
   name: string;
 
-  @ManyToMany(type => ProductFieldOption, productProperty => productProperty.productField, {cascade: true})
+  @OneToMany(type => ProductFieldOption, productFieldOption => productFieldOption.productField)
   options: ProductFieldOption[];
+
+  @Column()
+  fieldType: number;
+
+  @ManyToOne( type => Product)
+  product: Product;
+
 }
