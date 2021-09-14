@@ -7,7 +7,9 @@ import {HttpClient} from '@angular/common/http';
 import {PaymentMethodService} from './settings/settings-page/payment-methods-settings/payment-method.service';
 import {ClassesService} from './classes/classes.service';
 import {MembershipGroupService} from '@shared/membership-group.service';
-import {ProductService} from './sales/sales-settings/product-settings/product.service';
+import {Stock} from '@models/stock';
+import {MatDialog} from '@angular/material/dialog';
+import {StockPurchaseFormComponent} from './sales/stock/stock-purchase-form/stock-purchase-form.component';
 
 interface AppRoute {
   label: string;
@@ -23,8 +25,8 @@ interface AppRoute {
 export class AppComponent implements OnInit {
   cacheLoadingStatus: boolean = false;
   appRoutes$: BehaviorSubject<AppRoute[]> = new BehaviorSubject([//{label: 'Schedules', isActive: false, path: '/classes/schedules'},
+    {label: 'Dashboard', isActive: false, path: '/dashboard'},
     {label: 'Members', isActive: false, path: '/members'},
-    {label: 'Reports', isActive: false, path: '/reports'},
     {label: 'Sales', isActive: false, path: '/sales'}
   ]);
   title = 'primal-accounting';
@@ -32,8 +34,8 @@ export class AppComponent implements OnInit {
   constructor(private router: Router,
               public userService: UserService,
               private http: HttpClient,
+              private dialog: MatDialog,
               private membershipGroupService: MembershipGroupService,
-              private productService: ProductService,
               private paymentService: PaymentMethodService,
               private classesService: ClassesService) {
     router.events.subscribe(e => {
@@ -61,6 +63,10 @@ export class AppComponent implements OnInit {
     this.router.navigate([`/members/${member.id}`]);
   }
 
+  onStockFound(stock: Stock) {
+    this.dialog.open(StockPurchaseFormComponent, {data: stock, width: '80%', minHeight: '80%'});
+  }
+
 
   logout() {
     this.userService.logout();
@@ -70,7 +76,6 @@ export class AppComponent implements OnInit {
     this.cacheLoadingStatus = true;
     Promise.all([
       // this.classesService.fetchClasses().toPromise(),
-      this.productService.fetchProductCategories().toPromise(),
       this.paymentService.fetchPaymentMethods().toPromise(),
       this.membershipGroupService.fetchMembershipGroups().toPromise()]) // ,
   //    this.classesService.fetchClassCategories().toPromise()])
@@ -86,4 +91,5 @@ export class AppComponent implements OnInit {
       }
     });
   }
+
 }

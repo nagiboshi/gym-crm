@@ -6,9 +6,10 @@ import {CommunicationService} from '@shared/communication.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Member} from '@models/member';
 import * as _moment from 'moment';
-import {first, sortBy, isEmpty } from 'lodash';
-import {MembershipPurchaseHistoryItem} from '@models/purchase';
+import {first, last, sortBy, isEmpty } from 'lodash';
+import {MembershipPurchaseHistoryItem} from '@models/membership-purchase';
 import {SalesService} from '../../sales/sales.service';
+import {MembersService} from '../members.service';
 
 const moment = _moment;
 
@@ -27,7 +28,7 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
   todayMoment = moment().startOf('day');
 
   constructor(public dialog: MatDialog, private fb: FormBuilder,
-              private communicationService: CommunicationService,
+              private communicationService: MembersService,
               private activatedRoute: ActivatedRoute,
               private salesService: SalesService,
               private cd: ChangeDetectorRef) {
@@ -45,7 +46,7 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
     this._loadedMemberSubject = new BehaviorSubject(null);
     this._activeMembership = new BehaviorSubject(null);
     this._activeMembership$ = this._activeMembership.asObservable();
-    this.routeChangeSub = this.activatedRoute.url.subscribe(urlSegment => this.loadProfile(parseInt(first(urlSegment).path)) );
+    this.routeChangeSub = this.activatedRoute.url.subscribe(urlSegment => this.loadProfile(parseInt(last(urlSegment).path)) );
   }
 
   initForm() {

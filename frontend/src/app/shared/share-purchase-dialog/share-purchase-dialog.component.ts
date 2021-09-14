@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit, Output} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {MembershipPurchaseHistoryItem} from '@models/purchase';
+import {MembershipPurchaseHistoryItem} from '@models/membership-purchase';
 import {Member} from '@models/member';
 
 @Component({

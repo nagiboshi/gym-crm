@@ -15,13 +15,12 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {TimeRangeSelectorComponent} from './time-range-selector/time-range-selector.component';
 import {CommonModule, DatePipe} from '@angular/common';
-// import {fakeBackendProvider} from './fake-backend.service';
 import {HttpClientModule} from '@angular/common/http';
 import {FindMemberComponent} from './find-member/find-member.component';
 import {YearMonthSelectorComponent} from './year-month-selector/year-month-selector.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatMomentDateModule, MomentDateModule} from '@angular/material-moment-adapter';
-import {MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
+import {MatMomentDateModule} from '@angular/material-moment-adapter';
+import {MAT_DATE_FORMATS} from '@angular/material/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.component';
 import {MembershipExpirationPipe} from './pipes/membership-expiration.pipe';
@@ -32,23 +31,30 @@ import {MatTreeModule} from '@angular/material/tree';
 import {ClassCategoryNamePipe} from './pipes/class-category-name.pipe';
 import {DeletePromptDialogComponent} from './delete-prompt-dialog/delete-prompt-dialog.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import { LocalImageLinkPipe } from './pipes/member-photo-link.pipe';
+import {LocalImageLinkPipe} from './pipes/member-photo-link.pipe';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { BranchNamePipe } from './pipes/branch-name.pipe';
+import {BranchNamePipe} from './pipes/branch-name.pipe';
 import {HelpersService} from '@shared/helpers.service';
-import { SharePurchaseDialogComponent } from './share-purchase-dialog/share-purchase-dialog.component';
-import { GlobalErrorDialogComponent } from './global-error-dialog/global-error-dialog.component';
+import {SharePurchaseDialogComponent} from './share-purchase-dialog/share-purchase-dialog.component';
+import {GlobalErrorDialogComponent} from './global-error-dialog/global-error-dialog.component';
 import {GlobalErrorHandlerService} from '@shared/global-error-handler.service';
-import { InputPromptDialogComponent } from './input-prompt-dialog/input-prompt-dialog.component';
+import {InputPromptDialogComponent} from './input-prompt-dialog/input-prompt-dialog.component';
 import {MatChipsModule} from '@angular/material/chips';
-import { DelimeterSeparatedValuePipe } from './pipes/delimeter-separated-value.pipe';
+import {DelimeterSeparatedValuePipe} from './pipes/delimeter-separated-value.pipe';
+import {FindStockComponent} from '@shared/find-product/find-stock.component';
+import {PricePipe} from './pipes/price.pipe';
+import {TaxPipe} from './pipes/tax.pipe';
+import {DiscountPipe} from './pipes/discount.pipe';
+import {TotalPricePipe} from '@shared/pipes/total-price';
 
 
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent,
-    AddMemberDialogComponent, FindMemberComponent, YearMonthSelectorComponent,
-    MembershipExpirationPipe, ClassCategoryNamePipe, DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe],
-  providers: [ MatIconRegistry, DatePipe, HelpersService,GlobalErrorHandlerService, {
+    AddMemberDialogComponent, FindStockComponent, FindMemberComponent, YearMonthSelectorComponent,
+    MembershipExpirationPipe, ClassCategoryNamePipe,
+    TotalPricePipe,
+    DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe, PricePipe, TaxPipe, DiscountPipe],
+  providers: [MatIconRegistry, DatePipe, HelpersService, GlobalErrorHandlerService, {
     provide: MAT_DATE_FORMATS, useValue: {
       parse: {
         dateInput: 'LL',
@@ -82,50 +88,55 @@ import { DelimeterSeparatedValuePipe } from './pipes/delimeter-separated-value.p
     MatPaginatorModule,
     FormsModule
   ],
-    exports: [
-        FlexLayoutModule,
-        MatTabsModule,
-        MatButtonModule,
-        ReactiveFormsModule,
-        MatIconModule,
-        MatStepperModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatPaginatorModule,
-        MatInputModule,
-        MatProgressSpinnerModule,
-        MatTooltipModule,
-        MatDialogModule,
-        MatTreeModule,
-        HttpClientModule,
-        MatTableModule,
-        MatCheckboxModule,
-        // MomentDateModule,
-        MatMomentDateModule,
-        MatAutocompleteModule,
-        TimeRangeSelectorComponent,
-        MatSortModule,
-        FreezeMembershipDialogComponent,
-        MatDatepickerModule,
-        MatPaginatorModule,
-        AddMemberDialogComponent,
-        PurchaseHistoryComponent,
-        FindMemberComponent,
-        MatChipsModule,
-        InputPromptDialogComponent,
-        YearMonthSelectorComponent,
-        MembershipExpirationPipe,
-        BranchNamePipe,
-        ClassCategoryNamePipe,
-        DeletePromptDialogComponent,
-        LocalImageLinkPipe,
-        DelimeterSeparatedValuePipe,
-    ]
+  exports: [
+    FlexLayoutModule,
+    MatTabsModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatStepperModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    MatDialogModule,
+    MatTreeModule,
+    HttpClientModule,
+    MatTableModule,
+    MatCheckboxModule,
+    // MomentDateModule,
+    MatMomentDateModule,
+    MatAutocompleteModule,
+    TimeRangeSelectorComponent,
+    MatSortModule,
+    FreezeMembershipDialogComponent,
+    MatDatepickerModule,
+    MatPaginatorModule,
+    AddMemberDialogComponent,
+    PurchaseHistoryComponent,
+    FindMemberComponent,
+    FindStockComponent,
+    MatChipsModule,
+    InputPromptDialogComponent,
+    YearMonthSelectorComponent,
+    MembershipExpirationPipe,
+    BranchNamePipe,
+    ClassCategoryNamePipe,
+    DeletePromptDialogComponent,
+    LocalImageLinkPipe,
+    DelimeterSeparatedValuePipe,
+    PricePipe,
+    DiscountPipe,
+    TaxPipe,
+    TotalPricePipe
+  ]
 })
 export class SharedModule {
   constructor(private iconRegistry: MatIconRegistry, private sanitizer: DomSanitizer) {
     iconRegistry.addSvgIcon('schedule-icon', sanitizer.bypassSecurityTrustResourceUrl('/assets/schedule-icon.svg'));
-    iconRegistry.addSvgIcon('sharePeople', sanitizer.bypassSecurityTrustResourceUrl("/assets/share-people.svg") );
+    iconRegistry.addSvgIcon('sharePeople', sanitizer.bypassSecurityTrustResourceUrl('/assets/share-people.svg'));
 
   }
 }

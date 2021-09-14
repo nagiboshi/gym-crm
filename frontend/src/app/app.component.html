@@ -9,6 +9,7 @@
            [routerLink]="appRoute.path">{{appRoute.label}}</a>
       </nav>
       <app-find-member placeholder="Find member..." (memberSelected)="onMemberFound($event)"></app-find-member>
+      <find-stock placeholder="Find stock..." (stockSelected)="onStockFound($event)"></find-stock>
       <div fxLayoutAlign="space-between center">
         <a fxLayoutAlign="center center" fxLayout="row" routerLinkActive="active" mat-button [routerLink]="'/settings'">
           <mat-icon>settings</mat-icon>
@@ -24,3 +25,4 @@
     <router-outlet></router-outlet>
   </div>
 </section>
+

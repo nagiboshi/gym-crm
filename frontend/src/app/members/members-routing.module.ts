@@ -1,14 +1,15 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
 
-import { MembersComponent } from './members.component';
+import {MembersComponent} from './members.component';
 import {MemberProfileComponent} from './member-profile/member-profile.component';
 
-const routes: Routes = [{ path: '', component: MembersComponent },
-  {path: ':id', component: MemberProfileComponent}];
+const routes: Routes = [{path: '', component: MembersComponent},
+  {path: 'profile/:id', component: MemberProfileComponent}];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class MembersRoutingModule { }
+export class MembersRoutingModule {
+}

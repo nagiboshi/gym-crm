@@ -1,0 +1,23 @@
+.dashboards {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-rows: 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 30px 30px;
+  grid-template-areas:
+    ". . ."
+    ". . .";
+  .dashboard-board{
+    padding: 0 20px;
+    box-shadow: -2px 0px 19px 0px rgba(0,0,0,0.15);
+    -webkit-box-shadow: -2px 0px 19px 0px rgba(0,0,0,0.15);
+    -moz-box-shadow: -2px 0px 19px 0px rgba(0,0,0,0.15);
+    .title {
+      padding-top: 15px;
+      text-align: left;
+      color: rgba(0,0,0,0.7);
+      border-bottom: 1px solid rgba(0,0,0,0.25);
+    }
+  }
+}

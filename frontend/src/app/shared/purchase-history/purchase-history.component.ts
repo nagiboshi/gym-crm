@@ -1,14 +1,14 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/purchase';
+import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/membership-purchase';
 import {FreezeMembershipDialogComponent} from '../freeze-membership-dialog/freeze-membership-dialog.component';
 import {clone} from 'lodash';
 import {MatDialog} from '@angular/material/dialog';
-import {PurchaseFormComponent} from '../../sales/purchase-form/purchase-form.component';
 import {BehaviorSubject} from 'rxjs';
 import * as _moment from 'moment';
 import {SharePurchaseDialogComponent} from '@shared/share-purchase-dialog/share-purchase-dialog.component';
 import {Member} from '@models/member';
 import {SalesService} from '../../sales/sales.service';
+import {MembershipPurchaseFormComponent} from '../../sales/membership/membership-purchase-form/membership-purchase-form.component';
 
 const moment = _moment;
 
@@ -40,7 +40,7 @@ export class PurchaseHistoryComponent implements OnChanges {
   }
 
   addNewPurchase() {
-    this.dialog.open(PurchaseFormComponent, {data: this.member}).afterClosed().subscribe((purchase: MembershipPurchaseModel) => {
+    this.dialog.open(MembershipPurchaseFormComponent, {data: this.member}).afterClosed().subscribe((purchase: MembershipPurchaseModel) => {
       if (purchase) {
         const savedMembershipPurchase = this.salesService.savePurchase(purchase);
         savedMembershipPurchase.toPromise().then((newMembershipPurchase) => {

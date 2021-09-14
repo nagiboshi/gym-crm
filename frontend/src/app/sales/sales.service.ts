@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/purchase';
+import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/membership-purchase';
 import {Observable} from 'rxjs';
 import {RequestQueryBuilder} from '@nestjsx/crud-request';
 import {HttpClient} from '@angular/common/http';

@@ -29,6 +29,7 @@
     "@angular/platform-browser-dynamic": "~12.0.0",
     "@angular/router": "~12.0.0",
     "@nestjsx/crud-request": "*",
+    "angular-google-charts": "^2.2.2",
     "express": "4.17.1",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.1",

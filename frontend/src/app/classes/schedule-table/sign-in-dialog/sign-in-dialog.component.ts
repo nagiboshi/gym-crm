@@ -5,13 +5,14 @@ import {Member} from '@models/member';
 import {ScheduleMember} from '@models/schedule-member';
 import {Moment} from 'moment';
 import * as _moment from 'moment';
-import {remove,  sortBy, Dictionary, first} from 'lodash';
-import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/purchase';
-import {PurchaseFormComponent} from '../../../sales/purchase-form/purchase-form.component';
+import {remove, first} from 'lodash';
+import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/membership-purchase';
 import {Router} from '@angular/router';
 import {map, tap} from 'rxjs/operators';
 import {SalesService} from '../../../sales/sales.service';
 import {MatTableDataSource} from '@angular/material/table';
+import {MembershipPurchaseFormComponent} from '../../../sales/membership/membership-purchase-form/membership-purchase-form.component';
+import {MembersService} from '../../../members/members.service';
 
 export interface SignInDialogData {
   daySchedule: DaySchedule;
@@ -38,7 +39,7 @@ export class SignInDialogComponent implements OnInit {
   displayedColumns: string[] = ['fullName', 'package', 'expiryDate', 'sell' ];
   dataSource: MatTableDataSource<SignInMember> = new MatTableDataSource<SignInMember>();
   constructor(@Inject(MAT_DIALOG_DATA) public signInDialogData: SignInDialogData,
-              private communicationService: CommunicationService,
+              private communicationService: MembersService,
               private router: Router,
               private salesService: SalesService,
               private dialog: MatDialog) {
@@ -50,7 +51,7 @@ export class SignInDialogComponent implements OnInit {
     const memberIds = scheduleMembers.filter( sm => !sm.member ).map( sm => sm.memberId);
 
     // this.schedu
-
+    console.log("memberids" , memberIds);
     this.communicationService.getMembersByIds(memberIds).pipe(map<Member[], SignInMember[]>( (members) => {
       return members.map(  m => {
       console.log(m);
@@ -75,7 +76,6 @@ export class SignInDialogComponent implements OnInit {
     if (isMemberAlreadyThere) {
       return;
     }
-
     this.communicationService.getMemberWithPurchases(member.id, false, true, false ).toPromise().then((memberWithPurchases) => {
       const activeMembership = memberWithPurchases.membershipPurchases?.length > 0 ?  this.salesService.toPurchaseHistoryItem(first(memberWithPurchases.membershipPurchases), this.today): null;
       scheduleMembers.push({member: memberWithPurchases,
@@ -86,7 +86,7 @@ export class SignInDialogComponent implements OnInit {
 
   openSellDialog(signInMember: SignInMember) {
     const memberId = signInMember.member.id;
-    this.dialog.open(PurchaseFormComponent,
+    this.dialog.open(MembershipPurchaseFormComponent,
           {data: signInMember.member })
             .afterClosed().subscribe((purchase: MembershipPurchaseModel) => {
       if (purchase) {

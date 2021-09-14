@@ -2,13 +2,14 @@ import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Outpu
 import {CommunicationService} from '../communication.service';
 import {fromEvent, Observable, of} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
-import {Member} from '../../models/member';
+import {Member} from '@models/member';
 import {Router} from '@angular/router';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {FormControl} from '@angular/forms';
 import {AddMemberDialogComponent} from '../add-member-dialog/add-member-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {isEmpty} from 'lodash';
+import {MembersService} from '../../members/members.service';
 @Component({
   selector: 'app-find-member',
   templateUrl: './find-member.component.html',
@@ -30,7 +31,7 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
   searchFormControl: FormControl;
   showNewMemberOption = false;
 
-  constructor(public dialog: MatDialog, private communicationService: CommunicationService, private router: Router) {
+  constructor(public dialog: MatDialog, private membersService: MembersService, private router: Router) {
   }
 
   displayFn(member: Member) {
@@ -68,7 +69,7 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
 
   loadMembers(search): Observable<Member[]> {
     if( !isEmpty(search)) {
-      return this.communicationService.findMembers(search);
+      return this.membersService.findMembers(search);
     }
     return of([]);
   }
@@ -81,8 +82,8 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
       .afterClosed()
       .subscribe((newMember: Member) => {
         if ( newMember ) {
-          this.communicationService.saveMember(newMember).toPromise().then((savedMember) => {
-            this.communicationService.memberCreated.next(savedMember);
+          this.membersService.saveMember(newMember).toPromise().then((savedMember) => {
+            this.membersService.memberCreated.next(savedMember);
             this.memberSelected.emit(savedMember);
           });
         }

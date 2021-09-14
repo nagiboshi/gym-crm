@@ -9,8 +9,14 @@ import {AddMemberDialogComponent} from '@shared/add-member-dialog/add-member-dia
 import {MatTableDataSource} from '@angular/material/table';
 import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
 import {remove} from 'lodash';
-import {Subscription} from 'rxjs';
+import {interval, of, Subscription} from 'rxjs';
+import {MembersService} from './members.service';
+import {cloneDeep,range} from 'lodash';
+import {concatMap, delay, take} from 'rxjs/operators';
+import * as _moment from 'moment';
 
+
+const moment = _moment;
 @Component({
   selector: 'app-members',
   templateUrl: './members.component.html',
@@ -24,53 +30,82 @@ export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(public dialog: MatDialog, private communicationService: CommunicationService, private router: Router) {
+  constructor(public dialog: MatDialog, private membersService: MembersService, private router: Router) {
+
+
   }
 
   ngAfterViewInit() {
+
+
+
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     const size = this.paginator.pageSize;
     const offset = this.paginator.pageIndex * size;
-    this.communicationService.getMembers(size, null, offset).subscribe((members) => {
+    this.membersService.getMembers(size, null, offset).subscribe((members) => {
       this.dataSource.data = members;
     });
   }
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource<Member>();
-    this.memberCreatedSub = this.communicationService.memberCreated$.subscribe((createdMember) => {
+    this.memberCreatedSub = this.membersService.memberCreated$.subscribe((createdMember) => {
       this.dataSource.data = [createdMember, ...this.dataSource.data];
     })
   }
 
+  getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  getRandomBool(): boolean {
+    return Math.random() <= 0.5;
+  }
 
   addMember() {
     const newMember = {id: 0, firstName: '', file: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
+
+
+
+
     this.dialog.open(AddMemberDialogComponent, {data: newMember})
       .afterClosed()
       .subscribe((newMember: Member) => {
-        if (newMember) {
-          this.communicationService.saveMember(newMember).toPromise().then((savedMember) => {
-            this.communicationService.memberCreated.next(savedMember);
+        // if (newMember) {
+        //   interval(200).pipe(take(500)).subscribe((n) => {
+        //     newMember.firstName =  'Test ' + n;
+        //     newMember.lastName = 'Test ' + n;
+        //     newMember.email = 'test_' + n + '@example.com';
+        //     const random = this.getRandomArbitrary(moment().startOf('year').toDate().getTime(), moment().toDate().getTime() );
+        //     newMember.gender = this.getRandomBool() ? 'male':'female';
+        //     newMember.created = new Date(random);
+        //     this.membersService.saveMember(newMember).toPromise();
+        //   });
+          // .forEach((num) => {
+
+          // })
+          // console.log(newMember);
+          this.membersService.saveMember(newMember).toPromise().then((savedMember) => {
+            this.membersService.memberCreated.next(savedMember);
           });
-        }
+
       });
   }
 
   openProfile(row: any) {
-    this.router.navigateByUrl('/members/' + row.id);
+    this.router.navigateByUrl('/members/profile/' + row.id);
   }
 
   onPageChange(pageEvent: PageEvent) {
     const offset = pageEvent.pageIndex * pageEvent.pageSize;
-    this.communicationService.getMembers(pageEvent.pageSize, null, offset);
+    this.membersService.getMembers(pageEvent.pageSize, null, offset);
   }
 
   openMemberRemoveDialog(memberData: Member) {
     this.dialog.open(DeletePromptDialogComponent, {data: `Are you sure you want to remove ${memberData.firstName} ${memberData.lastName} from database ? `}).afterClosed().subscribe((doAction) => {
       if (doAction) {
-        this.communicationService.removeMember(memberData.id).toPromise().then(() => {
+        this.membersService.removeMember(memberData.id).toPromise().then(() => {
           const data = [...this.dataSource.data];
           remove(data, (data) => data.id == memberData.id);
           this.dataSource.data = data;

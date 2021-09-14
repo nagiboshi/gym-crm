@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {MembershipPurchaseHistoryItem} from '@models/purchase';
+import {MembershipPurchaseHistoryItem} from '@models/membership-purchase';
 import {Member} from '@models/member';
 import {Router} from '@angular/router';
 
