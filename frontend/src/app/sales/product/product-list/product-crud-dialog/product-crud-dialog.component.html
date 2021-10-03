@@ -1,0 +1,72 @@
+<form [formGroup]="formGroup">
+  <div class="product-crud-dialog">
+    <div mat-dialog-title> {{ product.id == 0 ? 'New' : 'Edit' }} Product "{{formGroup.value.name}}"</div>
+    <div fxLayout="column" class="product-form" mat-dialog-content>
+        <mat-form-field>
+          <input placeholder="Product name" matInput formControlName="name">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select [compareWith]="compareEntitiesById" [value]="product.subcategory?.category" placeholder="Select product category" (selectionChange)="updateSubcategories($event)">
+            <mat-option [value]="category" *ngFor="let category of categories | async"> {{category.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select [compareWith]="compareEntitiesById" placeholder="Select subcategory" formControlName="subcategory">
+            <mat-option [value]="subcategory"
+                        *ngFor="let subcategory of subcategories$ | async">{{subcategory.name}}</mat-option>
+            <!--          <mat-option *ngFor="let prodsuct of produc"></mat-option>-->
+          </mat-select>
+        </mat-form-field>
+        <ng-container formArrayName="properties">
+          <ng-container *ngFor="let _ of properties.controls; let i=index">
+            <div fxLayout="row" fxLayoutGap="20" fxLayoutAlign="start center" [formGroupName]="i">
+              <div class="product-property-name">
+                <mat-form-field>
+                  <input placeholder="Field name" matInput formControlName="name">
+                </mat-form-field>
+              </div>
+              <!-- Product properties -->
+              <div fxFlex="1 1 auto" class="product-property-field-value">
+                <mat-form-field>
+                  <mat-label>Field value</mat-label>
+                  <mat-chip-list formArrayName="values" #chipList aria-label="Field Value">
+                    <mat-chip
+                      *ngFor="let propertyValue of properties.controls[i].controls.values.value; let propertyValueIndex=index"
+                      [selectable]="true"
+                      [removable]="true"
+                      (removed)="removePropertyValue(properties.controls[i].controls.values, propertyValueIndex)">
+                      {{propertyValue.value}}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="New property value..."
+                           #fieldValueElRef
+                           [matChipInputFor]="chipList"
+                           [matChipInputSeparatorKeyCodes]="[32, 13]"
+                           (matChipInputTokenEnd)="addPropertyValue(properties.controls[i].controls.values, $event, fieldValueElRef)">
+                  </mat-chip-list>
+                </mat-form-field>
+              </div>
+
+              <button mat-raised-button color="warn" (click)="removeProperty(i)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+
+            </div>
+          </ng-container>
+        </ng-container>
+
+      </div>
+    </div>
+
+    <div fxLayoutAlign="space-between" mat-dialog-actions>
+      <div fxLayoutGap="10" class="button-container" fxLayout="row">
+
+        <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
+        <button mat-raised-button color="primary" [mat-dialog-close]="formGroup.value">Save</button>
+        <button mat-flat-button type="button" (click)="addProductProperty()"
+                fxLayoutAlign="start center">Add new property
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+  </div>
+</form>

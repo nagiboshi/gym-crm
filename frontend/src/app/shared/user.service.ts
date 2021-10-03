@@ -17,16 +17,12 @@ export class UserService {
   public token$: Observable<Token>;
   public users: BehaviorSubject<User[]>;
   public users$: Observable<User[]>;
-  // public currentUser: BehaviorSubject<User>
-  // public currentUser$: Observable<User>;
   constructor(
     private router: Router,
     private http: HttpClient
   ) {
     this.tokenSubject = new BehaviorSubject<Token>(JSON.parse(localStorage.getItem('token')));
     this.token$ = this.tokenSubject.asObservable();
-    // this.currentUser = new BehaviorSubject<User>(null);
-    // this.currentUser$ = this.currentUser.asObservable();
 
     this.users = new BehaviorSubject<User[]>([]);
     this.users$ = this.users.asObservable();

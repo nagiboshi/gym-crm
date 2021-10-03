@@ -1,21 +1,14 @@
+import {Product} from '@models/product';
+import {PropertyValue} from '@models/property';
+import {Supplier} from '@models/supplier';
 
-
-export interface StockPropertyValue {
-  id: number;
-  value: string;
-  property: StockProperty;
-}
-
-export interface StockProperty {
-  id: number;
-  name: string;
-  values: StockPropertyValue[];
-}
 
 export interface Stock {
   id: number;
-  name: string;
-  properties: StockProperty[];
+  product: Product;
+  details: PropertyValue[],
+  supplier: Supplier;
+  subcategory: any;
   price: number;
   qty: number;
 }

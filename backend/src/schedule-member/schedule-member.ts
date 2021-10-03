@@ -7,7 +7,7 @@ export class ScheduleMember {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(type => Member, )
+  @ManyToOne(type => Member, {onDelete: "CASCADE"} )
   @JoinColumn({referencedColumnName: 'id', name: 'memberId'})
   member: Member;
 
@@ -18,7 +18,7 @@ export class ScheduleMember {
   scheduleDate: number;
 
 
-  @ManyToOne(type => ClassSchedule)
+  @ManyToOne(type => ClassSchedule, {onDelete: "CASCADE"})
   @JoinColumn({referencedColumnName: 'id', name: 'scheduleId'})
   schedule: ClassSchedule;
 

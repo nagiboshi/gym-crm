@@ -1,5 +1,6 @@
-import {Stock, StockPropertyValue} from '@models/stock';
+import {Stock} from '@models/stock';
 import {PaymentMethod} from '@models/payment-method';
+import {PropertyValue} from '@models/property';
 
 
 export class StockPurchase {
@@ -11,6 +12,6 @@ export class StockPurchase {
   stockId: number;
   paymentMethod: PaymentMethod;
   paymentMethodId: number;
-  properties: StockPropertyValue[];
+  properties: PropertyValue[];
 
 }

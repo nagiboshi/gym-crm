@@ -7,9 +7,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CommunicationService} from '@shared/communication.service';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {ErrorInterceptor} from './helpers/errors.interceptor';
-import {JwtInterceptor} from './helpers/jwt.interceptor';
 import {GlobalErrorHandlerService} from '@shared/global-error-handler.service';
-import {MembersModule} from './members/members.module';
 
 @NgModule({
   declarations: [
@@ -20,12 +18,10 @@ import {MembersModule} from './members/members.module';
     BrowserModule,
     AppRoutingModule,
     SharedModule,
-    MembersModule
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandlerService},
     CommunicationService,
-    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]

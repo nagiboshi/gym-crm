@@ -15,8 +15,7 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {TimeRangeSelectorComponent} from './time-range-selector/time-range-selector.component';
 import {CommonModule, DatePipe} from '@angular/common';
-import {HttpClientModule} from '@angular/common/http';
-import {FindMemberComponent} from './find-member/find-member.component';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {YearMonthSelectorComponent} from './year-month-selector/year-month-selector.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatMomentDateModule} from '@angular/material-moment-adapter';
@@ -46,15 +45,20 @@ import {PricePipe} from './pipes/price.pipe';
 import {TaxPipe} from './pipes/tax.pipe';
 import {DiscountPipe} from './pipes/discount.pipe';
 import {TotalPricePipe} from '@shared/pipes/total-price';
+import {JwtInterceptor} from '../helpers/jwt.interceptor';
+import {FindMemberComponent} from '@shared/find-member/find-member.component';
 
 
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent,
-    AddMemberDialogComponent, FindStockComponent, FindMemberComponent, YearMonthSelectorComponent,
+    AddMemberDialogComponent, FindStockComponent, YearMonthSelectorComponent,
     MembershipExpirationPipe, ClassCategoryNamePipe,
     TotalPricePipe,
+    FindMemberComponent,
     DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe, PricePipe, TaxPipe, DiscountPipe],
-  providers: [MatIconRegistry, DatePipe, HelpersService, GlobalErrorHandlerService, {
+  providers: [MatIconRegistry, DatePipe, HelpersService, GlobalErrorHandlerService,
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    {
     provide: MAT_DATE_FORMATS, useValue: {
       parse: {
         dateInput: 'LL',
@@ -112,11 +116,11 @@ import {TotalPricePipe} from '@shared/pipes/total-price';
     TimeRangeSelectorComponent,
     MatSortModule,
     FreezeMembershipDialogComponent,
+    FindMemberComponent,
     MatDatepickerModule,
     MatPaginatorModule,
     AddMemberDialogComponent,
     PurchaseHistoryComponent,
-    FindMemberComponent,
     FindStockComponent,
     MatChipsModule,
     InputPromptDialogComponent,

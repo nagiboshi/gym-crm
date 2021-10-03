@@ -45,7 +45,7 @@ export class StockPurchaseFormComponent implements OnInit {
     this.selectedStock$ = this.selectedStock.asObservable();
     this.stockSub = this.selectedStock$.subscribe((stock)=> {
       this.stockPropertiesControllers = [];
-      stock.properties.forEach(property => {
+      stock.details.forEach(property => {
         this.stockPropertiesControllers.push(this.fb.group({
           property: [property],
           propertyValue: [null, Validators.required]

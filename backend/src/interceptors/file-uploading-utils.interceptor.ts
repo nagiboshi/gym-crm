@@ -20,7 +20,7 @@ export class FileUploadingUtils {
     });
   }
 
-  static multipleFileUploader(name: string,dest:string='./uploads/images', maxFileNumber: number = 20) {
+  static multipleFileUploader(name: string,dest:string='./public/images', maxFileNumber: number = 20) {
     return FilesInterceptor(name, maxFileNumber, {
       storage: diskStorage({
         destination: dest,

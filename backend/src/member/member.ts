@@ -28,6 +28,9 @@ export class Member {
   @IsEmail()
   email: string;
 
+  @Column({default: new Date()})
+  created: Date;
+
   @Column()
   @IsNotEmpty()
   gender: string;

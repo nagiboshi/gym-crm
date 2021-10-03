@@ -1,15 +1,14 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {CommunicationService} from '../communication.service';
 import {fromEvent, Observable, of} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Member} from '@models/member';
 import {Router} from '@angular/router';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {FormControl} from '@angular/forms';
-import {AddMemberDialogComponent} from '../add-member-dialog/add-member-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {isEmpty} from 'lodash';
 import {MembersService} from '../../members/members.service';
+import {AddMemberDialogComponent} from '@shared/add-member-dialog/add-member-dialog.component';
 @Component({
   selector: 'app-find-member',
   templateUrl: './find-member.component.html',

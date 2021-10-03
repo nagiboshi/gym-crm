@@ -27,12 +27,15 @@ import {ClassScheduleModule} from './class-schedule/class-schedule.module';
 import {ClassSchedule} from './class-schedule/class-schedule.model';
 import {ScheduleMember} from './schedule-member/schedule-member';
 import {SalesModule} from './sales/sales.module';
-import {ProductCategory} from './sales/product-category/product-category';
-import {ProductSubcategory} from './sales/product-category/product-subcategory';
-import {ProductTag} from './sales/tags/product-tag';
+import {Stock} from './sales/stock/stock';
+import {Property} from './sales/properties/property';
+import { StockPurchaseModule } from './stock-purchase/stock-purchase.module';
+import {StockPurchase} from './stock-purchase/stock-purchase';
+import {Subcategory} from './sales/category/subcategory';
+import {Category} from './sales/category/category';
+import {PropertyValue} from './sales/properties/property-value/property-value';
+import {Supplier} from './sales/supplier/supplier';
 import {Product} from './sales/product/product';
-import {ProductField} from './sales/product-fields/product-field';
-import {ProductFieldOption} from './sales/product-property/product-field-option';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -55,13 +58,14 @@ import {ProductFieldOption} from './sales/product-property/product-field-option'
       password: configService.get('POSTGRES_PASSWORD'),
       database: configService.get('POSTGRES_DB'),
       schema: 'public',
-      logging: false,
+      logging: true,
       keepConnectionAlive: true,
       entities: [
         Member,
         User,
         Branch,
         ClassCategory,
+        Product,
         ScheduleMember,
         ClassModel,
         Membership,
@@ -70,12 +74,13 @@ import {ProductFieldOption} from './sales/product-property/product-field-option'
         PaymentMethod,
         MembershipPurchase,
         MembershipFreeze,
-        ProductCategory,
-        ProductSubcategory,
-        ProductTag,
-        Product,
-        ProductFieldOption,
-        ProductField,
+        StockPurchase,
+        Stock,
+        PropertyValue,
+        Supplier,
+        Property,
+        Category,
+        Subcategory
       ],
       synchronize: true,
     })
@@ -90,7 +95,8 @@ import {ProductFieldOption} from './sales/product-property/product-field-option'
     PaymentMethodModule,
     MembershipPurchaseModule,
     SalesModule,
-    ClassScheduleModule],
+    ClassScheduleModule,
+    StockPurchaseModule],
   controllers: [AppController,],
   providers: [AppService],
 })

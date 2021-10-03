@@ -1,17 +1,18 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
 import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
 import {StockService} from './stock.service';
 import {Stock} from '@models/stock';
-import {StockCrudDialogComponent} from './stock-crud-dialog/stock-crud-dialog.component';
 import {HelpersService} from '@shared/helpers.service';
-import {remove, isEmpty} from 'lodash';
+import {remove} from 'lodash';
 import {StockPurchaseFormComponent} from './stock-purchase-form/stock-purchase-form.component';
-import {FormArray, FormControl, Validators} from '@angular/forms';
+import {FormControl} from '@angular/forms';
 import {StockPurchase} from '@models/stock-purchase';
+
+
+
 
 @Component({
   selector: 'stock-list',
@@ -19,43 +20,49 @@ import {StockPurchase} from '@models/stock-purchase';
   styleUrls: ['./stock-list.component.scss'],
 
 })
-export class StockListComponent implements OnInit {
-  columns = ['name', 'items', 'qty', 'sell',  'edit', 'delete'];
+export class StockListComponent implements OnInit, AfterViewInit {
+  columns = [ 'name', 'category', 'subcategory', 'inventory', 'delete'];
   limit = 10;
   dataSource: MatTableDataSource<Stock>;
-  qtyControls: FormControl[];
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private helpers: HelpersService, private stockService: StockService, private dialog: MatDialog) {
   }
 
-  _newStock(): Stock {
-    return {id: 0, name: '', qty: 0, price: 0, properties: [{name: 'Size', values: [], id: 0}, {name: 'Color', values: [], id:0}]};
-  }
+  // _newStock(): Stock {
+  //   return {id: 0, product: null, subcategory: null, qty: 0, price: 0, details: []};
+  // }
 
   openCrudDialog(stock?: Stock) {
-    const tempStock = stock ? stock : this._newStock();
-    this.dialog.open(StockCrudDialogComponent, {data: tempStock, minWidth: '600px'}).afterClosed().subscribe((stock: Stock) => {
-      if (stock) {
-        this.stockService.saveStock(stock).then((savedStock ) => {
-          this.dataSource.data = [savedStock, ...this.dataSource.data];
-        });
+    // const tempStock = stock ? stock : this._newStock();
+    // this.dialog.open(StockCrudDialogComponent, {data: tempStock, minWidth: '600px'}).afterClosed().subscribe((stock: Stock) => {
+    //   if (stock) {
+    //     this.stockService.saveStock(stock).then((savedStock ) => {
+    //       this.dataSource.data = [savedStock, ...this.dataSource.data];
+    //     });
+    //
+    //   }
+    // });
+  }
 
-      }
-    });
+  ngAfterViewInit() {
   }
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource<Stock>([]);
+    // this.dataSource.data = [{name: 'Kids Kimono', category: 'Clothes', subcategory: 'Kimonos', qty: 1, id: 1, properties: [], price: 100},
+    //   {name: 'Belt', category: 'Clothes', subcategory: 'Kimonos', qty: 1, id: 1, properties: [], price: 100},
+    //   {name: 'Chocolate Bar', category: 'Food', subcategory: 'Sweets', qty: 1, id: 1, properties: [], price: 100}
+    // ];
     this.stockService.getStocks().subscribe(response => {
+
       this.dataSource.data = response.data;
-      this.qtyControls = this.dataSource.data.map( stock => new FormControl( stock.qty, [Validators.min(0), Validators.required] ));
       this.paginator.length = response.total;
     });
   }
 
   openDeletePromptDialog(stock: Stock) {
-    this.dialog.open(DeletePromptDialogComponent, {data: `Are you sure you want to delete ${stock.name} ?`}).afterClosed().subscribe(() => {
+    this.dialog.open(DeletePromptDialogComponent, {data: `Are you sure you want to delete ${stock.product.name} ?`}).afterClosed().subscribe(() => {
       this.stockService.remove(stock).then(() => {
         const stockData = this.dataSource.data;
         remove(stockData, p => p.id == stock.id);

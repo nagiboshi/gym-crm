@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {fromEvent, Observable, of} from 'rxjs';
 import {concatMap, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
-import {Router} from '@angular/router';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {FormControl} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -38,7 +37,7 @@ export class FindStockComponent implements OnInit, AfterViewInit {
   }
 
   displayFn(stock: Stock) {
-    return stock?.name;
+    return stock?.product.name;
   }
 
   ngOnInit() {

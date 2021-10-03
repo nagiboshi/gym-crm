@@ -14,7 +14,6 @@ import { MembershipStatusComponent } from './member-profile/membership-status/me
   exports: [
     MembersComponent
   ],
-  providers: [MembersService],
   imports: [
     CommonModule,
     MembersRoutingModule,

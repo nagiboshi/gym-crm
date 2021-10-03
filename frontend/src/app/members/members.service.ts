@@ -10,7 +10,7 @@ import * as _moment from 'moment';
 
 const moment = _moment;
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class MembersService {
   memberCreated = new Subject<Member>();
   memberCreated$ = this.memberCreated.asObservable();

@@ -9,7 +9,7 @@ export class ClassSchedule {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(type => ClassModel)
+  @ManyToOne(type => ClassModel, {onDelete:"CASCADE"})
   @JoinColumn({referencedColumnName: 'id', name: 'classId'})
   scheduleClass;
 

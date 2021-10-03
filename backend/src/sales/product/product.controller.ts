@@ -3,13 +3,8 @@ import {JwtAuthGuard} from '../../auth/jwt-auth.guard';
 import {ProductService} from './product.service';
 import {Crud, CrudRequest, Override, ParsedBody, ParsedRequest} from '@nestjsx/crud';
 import {Product} from './product';
-import {MembershipGroup} from '../../membership-group/membership-group';
-import {ProductFieldsService} from '../product-fields/product-fields.service';
-import {TagService} from '../tags/tag.service';
-import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
-import {ProductField} from '../product-fields/product-field';
-import {Repository} from 'typeorm';
-import {ProductFieldOptionService} from '../product-property/product-field-option.service';
+import {PropertyService} from '../properties/property.service';
+import {PropertyValueService} from '../properties/property-value/property-value.service';
 
 
 @Crud({
@@ -18,22 +13,21 @@ import {ProductFieldOptionService} from '../product-property/product-field-optio
   },
   query: {
     join: {
-      fields: {eager: false},
-      'fields.options': {eager: false, alias: 'fieldOptions'},
-      tags: {eager: false}
+      properties: {eager: false},
+      'properties.values': {eager: false, alias: 'propertyValues'},
+      subcategory: {eager: false},
+      'subcategory.category': {eager: false, alias: 'category'}
     },
     alwaysPaginate: true
-
   }
 })
 @Controller('product')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class ProductController {
 
   constructor(public service: ProductService,
-              public productFieldService: ProductFieldsService,
-              public productFieldOptionService: ProductFieldOptionService,
-              public productTagService: TagService) {
+              public propertyService: PropertyService,
+              public propertyValueService: PropertyValueService) {
   }
 
   @Override()
@@ -42,13 +36,11 @@ export class ProductController {
     @ParsedBody() dto: Product
   ) {
 
-    dto.tags = await this.productTagService.repo.save(dto.tags);
-
-    for( let field of dto.fields) {
-      field.options = await this.productFieldOptionService.repo.save(field.options);
+    for (let property of dto.properties) {
+      property.values = await this.propertyValueService.repo.save(property.values);
     }
 
-    dto.fields = await this.productFieldService.repo.save(dto.fields);
+    dto.properties = await this.propertyService.repo.save(dto.properties);
     return await this.service.createOne(req, dto);
   }
 

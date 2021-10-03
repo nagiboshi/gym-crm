@@ -1,0 +1,65 @@
+<form *ngIf="formGroup" [formGroup]="formGroup">
+  <div class="stock-crud-dialog">
+    <div mat-dialog-title> {{ stock.id == 0 ? 'New' : 'Edit' }} Stock "{{formGroup.value.name}}"</div>
+    <div class="stock-form" mat-dialog-content>
+      <div fxLayout="column">
+        <mat-form-field>
+          <input placeholder="Enter stock name" matInput formControlName="name">
+        </mat-form-field>
+<!--        <mat-form-field>-->
+<!--          <input placeholder="Base price" matInput formControlName="price">-->
+<!--        </mat-form-field>-->
+<!--        <mat-form-field>-->
+<!--          <input placeholder="Quantity" matInput formControlName="qty">-->
+<!--        </mat-form-field>-->
+        <ng-container formArrayName="properties">
+          <ng-container *ngFor="let _ of stockProperties.controls; let i=index">
+            <div fxLayout="row" fxLayoutGap="20" fxLayoutAlign="space-between center" [formGroupName]="i">
+              <div class="stock-property-name">
+                <mat-form-field>
+                  <input placeholder="Property name" matInput formControlName="name">
+                </mat-form-field>
+              </div>
+              <!-- Stock Properties -->
+              <div class="property-value">
+                <mat-form-field>
+                  <mat-label>Property value</mat-label>
+                  <mat-chip-list formArrayName="values" #chipList aria-label="Property Value">
+                    <mat-chip
+                      *ngFor="let propertyValue of stockProperties.controls[i].controls.values.value; let propertyValueIndex=index"
+                      [selectable]="true"
+                      [removable]="true"
+                      (removed)="removeFieldValue(stockProperties.controls[i].controls.values, propertyValueIndex)">
+                      {{propertyValue.value}}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="New property value..."
+                           #propertyValueElRef
+                           [matChipInputFor]="chipList"
+                           [matChipInputSeparatorKeyCodes]="[32, 13]"
+                           (matChipInputTokenEnd)="addPropertyValue(stockProperties.controls[i].controls.values, $event, propertyValueElRef)">
+                  </mat-chip-list>
+                </mat-form-field>
+              </div>
+
+              <mat-icon class="remove-button" (click)="removeField(i)">delete</mat-icon>
+
+            </div>
+          </ng-container>
+        </ng-container>
+
+      </div>
+    </div>
+    <div fxLayoutAlign="space-between" mat-dialog-actions>
+      <div fxLayoutGap="10" class="button-container" fxLayout="row">
+
+        <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
+        <button mat-raised-button color="primary" [mat-dialog-close]="formGroup.value">Save</button>
+        <button mat-flat-button type="button" (click)="addStockProperty()"
+                fxLayoutAlign="start center">Add new field
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

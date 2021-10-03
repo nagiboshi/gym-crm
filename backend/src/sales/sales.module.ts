@@ -1,26 +1,29 @@
 import { Module } from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {ProductField} from './product-fields/product-field';
-import {ProductCategory} from './product-category/product-category';
-import {ProductSubcategory} from './product-category/product-subcategory';
-import {Product} from './product/product';
-import {ProductTag} from './tags/product-tag';
-import {ProductFieldOptionService} from './product-property/product-field-option.service';
-import {ProductFieldsService} from './product-fields/product-fields.service';
-import {ProductService} from './product/product.service';
-import {ProductFieldOption} from './product-property/product-field-option';
-import {ProductPropertyController} from './product-property/product-property.controller';
-import {ProductFieldsController} from './product-fields/product-fields.controller';
+import {Property} from './properties/property';
+import {Stock} from './stock/stock';
+import {PropertyService} from './properties/property.service';
+import {StockService} from './stock/stock.service';
+import {PropertyController} from './properties/property.controller';
+import {StockController} from './stock/stock.controller';
+import {Category} from './category/category';
+import {Subcategory} from './category/subcategory';
+import {CategoryService} from './category/category.service';
+import {SubcategoryService} from './category/subcategory.service';
+import {CategoryController} from './category/category.controller';
+import {SubcategoryController} from './category/subcategory.controller';
+import {PropertyValueService} from './properties/property-value/property-value.service';
+import {PropertyValue} from './properties/property-value/property-value';
+import { SupplierController } from './supplier/supplier.controller';
+import { SupplierService } from './supplier/supplier.service';
+import {Supplier} from './supplier/supplier';
 import {ProductController} from './product/product.controller';
-import {ProductCategoryController} from './product-category/product-category.controller';
-import {ProductCategoryService} from './product-category/product-category.service';
-import {ProductSubcategoryService} from './product-category/product-subcategory.service';
-import {ProductSubcategoryController} from './product-category/product-subcategory.controller';
-import {TagService} from './tags/tag.service';
+import {ProductService} from './product/product.service';
+import {Product} from './product/product';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductField, ProductFieldOption, ProductCategory, ProductSubcategory, Product, ProductTag])],
-  providers: [ProductFieldOptionService, ProductFieldsService,  TagService, ProductService, ProductSubcategoryService, ProductCategoryService],
-  controllers: [ProductPropertyController,ProductSubcategoryController, ProductFieldsController, ProductController, ProductCategoryController]
+  imports: [TypeOrmModule.forFeature([Property, Product, Supplier, PropertyValue, Category, Subcategory, Stock])],
+  providers: [PropertyValueService, ProductService, PropertyService,  StockService, CategoryService, SubcategoryService, SupplierService],
+  controllers: [PropertyController, ProductController, CategoryController, SubcategoryController, PropertyController, StockController, SupplierController]
 })
 export class SalesModule {}

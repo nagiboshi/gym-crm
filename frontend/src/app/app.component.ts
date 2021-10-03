@@ -22,7 +22,7 @@ interface AppRoute {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   cacheLoadingStatus: boolean = false;
   appRoutes$: BehaviorSubject<AppRoute[]> = new BehaviorSubject([//{label: 'Schedules', isActive: false, path: '/classes/schedules'},
     {label: 'Dashboard', isActive: false, path: '/dashboard'},
@@ -34,10 +34,7 @@ export class AppComponent implements OnInit {
   constructor(private router: Router,
               public userService: UserService,
               private http: HttpClient,
-              private dialog: MatDialog,
-              private membershipGroupService: MembershipGroupService,
-              private paymentService: PaymentMethodService,
-              private classesService: ClassesService) {
+              private dialog: MatDialog) {
     router.events.subscribe(e => {
       if (e instanceof NavigationEnd) {
         const appRoutes = this.appRoutes$.getValue();
@@ -72,24 +69,24 @@ export class AppComponent implements OnInit {
     this.userService.logout();
   }
 
-  loadCache() {
-    this.cacheLoadingStatus = true;
-    Promise.all([
-      // this.classesService.fetchClasses().toPromise(),
-      this.paymentService.fetchPaymentMethods().toPromise(),
-      this.membershipGroupService.fetchMembershipGroups().toPromise()]) // ,
-  //    this.classesService.fetchClassCategories().toPromise()])
-  .finally(() => {
-      this.cacheLoadingStatus = false;
-    });
-  }
+  // loadCache() {
+  //   this.cacheLoadingStatus = true;
+  //   Promise.all([
+  //     // this.classesService.fetchClasses().toPromise(),
+  //     // this.paymentService.fetchPaymentMethods().toPromise(),
+  //     // this.membershipGroupService.fetchMembershipGroups().toPromise()]) // ,
+  // //    this.classesService.fetchClassCategories().toPromise()])
+  // .finally(() => {
+  //     this.cacheLoadingStatus = false;
+  //   });
+  // }
 
-  ngOnInit(): void {
-     this.userService.token$.subscribe((token) => {
-      if (token && !this.cacheLoadingStatus) {
-        this.loadCache();
-      }
-    });
-  }
+  // ngOnInit(): void {
+     // this.userService.token$.subscribe((token) => {
+     //  if (token && !this.cacheLoadingStatus) {
+     //    this.loadCache();
+      // }
+    // });
+  // }
 
 }
