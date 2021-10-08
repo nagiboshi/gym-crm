@@ -11,7 +11,7 @@ export class PropertyValue {
   @Column()
   value: string;
 
-  @ManyToOne(type => Property, {onDelete:"CASCADE"})
+  @ManyToOne(type => Property)
   @JoinColumn()
   property: Property;
 

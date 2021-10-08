@@ -46,4 +46,8 @@ export class ProductService extends CrudTableService<Product>{
     return super.getPaged(limit,  page, queryBuilder);
   }
 
+  getFullEntity(id: number) {
+    return this.get(id);
+  }
+
 }

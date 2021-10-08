@@ -2,10 +2,24 @@
   <div class="stock-crud-dialog">
     <div mat-dialog-title> {{ stock.id == 0 ? 'New' : 'Edit' }} Stock "{{formGroup.value.name}}"</div>
     <div class="stock-form" mat-dialog-content>
-      <div fxLayout="column">
-        <mat-form-field>
-          <input placeholder="Enter stock name" matInput formControlName="name">
-        </mat-form-field>
+      <div class="column-1">
+        <input #productImageChoose class="product-file-target" multiple type="file" accept="image/*"
+               (change)="handleProductImage($event)">
+        <div class="product-image-container" fxLayout="column">
+          <div fxLayoutAlign="space-between center" *ngFor="let imgSrc of productImageSources; let index=index"
+               class="preview-container">
+            <img class="image-small-preview" [src]="imgSrc" width="120"/>
+            <button type="button" mat-raised-button (click)="removeImage(index)"
+                    class="remove-button">Delete
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="column-2" fxLayout="column">
+        <find-product (productSelected)="productSelected($event)" [placeholder]="'Enter product name'"></find-product>
+<!--        <mat-form-field>-->
+<!--          <input placeholder="Enter stock name" matInput formControlName="name">-->
+<!--        </mat-form-field>-->
 <!--        <mat-form-field>-->
 <!--          <input placeholder="Base price" matInput formControlName="price">-->
 <!--        </mat-form-field>-->
@@ -55,6 +69,9 @@
 
         <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
         <button mat-raised-button color="primary" [mat-dialog-close]="formGroup.value">Save</button>
+        <button class="add-image-button" type="button" mat-flat-button
+                (click)="productImageChoose.click()">Add Image
+        </button>
         <button mat-flat-button type="button" (click)="addStockProperty()"
                 fxLayoutAlign="start center">Add new field
           <mat-icon>add</mat-icon>

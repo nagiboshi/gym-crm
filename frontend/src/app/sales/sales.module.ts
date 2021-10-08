@@ -31,7 +31,7 @@ import {ProductModule} from './product/product.module';
     SharedModule,
     CategoryModule,
     ProductModule,
-    // PurchaseVouchersModule,
+    PurchaseVouchersModule,
     SuppliersModule
   ],
   providers: []

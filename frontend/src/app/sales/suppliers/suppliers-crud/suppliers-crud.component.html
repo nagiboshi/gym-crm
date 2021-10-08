@@ -18,21 +18,7 @@
             <div fxFlex="1 1 auto" class="property-field-value">
               <mat-form-field>
                 <mat-label>Field value</mat-label>
-                <mat-chip-list formArrayName="values" #chipList aria-label="Property Value">
-                  <mat-chip
-                    *ngFor="let propertyValue of properties.controls[i].controls.values.value; let propertyValueIndex=index"
-                    [selectable]="true"
-                    [removable]="true"
-                    (removed)="removePropertyValue(properties.controls[i].controls.values, propertyValueIndex)">
-                    {{propertyValue.value}}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
-                  <input placeholder="New property value..."
-                         #fieldValueElRef
-                         [matChipInputFor]="chipList"
-                         [matChipInputSeparatorKeyCodes]="[32, 13]"
-                         (matChipInputTokenEnd)="addPropertyValue(properties.controls[i].controls.values, $event, fieldValueElRef)">
-                </mat-chip-list>
+                  <input matInput formControlName="value" placeholder="Start typing...">
               </mat-form-field>
             </div>
 
@@ -51,7 +37,7 @@
     <div fxLayoutGap="10" class="button-container" fxLayout="row">
 
       <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
-      <button mat-raised-button color="primary" [mat-dialog-close]="formGroup.value">Save</button>
+      <button mat-raised-button color="primary" (click)="saveSupplier()">Save</button>
       <button mat-flat-button type="button" (click)="addProperty()"
               fxLayoutAlign="start center">Add new property
         <mat-icon>add</mat-icon>

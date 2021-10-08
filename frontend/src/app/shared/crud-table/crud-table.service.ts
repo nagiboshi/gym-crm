@@ -18,13 +18,17 @@ export abstract class CrudTableService<T extends Entity> {
   }
 
   async save(entity: T, queryBuilder?: RequestQueryBuilder ): Promise<T> {
-    return await this.http.post<T>(`${this.apiPath}${this.getQueryPath(queryBuilder)}`, entity).toPromise();
+    if( entity.id != 0 ) {
+      return this.http.patch<T>(`${this.apiPath}/${entity.id}${this.getQueryPath(queryBuilder)}`, entity).toPromise();
+    }
+    return this.http.post<T>(`${this.apiPath}${this.getQueryPath(queryBuilder)}`, entity).toPromise();
   }
-
 
   get(id: number, queryBuilder?: RequestQueryBuilder ): Promise<T> {
       return this.http.get<T>(`${this.apiPath}/${id}${this.getQueryPath(queryBuilder)}`).toPromise();
   }
+
+  abstract getFullEntity(id: number);
 
   getPaged(limit: number = 10, page: number = 0, queryBuilder?: RequestQueryBuilder): Observable<Page<T>> {
     if( !queryBuilder ) {

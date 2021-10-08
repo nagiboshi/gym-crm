@@ -1,34 +1,29 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {Category} from '../category/category';
-import {Subcategory} from '../category/subcategory';
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {PropertyValue} from '../properties/property-value/property-value';
 import {Supplier} from '../supplier/supplier';
+import {Product} from '../product/product';
+import {Property} from '../properties/property';
 
 @Entity()
 export class Stock {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
-
-  @Column('simple-array', { nullable: true })
+  @Column('simple-array', {nullable: true})
   images: string[];
 
   @Column()
   price: number;
 
-  @ManyToOne(type=>Supplier)
+  @ManyToOne(type => Product)
+  product: Product;
+
+  @ManyToOne(type => Supplier)
   supplier: Supplier;
 
-  @OneToMany(type => PropertyValue, propertyValue => propertyValue.stock, {nullable: true})
+  @OneToMany(type => PropertyValue, propertyValue => propertyValue.stock, {cascade: ['insert', 'update', 'remove'], nullable: true})
   details: PropertyValue[];
 
-  @ManyToOne(type => Category)
-  @JoinColumn({referencedColumnName: "id"})
-  category: Category;
-
-  @ManyToOne(type => Subcategory)
-  @JoinColumn({referencedColumnName: "id"})
-  subcategory: Subcategory;
+  @OneToMany(type => Property, property => property.stock, {cascade: ['insert', 'update', 'remove'], nullable: true})
+  properties: Property[];
 }

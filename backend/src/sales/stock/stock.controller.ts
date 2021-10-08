@@ -13,10 +13,7 @@ import {FileUploadingUtils} from '../../interceptors/file-uploading-utils.interc
     join: {
       properties: {eager: false},
       'properties.values': {eager: false, alias: 'propertyValues'},
-      subcategory: {eager: false}
     },
-    alwaysPaginate: true,
-
   },
   routes: {
     createOneBase: {

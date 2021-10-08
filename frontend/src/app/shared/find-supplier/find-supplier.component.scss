@@ -1,0 +1,19 @@
+.mat-tab-link{
+  &.active {
+    background-color: rgb(0, 117, 169);
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.supplier-auto-complete-item {
+  height: 15px;
+  font-size: 11px;
+  line-height: 15px;
+  &.phone-number {
+    font-style: italic;
+  }
+}
+

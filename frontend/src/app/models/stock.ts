@@ -7,8 +7,9 @@ export interface Stock {
   id: number;
   product: Product;
   details: PropertyValue[],
-  supplier: Supplier;
-  subcategory: any;
+  // supplier: Supplier;
+  // subcategory: any;
+  images: string[],
   price: number;
   qty: number;
 }

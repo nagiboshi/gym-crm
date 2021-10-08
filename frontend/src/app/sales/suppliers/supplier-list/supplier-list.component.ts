@@ -24,6 +24,7 @@ export class SupplierListComponent extends CrudTableComponent<SupplierService, S
     super.init();
   }
 
+
   _newTableEntity(): Supplier {
     return {id: 0, name: '', properties: []};
   }

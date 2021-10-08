@@ -2,6 +2,7 @@ import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'type
 import {PropertyValue} from './property-value/property-value';
 import {Product} from '../product/product';
 import {Supplier} from '../supplier/supplier';
+import {Stock} from '../stock/stock';
 
 @Entity()
 export class Property {
@@ -11,13 +12,19 @@ export class Property {
   @Column()
   name: string;
 
-  @OneToMany(type => PropertyValue, stockPropertyValue => stockPropertyValue.property, {nullable: true})
+  @OneToMany(type => PropertyValue, stockPropertyValue => stockPropertyValue.property, {
+    cascade: ['insert', 'update'],
+    onDelete: 'CASCADE',
+    nullable: true
+  })
   values: PropertyValue[];
 
-  @ManyToOne(type => Product, {onDelete: "CASCADE", nullable: true} )
+  @ManyToOne(type => Product, {nullable: true})
   product: Product;
 
-  @ManyToOne(type => Supplier, {onDelete: "CASCADE", nullable: true})
+  @ManyToOne(type => Supplier, {nullable: true})
   supplier: Supplier;
 
+  @ManyToOne( type => Stock, {nullable: true})
+  stock: Stock;
 }

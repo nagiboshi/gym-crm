@@ -40,20 +40,23 @@ import {GlobalErrorHandlerService} from '@shared/global-error-handler.service';
 import {InputPromptDialogComponent} from './input-prompt-dialog/input-prompt-dialog.component';
 import {MatChipsModule} from '@angular/material/chips';
 import {DelimeterSeparatedValuePipe} from './pipes/delimeter-separated-value.pipe';
-import {FindStockComponent} from '@shared/find-product/find-stock.component';
+import {FindProductComponent} from '@shared/find-product/find-product.component';
 import {PricePipe} from './pipes/price.pipe';
 import {TaxPipe} from './pipes/tax.pipe';
 import {DiscountPipe} from './pipes/discount.pipe';
 import {TotalPricePipe} from '@shared/pipes/total-price';
 import {JwtInterceptor} from '../helpers/jwt.interceptor';
 import {FindMemberComponent} from '@shared/find-member/find-member.component';
+import {FindStockComponent} from '@shared/find-stock/find-stock.component';
+import {FindSupplierComponent} from '@shared/find-supplier/find-supplier.component';
 
 
 @NgModule({
-  declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent,
-    AddMemberDialogComponent, FindStockComponent, YearMonthSelectorComponent,
+  declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent, FindSupplierComponent,
+    AddMemberDialogComponent, FindProductComponent, YearMonthSelectorComponent,
     MembershipExpirationPipe, ClassCategoryNamePipe,
     TotalPricePipe,
+    FindStockComponent,
     FindMemberComponent,
     DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe, PricePipe, TaxPipe, DiscountPipe],
   providers: [MatIconRegistry, DatePipe, HelpersService, GlobalErrorHandlerService,
@@ -132,9 +135,11 @@ import {FindMemberComponent} from '@shared/find-member/find-member.component';
     LocalImageLinkPipe,
     DelimeterSeparatedValuePipe,
     PricePipe,
+    FindProductComponent,
     DiscountPipe,
     TaxPipe,
-    TotalPricePipe
+    TotalPricePipe,
+    FindSupplierComponent
   ]
 })
 export class SharedModule {

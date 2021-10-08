@@ -6,9 +6,9 @@ export class Supplier {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({unique: true})
   name: string;
 
-  @OneToMany(type => Property, property => property.supplier)
+  @OneToMany(type => Property, (property: Property)=> property.supplier, {cascade: ["insert", "update", "remove"]})
   properties: Property[];
 }

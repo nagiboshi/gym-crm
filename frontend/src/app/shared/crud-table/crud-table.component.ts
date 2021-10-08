@@ -4,7 +4,7 @@ import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-p
 import {CrudTableService, Entity} from '@shared/crud-table/crud-table.service';
 import {MatDialog} from '@angular/material/dialog';
 import {ComponentType} from '@angular/cdk/portal';
-
+import {remove} from 'lodash';
 
 export abstract class CrudTableComponent<S extends CrudTableService<E>, E extends Entity, C> {
   limit = 10;
@@ -20,19 +20,19 @@ export abstract class CrudTableComponent<S extends CrudTableService<E>, E extend
   async openCrudDialog(entity?: E) {
     let tempEntity = entity ? entity : this._newTableEntity();
 
-    if (!entity) {
-      entity = this._newTableEntity();
+    if (tempEntity.id != 0) {
+      tempEntity = await this.service.getFullEntity(tempEntity.id);
     }
-
-    if (entity.id != 0) {
-      tempEntity = await this.service.get(tempEntity.id);
-    }
-
     this.dialog.open(this.crudDialog, {data: tempEntity, minWidth: '50vw'}).afterClosed().subscribe((entity: E) => {
       if (entity) {
         this.service.save(entity).then((savedEntity) => {
           const entities = this.dataSource.data;
+          if( entity.id != 0 ) {
+            remove(entities, e => e.id == entity.id);
+          }
           this.dataSource.data = [savedEntity, ...entities];
+        }).catch((e) => {
+          console.error(e);
         });
       }
     });

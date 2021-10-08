@@ -1,0 +1,14 @@
+<mat-form-field>
+  <mat-label [style.color]="labelColor" class="find-supplier-label">{{placeholder}}</mat-label>
+  <input [formControl]="searchFormControl" #searchField id="members-autocomplete" type="text" matInput [matAutocomplete]="auto">
+  <mat-autocomplete (optionSelected)="supplierSelect($event)" [displayWith]="displayFn" #auto="matAutocomplete">
+    <mat-option (click)="openSupplierCreationForm()" *ngIf="showNewSupplierOption && searchField.value.length!=0">
+      <div class="supplier-auto-complete-item">
+        <div>Add new supplier</div>
+      </div>
+    </mat-option>
+    <mat-option *ngFor="let supplier of suppliers$ | async" [value]="supplier">
+      {{supplier.name}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

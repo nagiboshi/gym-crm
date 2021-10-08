@@ -28,7 +28,24 @@
 }
 
 
+
+.product-file-target {
+  display: none;
+}
+
 .preview-container {
   margin-top: 15px;
 }
+
+
+.image-small-preview {
+  object-fit: scale-down;
+  margin-right: 10px;
+}
+
+.product-image-preview-container {
+  margin-top: 15px;
+  overflow-y: auto;
+}
+
 
