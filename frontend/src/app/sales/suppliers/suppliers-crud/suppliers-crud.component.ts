@@ -3,7 +3,7 @@ import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Supplier} from '@models/supplier';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Property} from '@models/property';
-import {first, isEmpty} from 'lodash';
+import {first, isEqual, differenceWith} from 'lodash';
 @Component({
   selector: 'suppliers-crud',
   templateUrl: './suppliers-crud.component.html',
@@ -17,7 +17,7 @@ export class SuppliersCrudComponent implements OnInit {
 
   _newSupplierPropertyFormGroup(property?: Property) {
     if( !property ) {
-      property = {id: 0, name: "", values: [{id: 0, value: ""}]};
+      property = {id: 0, name: "", values: [{id: 0, value: "", propertyId: 0}]};
     }
 
     const supplierPropertyValue = first(property.values);
@@ -66,7 +66,7 @@ export class SuppliersCrudComponent implements OnInit {
 
 
     form.value.properties.forEach( (property) => {
-      supplier.properties.push({id: property.id, name: property.name, values: [{id: property.propertyValueId, value: property.value}]});
+      supplier.properties.push({id: property.id, name: property.name, values: [{id: property.propertyValueId, value: property.value, propertyId: property.id}]});
     })
 
     return supplier
@@ -74,6 +74,7 @@ export class SuppliersCrudComponent implements OnInit {
 
   saveSupplier() {
     const supplier = this.convertToSupplier(this.formGroup);
-    this.dialogRef.close(supplier);
+    const propertiesToRemove = differenceWith(this.supplier.properties, supplier.properties, isEqual);
+    this.dialogRef.close([supplier, propertiesToRemove]);
   }
 }

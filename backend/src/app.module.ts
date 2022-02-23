@@ -27,15 +27,17 @@ import {ClassScheduleModule} from './class-schedule/class-schedule.module';
 import {ClassSchedule} from './class-schedule/class-schedule.model';
 import {ScheduleMember} from './schedule-member/schedule-member';
 import {SalesModule} from './sales/sales.module';
-import {Stock} from './sales/stock/stock';
+import {Product} from './sales/product/product';
 import {Property} from './sales/properties/property';
-import { StockPurchaseModule } from './stock-purchase/stock-purchase.module';
-import {StockPurchase} from './stock-purchase/stock-purchase';
+import {StockPurchase} from './sales/stock-purchase/stock-purchase';
 import {Subcategory} from './sales/category/subcategory';
 import {Category} from './sales/category/category';
 import {PropertyValue} from './sales/properties/property-value/property-value';
 import {Supplier} from './sales/supplier/supplier';
-import {Product} from './sales/product/product';
+import {PurchaseVoucher} from './sales/purchase-vouchers/purchase-voucher';
+import {InventoryItem} from './sales/inventory/inventory-item';
+import {PurchaseVoucherItem} from './sales/purchase-vouchers/purchase-voucher-item';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -61,26 +63,29 @@ import {Product} from './sales/product/product';
       logging: true,
       keepConnectionAlive: true,
       entities: [
+        InventoryItem,
         Member,
         User,
         Branch,
         ClassCategory,
-        Product,
         ScheduleMember,
         ClassModel,
         Membership,
         ClassSchedule,
         MembershipGroup,
         PaymentMethod,
+        PurchaseVoucher,
+        PurchaseVoucherItem,
+        InventoryItem,
         MembershipPurchase,
         MembershipFreeze,
         StockPurchase,
-        Stock,
+        Product,
         PropertyValue,
         Supplier,
         Property,
         Category,
-        Subcategory
+        Subcategory,
       ],
       synchronize: true,
     })
@@ -96,9 +101,9 @@ import {Product} from './sales/product/product';
     MembershipPurchaseModule,
     SalesModule,
     ClassScheduleModule,
-    StockPurchaseModule],
-  controllers: [AppController,],
-  providers: [AppService],
+    ReportsModule,],
+  controllers: [AppController],
+  providers: [AppService ],
 })
 export class AppModule {
 }

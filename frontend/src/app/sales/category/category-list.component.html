@@ -16,6 +16,7 @@
             [removable]="true"
             (removed)="removeSubcategory( productCategoryIndex, subcategoryIndex)">
             {{subcategory.name}}
+            <mat-icon matChipTrailingIcon class="edit-subcategory" (click)="editSubcategory(productCategoryIndex, subcategoryIndex, subcategory)">edit</mat-icon>
             <mat-icon matChipRemove>cancel</mat-icon>
           </mat-chip>
         </mat-chip-list>
@@ -25,7 +26,7 @@
 
     <ng-container matColumnDef="edit">
       <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
-      <td class="edit-cell" (click)="openCrudDialog(row)" mat-cell *matCellDef="let row"> <mat-icon>edit</mat-icon> </td>
+      <td class="edit-cell" (click)="editCategory(row)" mat-cell *matCellDef="let row"> <mat-icon>edit</mat-icon> </td>
     </ng-container>
 
     <ng-container matColumnDef="delete">

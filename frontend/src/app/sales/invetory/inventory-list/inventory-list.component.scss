@@ -1,0 +1,33 @@
+.control-buttons {
+  margin-top: 10px;
+}
+
+table, mat-paginator {
+  background: transparent;
+}
+
+.inventory-item-row {
+  &:hover {
+    background-color: rgba(0, 117, 169, 0.6);
+    cursor: pointer;
+
+    td {
+      color: white;
+    }
+
+    &.ran-out td{
+      color: #000;
+    }
+  }
+
+  &.ran-out {
+    background-color: #ff000036;
+
+  }
+}
+
+td .inventory-product {
+  &:hover {
+    text-decoration: underline;
+  }
+}

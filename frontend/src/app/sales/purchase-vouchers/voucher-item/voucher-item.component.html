@@ -1,0 +1,27 @@
+<div mat-dialog-title>{{data.product.name}}</div>
+<div class="voucher-item-container" mat-dialog-content fxLayout="row" [formGroup]="form">
+  <div>
+    <div fxLayout="column">
+      <img class="voucher-image" width="120" height="150" *ngFor="let img of data.product.images" [src]="img | localImageLink">
+    </div>
+  </div>
+  <div fxLayout="column">
+    <mat-form-field>
+      <input placeholder="Quantity" type="number" formControlName="qty" min="1" matInput/>
+    </mat-form-field>
+    <mat-form-field>
+      <input placeholder="Price" type="number" formControlName="price" min="1" matInput/>
+    </mat-form-field>
+    <mat-form-field *ngFor="let property of data.product.properties">
+      <mat-select [placeholder]="property.name" (valueChange)="updateVoucherDetails($event)">
+        <mat-option [value]="propertyValue"
+                    *ngFor="let propertyValue of property.values">{{propertyValue.value}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" [mat-dialog-close]="form.value">Save</button>
+  <button mat-raised-button color="warn" [mat-dialog-close]="form.value">Close</button>
+</div>

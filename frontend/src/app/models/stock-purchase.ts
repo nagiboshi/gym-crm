@@ -1,17 +1,17 @@
-import {Stock} from '@models/stock';
 import {PaymentMethod} from '@models/payment-method';
 import {PropertyValue} from '@models/property';
+import {Product} from '@models/product';
+import {InventoryItem} from '../sales/invetory/inventory-list/inventory-item';
 
 
 export class StockPurchase {
   id: number;
   saleDate: number;
   price: number;
-  stock: Stock;
-  quantity: number;
-  stockId: number;
-  paymentMethod: PaymentMethod;
+  item?: InventoryItem;
+  qty: number;
+  itemId: number;
+  paymentMethod?: PaymentMethod;
   paymentMethodId: number;
-  properties: PropertyValue[];
 
 }

@@ -4,12 +4,14 @@ import {NavigationEnd, Router} from '@angular/router';
 import {BehaviorSubject } from 'rxjs';
 import {UserService} from '@shared/user.service';
 import {HttpClient} from '@angular/common/http';
-import {PaymentMethodService} from './settings/settings-page/payment-methods-settings/payment-method.service';
-import {ClassesService} from './classes/classes.service';
-import {MembershipGroupService} from '@shared/membership-group.service';
-import {Stock} from '@models/stock';
 import {MatDialog} from '@angular/material/dialog';
-import {StockPurchaseFormComponent} from './sales/stock/stock-purchase-form/stock-purchase-form.component';
+import {Product} from '@models/product';
+import {StockPurchaseFormComponent} from './sales/product/product-purchase-form/stock-purchase-form.component';
+import {StockPurchase} from '@models/stock-purchase';
+import {StockPurchaseService} from './sales/product/product-purchase-form/stock-purchase.service';
+import {MembershipGroupService} from '@shared/membership-group.service';
+import {PaymentMethodService} from './settings/settings-page/payment-methods-settings/payment-method.service';
+import {InventoryItem} from './sales/invetory/inventory-list/inventory-item';
 
 interface AppRoute {
   label: string;
@@ -29,12 +31,24 @@ export class AppComponent {
     {label: 'Members', isActive: false, path: '/members'},
     {label: 'Sales', isActive: false, path: '/sales'}
   ]);
+  activeRoute: AppRoute;
+  company = {name: 'Primal Gym', logo: "/assets/primal-logo.svg"};
   title = 'primal-accounting';
 
   constructor(private router: Router,
               public userService: UserService,
               private http: HttpClient,
-              private dialog: MatDialog) {
+              private productPurchaseService: StockPurchaseService,
+              private paymentMethodService: PaymentMethodService,
+              private dialog: MatDialog,
+              private membershipGroupService: MembershipGroupService) {
+    userService.token$.subscribe((t) => {
+
+      if(t) {
+        membershipGroupService.fetchMembershipGroups().subscribe();
+        paymentMethodService.fetchPaymentMethods().subscribe();
+      }
+    })
     router.events.subscribe(e => {
       if (e instanceof NavigationEnd) {
         const appRoutes = this.appRoutes$.getValue();
@@ -44,10 +58,14 @@ export class AppComponent {
 
         if (e.url == '/') {
           appRoutes[0].isActive = true;
+          this.activeRoute = appRoutes[0];
         } else {
           appRoutes.forEach((route) => {
             const urlSegment = '/' + e.url.split('/')[1];
             route.isActive = e.url == route.path || route.path.startsWith(urlSegment);
+            if( route.isActive ) {
+              this.activeRoute = route;
+            }
           });
 
         }
@@ -57,36 +75,14 @@ export class AppComponent {
   }
 
   onMemberFound(member: Member) {
-    this.router.navigate([`/members/${member.id}`]);
+    this.router.navigate([`/members/profile/${member.id}`]);
   }
-
-  onStockFound(stock: Stock) {
-    this.dialog.open(StockPurchaseFormComponent, {data: stock, width: '80%', minHeight: '80%'});
-  }
-
 
   logout() {
     this.userService.logout();
   }
 
-  // loadCache() {
-  //   this.cacheLoadingStatus = true;
-  //   Promise.all([
-  //     // this.classesService.fetchClasses().toPromise(),
-  //     // this.paymentService.fetchPaymentMethods().toPromise(),
-  //     // this.membershipGroupService.fetchMembershipGroups().toPromise()]) // ,
-  // //    this.classesService.fetchClassCategories().toPromise()])
-  // .finally(() => {
-  //     this.cacheLoadingStatus = false;
-  //   });
-  // }
+  onStockSelected($event: InventoryItem) {
 
-  // ngOnInit(): void {
-     // this.userService.token$.subscribe((token) => {
-     //  if (token && !this.cacheLoadingStatus) {
-     //    this.loadCache();
-      // }
-    // });
-  // }
-
+  }
 }

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MembershipPurchaseModel} from '@models/membership-purchase';
+import {ServicePurchaseModel} from '@models/membership-purchase';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'lodash';
@@ -45,7 +45,7 @@ export interface DaySchedule extends ClassSchedule {
 @Injectable({providedIn: 'root'})
 export class CommunicationService {
   schedulesSubj = new BehaviorSubject<ClassSchedule[]>([]);
-  newPurchase = new Subject<MembershipPurchaseModel>();
+  newPurchase = new Subject<ServicePurchaseModel>();
   branchesSubj = new BehaviorSubject<Branch[]>([]);
 
   userRoles: Map<number, UserRole>;
@@ -152,7 +152,7 @@ export class CommunicationService {
     return this.httpClient.post<ScheduleMember[]>('/api/schedule-member/bulk', {bulk: scheduleMembers});
   }
 
-  emitNewPurchase(purchase: MembershipPurchaseModel) {
+  emitNewPurchase(purchase: ServicePurchaseModel) {
     this.newPurchase.next(purchase);
   }
 

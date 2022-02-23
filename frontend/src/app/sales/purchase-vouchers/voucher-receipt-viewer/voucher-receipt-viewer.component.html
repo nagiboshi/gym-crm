@@ -1,0 +1,52 @@
+<div fxLayout="column" fxFill>
+  <div fxFlex="10" mat-dialog-title>
+    Purchase Voucher {{voucher.id}}
+  </div>
+  <div fxFlex="90" fxLayout="column" fxLayoutAlign="space-between">
+    <div mat-dialog-content>
+      <div fxLayout="column">
+        <div fxLayout="column" class="purchase-voucher-receipt-viewer">
+          <div class="voucher-title-container"><span class="voucher-title">Supplier:</span> {{voucher.supplier.name}}
+          </div>
+          <div class="voucher-title-container"><span
+            class="voucher-title">From:</span> {{voucher.from | date:'mediumDate'}}</div>
+          <div class="voucher-title-container"><span
+            class="voucher-title">Due:</span> {{voucher.to | date: 'mediumDate'}}
+          </div>
+        </div>
+        <div>
+          <table class="voucher-view">
+            <thead>
+            <tr class="voucher-header-row">
+              <th class="voucher-header">#</th>
+              <th class="voucher-header">Product</th>
+              <th class="voucher-header">Quantity</th>
+              <th class="voucher-header">Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of voucher.items; let index=index;">
+              <td class="voucher-cell-value">{{index + 1}}</td>
+              <td class="voucher-cell-value">{{item.product.name}}</td>
+              <td class="voucher-cell-value">{{item.qty}}</td>
+              <td class="voucher-cell-value">{{item.price}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div fxLayoutAlign="end" class="voucher-receipt-total-container">
+          <div class="voucher-receipt-total">
+            <div class="voucher-total">Total Without Tax: {{total | currency:'AED'}}</div>
+            <div class="voucher-total-vat"> + VAT 5%: {{total | tax:taxes  | currency:'AED'}}</div>
+            <div class="voucher-total-price"> = {{(total + (total | tax: taxes))| currency: 'AED'}} </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-raised-button (click)="print()" color="primary">Print</button>
+      <button mat-raised-button mat-dialog-close color="warn">Cancel</button>
+    </div>
+
+  </div>
+</div>

@@ -18,7 +18,7 @@ export class PaymentMethodService {
 
   removePaymentMethod(id: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      return this.httpClient.delete(`api/payment-method/${id}`).toPromise().then(() => {
+      return this.httpClient.delete(`/api/payment-method/${id}`).toPromise().then(() => {
         const paymentMethods = this.paymentMethodsSubj.getValue();
         remove(paymentMethods, c => c.id == id);
         this.paymentMethodsSubj.next([...paymentMethods]);

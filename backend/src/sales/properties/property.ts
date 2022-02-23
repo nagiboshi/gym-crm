@@ -1,8 +1,8 @@
 import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {PropertyValue} from './property-value/property-value';
-import {Product} from '../product/product';
 import {Supplier} from '../supplier/supplier';
-import {Stock} from '../stock/stock';
+import {Product} from '../product/product';
+import {Subcategory} from '../category/subcategory';
 
 @Entity()
 export class Property {
@@ -12,19 +12,17 @@ export class Property {
   @Column()
   name: string;
 
-  @OneToMany(type => PropertyValue, stockPropertyValue => stockPropertyValue.property, {
-    cascade: ['insert', 'update'],
-    onDelete: 'CASCADE',
-    nullable: true
+  @OneToMany(type => PropertyValue, productPropertyValue => productPropertyValue.property, {
+    cascade: true
   })
   values: PropertyValue[];
 
-  @ManyToOne(type => Product, {nullable: true})
-  product: Product;
-
-  @ManyToOne(type => Supplier, {nullable: true})
+  @ManyToOne(type => Supplier, { onDelete: "CASCADE", onUpdate: "CASCADE",  cascade: true, nullable: true})
   supplier: Supplier;
 
-  @ManyToOne( type => Stock, {nullable: true})
-  stock: Stock;
+  @ManyToOne( type => Product, { onDelete: "CASCADE", onUpdate: "CASCADE",  cascade: true, nullable: true})
+  product: Product;
+
+  @ManyToOne( type => Subcategory, {nullable: true, onDelete: "CASCADE"})
+  subcategory: Subcategory;
 }

@@ -1,0 +1,36 @@
+<form *ngIf="formGroup" [formGroup]="formGroup">
+  <div class="product-crud-dialog">
+    <div mat-dialog-title>{{formGroup.value.name}}</div>
+    <div class="product-form" mat-dialog-content>
+      <div class="column-1">
+
+        <input #productImageChoose class="product-file-target" multiple type="file" accept="image/*"
+               (change)="handleProductImage($event)">
+        <div class="product-image-container" fxLayout="column">
+          <div fxLayoutAlign="space-between center" *ngFor="let imgSrc of productImageSources; let index=index"
+               class="preview-container">
+            <img class="image-small-preview" [src]="imgSrc" width="120"/>
+            <button type="button" mat-raised-button (click)="removeImage(index)"
+                    class="remove-button">Delete
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="column-2" fxLayout="column">
+        <mat-form-field>
+          <input matInput formControlName="name" placeholder="Enter product name">
+        </mat-form-field>
+        <properties-crud [useMultipleValue]="true"  (changedProperties)="updateProductProperties($event)" [properties]="productProperties"></properties-crud>
+      </div>
+    </div>
+    <div fxLayoutAlign="space-between" mat-dialog-actions>
+      <div fxLayoutGap="10" class="button-container" fxLayout="row">
+        <button class="add-image-button" type="button" mat-flat-button
+                (click)="productImageChoose.click()">Add Image
+        </button>
+        <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
+        <button mat-raised-button color="primary" [mat-dialog-close]="formGroup.value">Save</button>
+      </div>
+    </div>
+  </div>
+</form>

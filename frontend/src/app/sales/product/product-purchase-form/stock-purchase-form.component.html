@@ -1,0 +1,112 @@
+<mat-dialog-content>
+  <mat-vertical-stepper #stepper [linear]="true">
+    <mat-step [stepControl]="stockFormGroup">
+      <form [formGroup]="stockFormGroup">
+        <ng-template matStepLabel>Select stock</ng-template>
+        <div fxLayoutAlign="start center">
+          <find-inventory-item [joinFields]="joinFields" (stockSelected)="stockSelected($event)"></find-inventory-item>
+        </div>
+        <div class="next-button">
+          <button [disabled]="!stockFormGroup.valid" mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="priceFormGroup">
+      <form [formGroup]="priceFormGroup">
+        <ng-template matStepLabel>Input Price</ng-template>
+        <div fxLayoutGap="30px" fxLayout="row">
+          <mat-form-field floatLabel="always">
+            <mat-label>Price</mat-label>
+
+<!--            product?.price-->
+
+            <input [min]="0" class="align-right" placeholder="0" matInput formControlName="price">
+            <span matPrefix>AED</span>
+            <span matSuffix>.00</span>
+          </mat-form-field>
+          <mat-form-field floatLabel="always">
+            <mat-label>Discount</mat-label>
+            <input min="0" max="100" class="align-right" placeholder="0" matInput formControlName="discount">
+            <span matSuffix>%</span>
+          </mat-form-field>
+        </div>
+        <div>
+          <button [disabled]="!priceFormGroup.valid" mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="quantityFormGroup">
+      <form [formGroup]="quantityFormGroup">
+        <ng-template matStepLabel>Select Quantity</ng-template>
+
+<!--        product.qty -->
+
+        <div class="quantity-form-group available-items">Available Items: <span class="quantity-form-group qty">{{0}}</span> </div>
+        <div fxLayoutGap="30px" fxLayout="row">
+          <mat-form-field floatLabel="always">
+            <mat-label>Quantity</mat-label>
+            <input type="number" [max]="this.stockFormGroup.value.qty" class="align-right" min="1" placeholder="0" matInput formControlName="quantity">
+          </mat-form-field>
+        </div>
+        <div>
+          <button [disabled]="!quantityFormGroup.valid" mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="paymentMethodFormGroup">
+      <form [formGroup]="paymentMethodFormGroup">
+        <ng-template matStepLabel>Select Payment Method:</ng-template>
+        <div fxLayoutGap="30px" fxLayout="row">
+          <mat-form-field>
+            <mat-select formControlName="paymentMethod">
+              <mat-option [value]="paymentMethod"
+                          *ngFor="let paymentMethod of paymentMethods">{{paymentMethod.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div>
+          <button [disabled]="!paymentMethodFormGroup.valid" mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel>Summary</ng-template>
+      <div *ngIf="stockFormGroup.valid && quantityFormGroup.valid && priceFormGroup.valid" class="summary">
+        <div class="form-row">
+          <div class="form-label">Selected Stock:</div>
+          <div class="form-value">{{stockFormGroup.value.stock.product.name}}</div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">Sell price:</div>
+          <div class="form-value">{{priceFormGroup.value.price}}</div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">Quantity:</div>
+          <div class="form-value">{{quantityFormGroup.value.quantity}}</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Discount {{priceFormGroup.value.discount}}%:</div>
+          <div
+            class="form-value">{{ (priceFormGroup.value.price * quantityFormGroup.value.quantity * (priceFormGroup.value.discount / 100)) | currency:'AED'}}</div>
+        </div>
+
+        <div class="form-row color-red" *ngFor="let govTax of taxes">
+          <div class="form-label">{{govTax.name}}:</div>
+          <div
+            class="form-value">{{ priceFormGroup.value.price | price: quantityFormGroup.value.quantity | discount:priceFormGroup.value.discount | tax:govTax  | currency:'AED' }}</div>
+        </div>
+
+        <div class="form-row color-green bold total">
+          <div class="form-label">Total:</div>
+          <div
+            class="form-value">{{priceFormGroup.value.price | totalPrice: quantityFormGroup.value.quantity :priceFormGroup.value.discount :taxes | currency: 'AED'}}</div>
+        </div>
+      </div>
+      <div>
+        <button (click)="submitPurchase()" mat-button>Submit</button>
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
+</mat-dialog-content>

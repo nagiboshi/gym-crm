@@ -8,4 +8,6 @@ export class CategoryService extends TypeOrmCrudService<Category> {
   constructor(@InjectRepository(Category) public repo) {
     super(repo);
   }
+
+
 }

@@ -10,10 +10,6 @@
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
-  "engines": {
-    "node": "12.18.3",
-    "npm": "6.14.6"
-  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.0.0",
@@ -28,7 +24,7 @@
     "@angular/platform-browser": "~12.0.0",
     "@angular/platform-browser-dynamic": "~12.0.0",
     "@angular/router": "~12.0.0",
-    "@nestjsx/crud-request": "*",
+    "@nestjsx/crud-request": "^5.0.0-alpha.3",
     "angular-google-charts": "^2.2.2",
     "express": "4.17.1",
     "jwt-decode": "^3.1.2",
@@ -36,6 +32,7 @@
     "moment-range": "^4.0.2",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
+    "uuid": "^8.3.2",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
@@ -46,6 +43,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/lodash": "^4.14.168",
     "@types/moment": "^2.13.0",
+    "@types/uuid": "^8.3.2",
     "@types/moment-range": "^4.0.0",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",

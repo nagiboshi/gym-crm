@@ -19,18 +19,6 @@ export class PricePipe implements PipeTransform {
 
     const qtyNumber  = this.helpers.toNumber(qty);
    return price * qtyNumber;
-    //
-    // if(!discount) {
-    //   discount = 0;
-    // }
-    //
-    // const discountNumber = this.toNumber(discount);
-    //
-    // let discountedValue = totalPrice -  totalPrice * (discountNumber / 100);
-    // const sumOfTaxes =
-    //   taxes.map((tax) => discountedValue + discountedValue * (tax as number / 100))
-    //        .reduce((acc, next) => acc + next);
-    // return discountedValue + sumOfTaxes;
   }
 
 }

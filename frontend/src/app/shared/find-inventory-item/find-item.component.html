@@ -1,0 +1,11 @@
+<mat-form-field>
+  <mat-label [style.color]="labelColor" class="find-member-label">{{placeholder}}</mat-label>
+  <input [formControl]="searchFormControl" #searchField id="members-autocomplete" type="text" matInput [matAutocomplete]="auto">
+  <mat-autocomplete (optionSelected)="stockSelect($event)" [displayWith]="displayFn" #auto="matAutocomplete">
+    <mat-option *ngFor="let item of items$ | async" [value]="item">
+      <div class="product-auto-complete-item">{{item.product.name}}
+        <ng-container *ngIf="item.details"><span *ngFor="let detail of item.details" class="stock-detail">{{detail | stockDetail: item.product.properties }}</span></ng-container>
+      </div>
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

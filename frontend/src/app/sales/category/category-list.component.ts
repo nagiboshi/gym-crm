@@ -5,8 +5,9 @@ import {CategoriesCrudComponent} from './categories-crud/categories-crud.compone
 import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
 import {remove} from 'lodash';
 import {MatPaginator} from '@angular/material/paginator';
-import {Category} from '@models/category';
+import {Category, emptyCategory, Subcategory} from '@models/category';
 import {CategoryService} from './category.service';
+import {SubcategoryCrudComponent} from './categories-crud/subcategory-crud.component/subcategory-crud.component';
 
 @Component({
   selector: 'category-list',
@@ -22,13 +23,13 @@ export class CategoryListComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-     this.categoryService.getCategories().then((categories) => {
-       this.dataSource.data = categories;
-     } );
+    this.categoryService.getCategories().then((categories) => {
+      this.dataSource.data = categories;
+    });
   }
 
   openCrudDialog(category: Category) {
-    return this.matDialog.open(CategoriesCrudComponent, {data: category});
+    return this.matDialog.open(CategoriesCrudComponent, {width: '40vw', data: category});
   }
 
   openDeletePromptDialog(category: Category) {
@@ -43,33 +44,67 @@ export class CategoryListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  _newCategory(): Category {
-    return {id: 0, name: '', subcategories: [], description: '', type: ''};
-  }
-
-  addCategory() {
-    this.openCrudDialog(this._newCategory()).afterClosed().subscribe((result) => {
+  editCategory(category: Category) {
+    this.openCrudDialog(category).afterClosed().subscribe((result) => {
       if (!result) {
         return;
       }
 
-      this.categoryService.saveCategory(result)
-        .then(newCategory =>
-                  this.dataSource.data = [newCategory as Category, ...this.dataSource.data]);
+      this.categoryService.updateCategory(result).then((updatedCategory) => {
+        const idx = this.dataSource.data.findIndex(c => updatedCategory.id == c.id);
+        const data = this.dataSource.data;
+        data.splice(idx, 1, updatedCategory);
+        this.dataSource.data = [...data];
+      });
+    });
+  }
 
+  addCategory() {
+    this.openCrudDialog(emptyCategory()).afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+      this.categoryService.saveCategory(result).then((newCategory) => {
+        this.dataSource.data = [newCategory as Category, ...this.dataSource.data];
+      });
     });
   }
 
   removeSubcategory(categoryIndex, subCategoryIndex) {
-    const productCategories = this.dataSource.data;
-    const subCategoryToRemove = productCategories[categoryIndex].subcategories[subCategoryIndex];
-    productCategories[categoryIndex].subcategories.splice(subCategoryIndex, 1);
-    this.categoryService.removeSubcategory(subCategoryToRemove.id).toPromise().then(() => {
-      this.dataSource.data = [...productCategories];
+    this.matDialog.open(DeletePromptDialogComponent, {data: `Are you sure?`}).afterClosed().subscribe((yes) => {
+      if (yes) {
+        const productCategories = this.dataSource.data;
+        const subCategoryToRemove = productCategories[categoryIndex].subcategories[subCategoryIndex];
+        this.categoryService.removeSubcategory(subCategoryToRemove.id).toPromise().then(() => {
+          const subcategories =  productCategories[categoryIndex].subcategories;
+          subcategories.splice(subCategoryIndex, 1);
+        });
+      }
     });
+
   }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
+  }
+
+  editSubcategory(categoryIndex: number, subcategoryIndex: number, subcategory: Subcategory) {
+
+    if (!subcategory.category && subcategory.categoryId) {
+      const productCategories = this.dataSource.data;
+      subcategory.category = productCategories[categoryIndex];
+    }
+
+
+    this.matDialog.open(SubcategoryCrudComponent, {data: subcategory}).afterClosed().subscribe((editedSubcategory) => {
+
+      if (editedSubcategory) {
+        const productCategories = this.dataSource.data;
+        const category = productCategories[categoryIndex];
+        category.subcategories.splice(subcategoryIndex, 1, editedSubcategory);
+        this.dataSource.data = [...productCategories];
+        this.categoryService.saveCategory(category);
+      }
+    });
   }
 }

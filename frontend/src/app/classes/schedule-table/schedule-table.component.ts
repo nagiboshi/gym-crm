@@ -28,7 +28,7 @@ import {ScheduleCalendarHeaderComponent} from './schedule-calendar/schedule.cale
 import {SelectionStrategyEventEmitter} from './schedule-calendar/selection-strategy.event-emitter';
 import {ScheduleMember} from '@models/schedule-member';
 import {ClassesService} from '../classes.service';
-import {MembershipPurchaseModel} from '@models/membership-purchase';
+import {ServicePurchaseModel} from '@models/membership-purchase';
 import {HelpersService} from '@shared/helpers.service';
 import {map, mapTo} from 'rxjs/operators';
 

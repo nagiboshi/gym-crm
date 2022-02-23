@@ -1,3 +1,5 @@
+@import "../colors.scss";
+
 a.active {
   background-color: #0079a7;
   height: 48px;
@@ -5,8 +7,74 @@ a.active {
   max-height: 48px;
 }
 
+.left-sidebar {
+  background-color: rgba(0, 117, 169, 0.8);
+  height: 100%;
+}
 #cache-loading-spinner {
   position: absolute;
   left: 40%;
   top: 40%;
+}
+
+.company-name{
+  height: 60px;
+  width: 250px;
+  font-size: 20px;
+  color: #FFF;
+  padding-left: 54px;
+}
+
+.main-content-container {
+  padding: 0 4%;
+  background-color: $primaryColor01;
+  height: 100%;
+}
+
+.header-items {
+  width: 100%;
+  app-find-member {
+    margin-right: 30px;
+  }
+}
+
+#sales-submenu {
+  display: none;
+  &.opened {
+    display: block;
+  }
+
+  padding-left: 40px;
+}
+
+.main-route-icon {
+  margin-right: 10px;
+}
+
+.main-route-link {
+  font-weight: normal;
+  width: 100%;
+  text-align: left;
+  color: #FFF;
+}
+
+.sales-submenu-sublink {
+  color: #FFF;
+  font-weight: normal;
+}
+
+.header-wrapper {
+  width: 100%;
+}
+header {
+  width: 100%;
+}
+
+.active-route {
+  font-size: 20px;
+  padding-top: 15px;
+}
+
+.main-container {
+  margin-top:30px;
 }

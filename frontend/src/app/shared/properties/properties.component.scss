@@ -1,0 +1,21 @@
+.property-name {
+  width: 100px;
+  max-width: 100px;
+  margin-right: 20px;
+
+  mat-form-field {
+    width: 100px;
+  }
+}
+
+.property-value {
+  padding-right: 20px;
+  mat-form-field {
+    width: 100%;
+  }
+  flex-grow: 1;
+}
+
+.remove-button {
+  cursor: pointer;
+}

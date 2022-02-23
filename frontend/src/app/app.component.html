@@ -1,28 +1,90 @@
-<section class="page-wrapper">
 <!--  <ng-container *ngIf="selectedBranchId; else mainContent">-->
-    <mat-progress-spinner id="cache-loading-spinner" [mode]="'indeterminate'" [strokeWidth]="1"
-                          *ngIf="cacheLoadingStatus"></mat-progress-spinner>
-    <header *ngIf="userService.token$ | async" fxLayoutAlign="space-between center">
-      <nav mat-tab-nav-bar>
-        <a [ngClass]="{'primal-route': true, 'active': appRoute.isActive}" *ngFor="let appRoute of appRoutes$ | async"
-           mat-tab-link
-           [routerLink]="appRoute.path">{{appRoute.label}}</a>
-      </nav>
-      <app-find-member placeholder="Find member..." (memberSelected)="onMemberFound($event)"></app-find-member>
-      <find-stock placeholder="Find stock..." (stockSelected)="onStockFound($event)"></find-stock>
-      <div fxLayoutAlign="space-between center">
-        <a fxLayoutAlign="center center" fxLayout="row" routerLinkActive="active" mat-button [routerLink]="'/settings'">
-          <mat-icon>settings</mat-icon>
-        </a>
-        <button (click)="logout()" mat-button>
-          <mat-icon>exit_to_app</mat-icon>
-        </button>
+<mat-progress-spinner id="cache-loading-spinner" [mode]="'indeterminate'" [strokeWidth]="1"
+                      *ngIf="cacheLoadingStatus"></mat-progress-spinner>
 
-      </div>
-    </header>
 <!--  </ng-container>-->
-  <div class="main-content">
-    <router-outlet></router-outlet>
-  </div>
-</section>
+<mat-drawer-container fxFill>
+  <mat-drawer [style.width.px]="250" mode="side" position="start" opened>
+
+    <div class="left-sidebar">
+      <div fxLayoutAlign="start center" class="company-name">
+        {{company.name}}
+      </div>
+      <mat-divider></mat-divider>
+      <mat-list>
+        <mat-list-item>
+          <a fxLayoutAlign="start center" class="main-route-link first" mat-button routerLink="/dashboard">
+            <mat-icon class="main-route-icon">dashboard</mat-icon>
+            Dashboard</a>
+        </mat-list-item>
+        <mat-list-item>
+          <a fxLayoutAlign="start center" class="main-route-link" mat-button routerLink="/members">
+            <mat-icon class="main-route-icon">group</mat-icon>
+            Members</a>
+        </mat-list-item>
+        <mat-list-item>
+          <button (click)="salesSubmenu.classList.toggle('opened')" fxLayoutAlign="start center" mat-button
+                  class="main-route-link">
+              <mat-icon svgIcon="sales-icon" class="main-route-icon"></mat-icon>
+              Sales
+              <mat-icon *ngIf="!salesSubmenu.classList.contains('opened')">expand_more</mat-icon>
+              <mat-icon *ngIf="salesSubmenu.classList.contains('opened')">expand_less</mat-icon>
+          </button>
+
+        </mat-list-item>
+        <div id="sales-submenu" #salesSubmenu>
+          <mat-list>
+            <mat-list-item>
+              <a class="sales-submenu-sublink" mat-button routerLink="/sales/inventory">Inventory</a>
+            </mat-list-item>
+            <mat-list-item>
+              <a class="sales-submenu-sublink" mat-button routerLink="/sales/purchase-voucher">Purchase Voucher</a>
+            </mat-list-item>
+            <mat-list-item>
+              <a class="sales-submenu-sublink" mat-button routerLink="/sales/memberships">Memberships</a>
+            </mat-list-item>
+            <mat-list-item>
+              <a class="sales-submenu-sublink" mat-button routerLink="/sales/suppliers">Suppliers</a>
+            </mat-list-item>
+            <mat-list-item>
+              <a class="sales-submenu-sublink" mat-button routerLink="/sales/categories">Categories</a>
+            </mat-list-item>
+          </mat-list>
+        </div>
+        <!--      <p>I'm visible because I am open</p>-->
+      </mat-list>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="main-content-container">
+      <header *ngIf="userService.token$ | async" fxLayoutAlign="space-between center">
+        <div class="header-wrapper" fxLayout="row">
+          <div *ngIf="activeRoute" class="active-route">{{activeRoute.label}}</div>
+          <div class="header-items" fxLayoutAlign="end">
+            <app-find-member labelColor="#A1A1A1" placeholder="Find member..."
+                             (memberSelected)="onMemberFound($event)"></app-find-member>
+<!--            <find-product labelColor="#A1A1A1" placeholder="Find product..."-->
+<!--                          (productSelected)="onProductFound($event)"></find-product>-->
+            <find-inventory-item labelColor="#A1A1A1" placeholder="Find stock..."
+            (stockSelected)="onStockSelected($event)"></find-inventory-item>
+            <div fxLayoutAlign="space-between center">
+              <a fxLayoutAlign="center center" fxLayout="row" routerLinkActive="active" mat-button
+                 [routerLink]="'/settings'">
+                <mat-icon>settings</mat-icon>
+              </a>
+              <button (click)="logout()" mat-button>
+                <mat-icon>exit_to_app</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+      <mat-divider></mat-divider>
+      <div class="main-container">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+
+  </mat-drawer-content>
+</mat-drawer-container>
 

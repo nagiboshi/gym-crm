@@ -1,32 +1,37 @@
 <form [formGroup]="formGroup" (ngSubmit)="save()">
   <div class="categories-crud">
     <div mat-dialog-title>{{formGroup.value.id == 0 ? 'New ' : 'Edit '}} {{formGroup.value.name}}</div>
-    <div mat-dialog-content>
-      <mat-form-field class="categories-name">
+    <div fxLayout="column" mat-dialog-content>
+      <mat-form-field fxFlex="100" class="categories-name">
         <input formControlName="name" placeholder="Name" matInput/>
       </mat-form-field>
-      <mat-form-field class="categories-description">
-        <input [multiple]="true" formControlName="description" placeholder="Description" matInput/>
-      </mat-form-field>
-      <ng-container formArrayName="subcategories">
-        <h4>Subcategories list: </h4>
-        <div *ngFor="let _ of subcategoriesFormArray.controls; let i = index">
-          <ng-container [formGroupName]="i">
-            <mat-form-field class="categories-name">
-              <input matInput placeholder="Name" formControlName="name">
-            </mat-form-field>
-            <mat-form-field class="categories-description">
-              <input [multiple]="true" placeholder="Description" matInput formControlName="description">
-            </mat-form-field>
-            <mat-icon class="subcategory-remove-icon" (click)="removeSubcategory(i)">delete</mat-icon>
-          </ng-container>
-        </div>
-      </ng-container>
+      <table mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Subcategories</th>
+          <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+        </ng-container>
+        <ng-container matColumnDef="edit">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+          <td class="edit-cell" mat-cell *matCellDef="let row">
+            <mat-icon (click)="editSubcategory(row)">edit</mat-icon>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+          <td class="delete-cell" mat-cell *matCellDef="let row">
+            <mat-icon (click)="removeSubcategory(row)">delete</mat-icon>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+      </table>
     </div>
     <div mat-dialog-actions>
-      <button mat-raised-button color="primary" type="submit">Save</button>
-      <button mat-raised-button color="primary" type="button" (click)="addSubcategory()">Add subcategory</button>
-      <button mat-flat-button mat-dialog-close color="warn">Cancel</button>
+      <button [disabled]="formGroup.invalid" mat-raised-button color="primary" type="submit">Save</button>
+      <button [disabled]="formGroup.invalid" mat-raised-button color="primary" type="button" (click)="addSubcategory()">
+        Add subcategory
+      </button>
+      <button mat-button mat-dialog-close color="warn">Cancel</button>
     </div>
   </div>
 </form>

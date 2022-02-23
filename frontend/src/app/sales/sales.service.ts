@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
-import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/membership-purchase';
+import {MembershipPurchaseHistoryItem, ServicePurchaseModel} from '@models/membership-purchase';
 import {Observable} from 'rxjs';
 import {RequestQueryBuilder} from '@nestjsx/crud-request';
 import {HttpClient} from '@angular/common/http';
 import {Moment} from 'moment';
 import * as _moment from 'moment';
 import {HelpersService} from '@shared/helpers.service';
+import {StockPurchase} from '@models/stock-purchase';
 
 const moment = _moment;
 const threeDaysTS = 2.592e+8;
@@ -16,13 +17,17 @@ export class SalesService {
   constructor(private httpClient: HttpClient, private helpers: HelpersService) {
   }
 
-  savePurchase(purchase: MembershipPurchaseModel): Observable<MembershipPurchaseModel> {
+  saveStockPurchase(purchase: StockPurchase): Observable<StockPurchase> {
+    return this.httpClient.post<StockPurchase>('/api/stock-purchase', purchase);
+  }
+
+  savePurchase(purchase: ServicePurchaseModel): Observable<ServicePurchaseModel> {
     const query = '/?' + RequestQueryBuilder.create()
       .setJoin({field: 'members'})
       .setJoin({field: 'membership'})
       .setJoin({field: 'freeze'})
       .query(false);
-    return this.httpClient.post<MembershipPurchaseModel>('/api/membership-purchase' + query, purchase);
+    return this.httpClient.post<ServicePurchaseModel>('/api/membership-purchase' + query, purchase);
   }
 
 
@@ -35,7 +40,7 @@ export class SalesService {
 
 
 
-  toPurchaseItemModel(purchaseHistoryItem: MembershipPurchaseHistoryItem ): MembershipPurchaseModel {
+  toPurchaseItemModel(purchaseHistoryItem: MembershipPurchaseHistoryItem ): ServicePurchaseModel {
     return {
       id: purchaseHistoryItem.id,
       members: purchaseHistoryItem.members,
@@ -47,12 +52,13 @@ export class SalesService {
       paymentMethodId: purchaseHistoryItem.paymentMethodId,
       price: purchaseHistoryItem.price,
       saleDate: purchaseHistoryItem.saleDate,
-      startDate: purchaseHistoryItem.startDate
+      startDate: purchaseHistoryItem.startDate,
+
     }
   }
 
 
-  toPurchaseHistoryItem(purchaseItem: MembershipPurchaseModel, expirationMoment: Moment): MembershipPurchaseHistoryItem {
+  toPurchaseHistoryItem(purchaseItem: ServicePurchaseModel, expirationMoment: Moment): MembershipPurchaseHistoryItem {
     if( !purchaseItem ) {
       return;
     }

@@ -1,3 +1,4 @@
+
 import {Controller, UseGuards} from '@nestjs/common';
 import {JwtAuthGuard} from '../../auth/jwt-auth.guard';
 import {PropertyService} from './property.service';

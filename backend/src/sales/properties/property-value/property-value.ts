@@ -1,7 +1,9 @@
-import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Property} from '../property';
 import {Supplier} from '../../supplier/supplier';
-import {Stock} from '../../stock/stock';
+import {Product} from '../../product/product';
+import {InventoryItem} from '../../inventory/inventory-item';
+import {PurchaseVoucherItem} from '../../purchase-vouchers/purchase-voucher-item';
 
 @Entity()
 export class PropertyValue {
@@ -11,15 +13,20 @@ export class PropertyValue {
   @Column()
   value: string;
 
-  @ManyToOne(type => Property)
+  @ManyToOne(type => Property, {onDelete: "CASCADE", persistence: true})
   @JoinColumn()
-  property: Property;
+  property?: Property;
+
+  @Column()
+  propertyId: number;
 
   @ManyToOne(type => Supplier, {onDelete: "CASCADE"})
   @JoinColumn()
-  supplier: Supplier;
+  supplier?: Supplier;
 
-  @ManyToOne(type => Stock, {onDelete:"CASCADE"})
-  @JoinColumn()
-  stock: Stock;
+  @ManyToOne( type => PurchaseVoucherItem, {cascade: true, onDelete: "CASCADE", onUpdate: "CASCADE"})
+  purchaseVoucherItem?: PurchaseVoucherItem;
+
+  @ManyToMany( type => InventoryItem, item => item.details, {persistence: true ,onDelete: "CASCADE", onUpdate: "CASCADE", cascade: true})
+  inventoryItems?: InventoryItem;
 }

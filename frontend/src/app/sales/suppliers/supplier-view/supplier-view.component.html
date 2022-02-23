@@ -1,0 +1,12 @@
+<div mat-dialog-title>Supplier {{supplier.name}}</div>
+<div mat-dialog-content>
+    <div fxLayout="row" *ngFor="let property of supplier.properties" class="supplier-info">
+        <div class="property-name">{{property.name}}</div>
+        <div *ngFor="let propertyValue of property.values" class="property-value">
+          {{propertyValue.value}}
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" mat-dialog-close>Close</button>
+</div>

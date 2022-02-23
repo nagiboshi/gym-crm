@@ -1,0 +1,31 @@
+.product-crud-dialog {
+  padding-bottom:20px;
+  .product-form {
+    display: grid;
+    grid-gap: 40px;
+    grid-template-columns: 200px auto;
+    overflow-y: auto;
+  }
+}
+
+
+.product-file-target {
+  display: none;
+}
+
+.preview-container {
+  margin-top: 15px;
+}
+
+
+.image-small-preview {
+  object-fit: scale-down;
+  margin-right: 10px;
+}
+
+.product-image-preview-container {
+  margin-top: 15px;
+  overflow-y: auto;
+}
+
+

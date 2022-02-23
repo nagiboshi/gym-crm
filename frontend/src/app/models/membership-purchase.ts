@@ -1,16 +1,16 @@
 import {Membership} from './membership';
 import {Member} from '@models/member';
 import {PurchaseFreeze} from '@models/purchase-freeze';
+import {InventoryItem} from '../sales/invetory/inventory-list/inventory-item';
+import {PaymentMethod} from '@models/payment-method';
 
-
-
-export interface MembershipPurchaseModel {
+export interface ServicePurchaseModel {
   id: number;
   membershipId: number;
-  membership: Membership;
+  membership?: Membership;
   saleDate: number;
   startDate: number;
-  freeze: PurchaseFreeze;
+  freeze?: PurchaseFreeze;
   freezeId: number;
   price: number;
   note: string;
@@ -19,7 +19,7 @@ export interface MembershipPurchaseModel {
 }
 
 
-export interface MembershipPurchaseHistoryItem extends MembershipPurchaseModel {
+export interface MembershipPurchaseHistoryItem extends ServicePurchaseModel {
   isExpired: boolean;
   isNearlyExpire: boolean;
   isFreezed: boolean;

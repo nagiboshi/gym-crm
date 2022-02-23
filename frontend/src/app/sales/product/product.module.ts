@@ -1,19 +1,21 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ProductListComponent} from './product-list/product-list.component';
-import {ProductCrudDialogComponent} from './product-list/product-crud-dialog/product-crud-dialog.component';
 import {ProductService} from './product.service';
 import {SharedModule} from '@shared/shared.module';
+import {StockPurchaseFormComponent} from './product-purchase-form/stock-purchase-form.component';
+import { ViewProductComponent } from './view-product/view-product.component';
 
 
 @NgModule({
-  declarations: [ProductListComponent, ProductCrudDialogComponent],
+  declarations: [ StockPurchaseFormComponent, ViewProductComponent],
   providers: [ProductService],
   imports: [
     CommonModule,
     SharedModule
   ],
-  exports: [ProductListComponent]
+    exports: [
+        StockPurchaseFormComponent
+    ]
 })
 export class ProductModule {
 }

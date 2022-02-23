@@ -1,6 +1,6 @@
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Category} from './category';
-import {Product} from '../product/product';
+import {Property} from '../properties/property';
 
 @Entity()
 export class Subcategory {
@@ -10,12 +10,17 @@ export class Subcategory {
   @Column()
   name: string;
 
-  @Column()
-  description: string;
-
-  @ManyToOne(type => Category, category => category.id, {onDelete: 'CASCADE', cascade: true})
+  @ManyToOne(type => Category, category => category.id,{
+    onDelete: "CASCADE",
+  })
   category: Category;
 
-  @OneToMany(type => Product, product => product.subcategory, {onDelete: 'CASCADE'})
-  product: Product;
+  @Column()
+  categoryId: number;
+
+  @OneToMany(type => Property, property => property.subcategory, {
+    nullable: true,
+    cascade: true
+  })
+  properties: Property[];
 }

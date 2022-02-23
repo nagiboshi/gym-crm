@@ -1,6 +1,16 @@
-import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {InventoryItem} from '../inventory/inventory-item';
+import {PurchaseVoucherItem} from '../purchase-vouchers/purchase-voucher-item';
 import {Property} from '../properties/property';
-import {Subcategory} from '../category/subcategory';
+import {Type} from 'class-transformer';
+
+export class ProductSubmit {
+  id: number;
+  name: string;
+  images?: string[];
+  @Type( () => Property)
+  properties: Property[];
+}
 
 @Entity()
 export class Product {
@@ -10,13 +20,15 @@ export class Product {
   @Column()
   name: string;
 
-  @OneToMany(type => Property, property => property.product, {cascade: true} )
-  properties: Property[];
+  @Column('simple-array', {nullable: true})
+  images: string[];
 
-  @ManyToOne(type => Subcategory)
-  @JoinColumn({referencedColumnName: "id", name: 'subcategoryId'})
-  subcategory: Subcategory;
+  @OneToMany( type => InventoryItem, item => item.product)
+  inventoryItems?: InventoryItem[];
 
-  @Column()
-  subcategoryId: number;
+  @OneToMany( type => PurchaseVoucherItem, item => item.product)
+  purchaseVoucherItems?: PurchaseVoucherItem;
+
+  @OneToMany( type => Property, property => property.product)
+  properties?: Property[];
 }

@@ -1,0 +1,19 @@
+@import "../../../shared/crud-table/crud-table.component";
+
+
+.purchase-voucher-content {
+  height: 65vh;
+}
+
+
+.no-items-added {
+  width: 100%;
+  text-align: center;
+  height: 48px;
+  line-height: 48px;
+}
+
+.form-errors {
+  color: red;
+  font-style: italic;
+}

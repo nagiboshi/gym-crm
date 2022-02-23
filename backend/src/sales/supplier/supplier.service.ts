@@ -5,7 +5,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Supplier} from './supplier';
 
 @Injectable()
-export class SupplierService extends TypeOrmCrudService<ScheduleMember> {
+export class SupplierService extends TypeOrmCrudService<Supplier> {
   constructor(@InjectRepository(Supplier) public repo) {
     super(repo);
   }

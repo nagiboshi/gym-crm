@@ -1,29 +1,40 @@
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {Property} from './properties/property';
-import {Stock} from './stock/stock';
+import {Product} from './product/product';
 import {PropertyService} from './properties/property.service';
-import {StockService} from './stock/stock.service';
+import {ProductService} from './product/product.service';
 import {PropertyController} from './properties/property.controller';
-import {StockController} from './stock/stock.controller';
+import {ProductController} from './product/product.controller';
 import {Category} from './category/category';
 import {Subcategory} from './category/subcategory';
 import {CategoryService} from './category/category.service';
-import {SubcategoryService} from './category/subcategory.service';
 import {CategoryController} from './category/category.controller';
-import {SubcategoryController} from './category/subcategory.controller';
 import {PropertyValueService} from './properties/property-value/property-value.service';
 import {PropertyValue} from './properties/property-value/property-value';
-import { SupplierController } from './supplier/supplier.controller';
-import { SupplierService } from './supplier/supplier.service';
+import {SupplierController} from './supplier/supplier.controller';
+import {SupplierService} from './supplier/supplier.service';
 import {Supplier} from './supplier/supplier';
-import {ProductController} from './product/product.controller';
-import {ProductService} from './product/product.service';
-import {Product} from './product/product';
+import {SubcategoryController} from './category/subcategory.controller';
+import {SubcategoryService} from './category/subcategory.service';
+import {PurchaseVoucher} from './purchase-vouchers/purchase-voucher';
+import {PurchaseVoucherService} from './purchase-vouchers/purchase-voucher.service';
+import {PurchaseVoucherController} from './purchase-vouchers/purchase-voucher.controller';
+import {InventoryItem} from './inventory/inventory-item';
+import {InventoryService} from './inventory/inventory.service';
+import {InventoryController} from './inventory/inventory.controller';
+import {StockPurchaseService} from './stock-purchase/stock-purchase.service';
+import {StockPurchase} from './stock-purchase/stock-purchase';
+import {StockPurchaseController} from './stock-purchase/stock-purchase.controller';
+import {PurchaseVoucherItem} from './purchase-vouchers/purchase-voucher-item';
+import {PurchaseVoucherItemService} from './purchase-vouchers/purchase-voucher-item.service';
+import {RequestService} from '../shared/request.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Property, Product, Supplier, PropertyValue, Category, Subcategory, Stock])],
-  providers: [PropertyValueService, ProductService, PropertyService,  StockService, CategoryService, SubcategoryService, SupplierService],
-  controllers: [PropertyController, ProductController, CategoryController, SubcategoryController, PropertyController, StockController, SupplierController]
+  imports: [TypeOrmModule.forFeature([InventoryItem, PurchaseVoucherItem, Property, Supplier, StockPurchase, PurchaseVoucher, PropertyValue, Category, Subcategory, Product])],
+  providers: [InventoryService, RequestService, PurchaseVoucherItemService, PropertyValueService, StockPurchaseService, PurchaseVoucherService, SubcategoryService, PropertyService, ProductService, CategoryService, SupplierService],
+  controllers: [InventoryController, PropertyController, PurchaseVoucherController, StockPurchaseController, SubcategoryController, CategoryController, ProductController, SupplierController],
+  exports: [InventoryService]
 })
-export class SalesModule {}
+export class SalesModule {
+}

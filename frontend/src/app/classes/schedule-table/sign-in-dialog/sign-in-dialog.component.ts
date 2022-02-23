@@ -6,12 +6,12 @@ import {ScheduleMember} from '@models/schedule-member';
 import {Moment} from 'moment';
 import * as _moment from 'moment';
 import {remove, first} from 'lodash';
-import {MembershipPurchaseHistoryItem, MembershipPurchaseModel} from '@models/membership-purchase';
+import {MembershipPurchaseHistoryItem, ServicePurchaseModel} from '@models/membership-purchase';
 import {Router} from '@angular/router';
 import {map, tap} from 'rxjs/operators';
 import {SalesService} from '../../../sales/sales.service';
 import {MatTableDataSource} from '@angular/material/table';
-import {MembershipPurchaseFormComponent} from '../../../sales/membership/membership-purchase-form/membership-purchase-form.component';
+import {ServicePurchaseFormComponent} from '../../../sales/membership/service-purchase-form/service-purchase-form.component';
 import {MembersService} from '../../../members/members.service';
 
 export interface SignInDialogData {
@@ -86,9 +86,9 @@ export class SignInDialogComponent implements OnInit {
 
   openSellDialog(signInMember: SignInMember) {
     const memberId = signInMember.member.id;
-    this.dialog.open(MembershipPurchaseFormComponent,
+    this.dialog.open(ServicePurchaseFormComponent,
           {data: signInMember.member })
-            .afterClosed().subscribe((purchase: MembershipPurchaseModel) => {
+            .afterClosed().subscribe((purchase: ServicePurchaseModel) => {
       if (purchase) {
           // const purchaseModel = toPurchaseItemModel(purchase);
           this.salesService.savePurchase(purchase)

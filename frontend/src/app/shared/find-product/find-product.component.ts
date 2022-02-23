@@ -9,6 +9,8 @@ import {Product} from '@models/product';
 import {Page} from '@models/page';
 import {QueryJoin} from '@nestjsx/crud-request';
 import {ProductService} from '../../sales/product/product.service';
+import {ProductCrudDialogComponent} from '../../sales/purchase-vouchers/product-crud-dialog/product-crud-dialog.component';
+import {HelpersService} from '@shared/helpers.service';
 
 @Component({
   selector: 'find-product',
@@ -18,7 +20,7 @@ import {ProductService} from '../../sales/product/product.service';
 export class FindProductComponent implements OnInit, AfterViewInit {
   @ViewChild('searchField') searchInput: ElementRef;
   @Input()
-  labelColor = '#FFF';
+  labelColor = '#0000008a';
   @Input()
   placeholder;
   @Input()
@@ -26,14 +28,14 @@ export class FindProductComponent implements OnInit, AfterViewInit {
   @Input()
   clearAfterSelection = false;
   @Input()
-  joinFields: QueryJoin[];
+  joinFields: QueryJoin[] = [];
   @Output()
   productSelected: EventEmitter<Product> = new EventEmitter<Product>();
   products$: Observable<Product[]>;
   searchFormControl: FormControl;
   showNewProductOption = false;
 
-  constructor(public dialog: MatDialog, private productService: ProductService) {
+  constructor(public dialog: MatDialog, private productService: ProductService, private helpers: HelpersService) {
   }
 
   displayFn(product: Product) {
@@ -71,24 +73,22 @@ export class FindProductComponent implements OnInit, AfterViewInit {
   loadProducts(search): Observable<Page<Product>> {
     if (!isEmpty(search)) {
 
-      return this.productService.getProducts(10, 0, search);
+      return this.productService.getProducts(10, 0, search, this.joinFields);
     }
     return of(null);
   }
 
   openNewProductForm() {
-    // const newProduct  = {id: 0, firstName: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
-    // this.searchInput.nativeElement.blur();
-    // this.showNewProductOption = false;
-    // this.dialog.open(AddNew, {data: newMember})
-    //   .afterClosed()
-    //   .subscribe((newMember: Member) => {
-    //     if ( newMember ) {
-    //       this.communicationService.saveMember(newMember).toPromise().then((savedMember) => {
-    //         this.communicationService.memberCreated.next(savedMember);
-    //         this.memberSelected.emit(savedMember);
-    //       });
-    //     }
-    //   });
+    const newProduct = {id: 0, firstName: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
+    this.searchInput.nativeElement.blur();
+    this.showNewProductOption = false;
+    this.dialog.open(ProductCrudDialogComponent, {data: newProduct})
+      .afterClosed()
+      .subscribe(async (submittedProduct: Product) => {
+        if (submittedProduct) {
+          const savedProduct = await this.productService.save(this.helpers.toFormData(submittedProduct) as any);
+          this.productSelected.emit(savedProduct);
+        }
+      });
   }
 }

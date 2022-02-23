@@ -1,73 +1,65 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
-import {PurchaseVoucher} from '../purchase-voucher';
+import {PurchaseVoucher, PurchaseVoucherItem} from '@models/purchase-voucher';
 import {Supplier} from '@models/supplier';
-import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
-import * as _moment from 'moment'
-import {MAT_DIALOG_DATA, MatDialog} from '@angular/material/dialog';
-import {Stock} from '@models/stock';
-import {StockCrudDialogComponent} from '../stock-crud-dialog/stock-crud-dialog.component';
-let moment  = _moment;
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {Product} from '@models/product';
+import {ProductService} from '../../product/product.service';
+import {PurchaseVouchersService} from '../purchase-vouchers.service';
+import {HelpersService} from '@shared/helpers.service';
+import {MatDatepickerInputEvent} from '@angular/material/datepicker';
+import {Moment} from 'moment';
+import {VoucherItemComponent} from '../voucher-item/voucher-item.component';
+import {QueryJoin} from '@nestjsx/crud-request';
+
 @Component({
   selector: 'purchase-voucher-crud-dialog',
   templateUrl: './purchase-voucher-crud-dialog.component.html',
   styleUrls: ['./purchase-voucher-crud-dialog.component.scss']
 })
 export class PurchaseVoucherCrudDialogComponent implements OnInit {
-  dataSource: MatTableDataSource<PurchaseVoucher>;
-  selectedSupplier: Supplier = null;
-  columns = ['productId','name', 'qty', 'delete'];
-  formArray: FormArray;
-  date: number;
-  dueDate: Date;
+  dataSource: MatTableDataSource<PurchaseVoucherItem>;
+  columns = ['name', 'qty', 'price'];
   form: FormGroup;
+  minDateTo: any;
+  findProductJoinFields: QueryJoin[] = [{field: 'properties'}, {field: 'properties.values'}];
 
-
-  constructor(@Inject(MAT_DIALOG_DATA) public purchaseVoucher: PurchaseVoucher, private dialog: MatDialog, private fb: FormBuilder) {
+  constructor(@Inject(MAT_DIALOG_DATA) public purchaseVoucher: PurchaseVoucher,
+              private purchaseVouchersService: PurchaseVouchersService,
+              private dialogRef: MatDialogRef<PurchaseVoucherCrudDialogComponent>,
+              private productService: ProductService,
+              private helpersService: HelpersService,
+              private dialog: MatDialog,
+              private fb: FormBuilder) {
   }
 
 
   ngOnInit(): void {
-    //
-    // if(!this.purchaseVoucher){
-    //   const emptyStocks: Stock[] = [1,2,3,4,5].map<Stock>( (_, idx, arr) => { return {id: 0, qty: 0, product: null, details: null, images: [], price: 0  }});
-    //   this.purchaseVoucher = {id: 0, from: moment.now(), to: null, qty: 5, stocks: emptyStocks, supplier: this.selectedSupplier};
-    // }
-    this.dataSource = new MatTableDataSource<PurchaseVoucher>([]);
-    this.formArray = new FormArray([]);
-    this.date = moment.now();
-    this.form = this.fb.group({});
+    const purchaseVoucherItems = [...this.purchaseVoucher.items];
+
+    this.dataSource = new MatTableDataSource<PurchaseVoucherItem>(purchaseVoucherItems);
+    this.minDateTo = this.purchaseVoucher.from;
+    this.form = this.fb.group({
+      id: [this.purchaseVoucher.id],
+      from: [this.purchaseVoucher.from, Validators.required],
+      to: [this.purchaseVoucher.to],
+      items: [this.dataSource.data, Validators.required],
+      supplier: [this.purchaseVoucher.supplier, Validators.required],
+    });
   }
 
-  addNewItem() {
-
-
-    this.dialog.open(StockCrudDialogComponent, {});
-    // const fg = this.fb.group({
-    //
-    // });
-    // id: number;
-    // from: number;
-    // to?: number;
-    // supplier: Supplier;
-    // qty: number;
-    // stocks: Stock[];
-    // this.formArray.push()
-  }
-
-
-  submitVoucher() {
-    let purchaseVoucher: Partial<PurchaseVoucher> = {};
-
-    purchaseVoucher.id = 0;
-    purchaseVoucher.supplier = this.selectedSupplier;
-    purchaseVoucher.stocks = [];
-    // purchaseVoucher.from = this.
+  addNewItem(product: Product) {
+    const voucherItem: PurchaseVoucherItem = {id: 0, productId: product.id, product, price: 0, qty: 1, details: [], purchaseVoucher: this.form.value };
+      this.dialog.open(VoucherItemComponent, {data: voucherItem}).afterClosed().subscribe(async (newVoucherItem: PurchaseVoucherItem) => {
+         this.dataSource.data = [newVoucherItem, ...this.dataSource.data];
+         this.form.patchValue({items: this.dataSource.data});
+      });
   }
 
 
   supplierSelected(supplier: Supplier) {
-    this.selectedSupplier = supplier;
+    this.form.patchValue({supplier});
   }
 
   openDeletePromptDialog(row) {
@@ -75,6 +67,17 @@ export class PurchaseVoucherCrudDialogComponent implements OnInit {
   }
 
   removeSupplier() {
-    this.selectedSupplier = null;
+    this.form.patchValue({supplier: null});
   }
+
+  updateFromDateField(changeDateEvent: MatDatepickerInputEvent<unknown, unknown | null>) {
+    const jsonFromDate  = (changeDateEvent.value as Moment).toJSON();
+    this.form.patchValue({from: jsonFromDate});
+    this.minDateTo  = jsonFromDate;
+  }
+
+  updateToDateField(changeDateEvent: MatDatepickerInputEvent<unknown, unknown | null>) {
+    this.form.patchValue({to: (changeDateEvent.value as Moment).toJSON()});
+  }
+
 }

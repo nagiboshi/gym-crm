@@ -3,8 +3,6 @@ import {CreateManyDto, Crud, CrudRequest, Override, ParsedBody, ParsedRequest} f
 import {MembershipGroup} from './membership-group';
 import {MembershipGroupService} from './membership-group.service';
 import {MembershipService} from './membership.service';
-import {Membership} from './membership';
-import {DeepPartial} from 'typeorm';
 import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 
 @Crud({

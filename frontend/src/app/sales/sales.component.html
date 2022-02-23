@@ -1,21 +1,33 @@
-<mat-tab-group>
+<mat-tab-group >
   <mat-tab label="Inventory">
-<!--    <inventory-list></inventory-list>-->
+    <ng-template matTabContent>
+      <inventory-list></inventory-list>
+    </ng-template>
   </mat-tab>
   <mat-tab label="Purchase Voucher">
-    <purchase-vouchers></purchase-vouchers>
+    <ng-template matTabContent>
+      <purchase-vouchers></purchase-vouchers>
+    </ng-template>
   </mat-tab>
-  <mat-tab label="Products">
-    <product-list></product-list>
-  </mat-tab>
+  <!--  <mat-tab label="Products">-->
+<!--  <ng-template matTabContent>-->
+  <!--    <product-list></product-list>-->
+<!--  </ng-template>-->
+  <!--  </mat-tab>-->
   <mat-tab label="Memberships">
-    <membership-list></membership-list>
+    <ng-template matTabContent>
+      <membership-list></membership-list>
+    </ng-template>
   </mat-tab>
   <mat-tab label="Suppliers">
-    <supplier-list></supplier-list>
+    <ng-template matTabContent>
+      <supplier-list></supplier-list>
+    </ng-template>
   </mat-tab>
   <mat-tab label="Categories">
-    <category-list></category-list>
+    <ng-template matTabContent>
+      <category-list></category-list>
+    </ng-template>
   </mat-tab>
 
 </mat-tab-group>

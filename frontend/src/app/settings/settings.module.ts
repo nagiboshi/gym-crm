@@ -9,7 +9,6 @@ import {PaymentMethodCreateDialogComponent} from './settings-page/payment-method
 import {CreateClassDialogComponent} from './settings-page/classes/class-settings/create-class-dialog/create-class-dialog.component';
 import {UsersComponent} from './settings-page/users/users.component';
 import {UserMergeDialogComponent} from './settings-page/users/user-merge-dialog/user-merge-dialog.component';
-import {PaymentMethodService} from './settings-page/payment-methods-settings/payment-method.service';
 import { UserRolePipe } from './settings-page/users/user-role.pipe';
 
 

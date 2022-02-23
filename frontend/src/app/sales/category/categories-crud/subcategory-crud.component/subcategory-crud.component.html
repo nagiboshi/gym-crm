@@ -1,0 +1,19 @@
+<div mat-dialog-title>Subcategory Details</div>
+<div mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <div fxLayout="column">
+      <mat-form-field>
+        <input [disabled]="true" matInput placeholder="Category name" [value]="subcategory.category?.name">
+      </mat-form-field>
+      <mat-form-field  fxFlex="100">
+        <input placeholder="Subcategory name" matInput formControlName="name">
+      </mat-form-field>
+      <properties-crud (changedProperties)="updatedProperties($event)" [properties]="subcategory.properties"></properties-crud>
+    </div>
+  </form>
+</div>
+
+<div mat-dialog-actions>
+  <button color="primary" [mat-dialog-close]="formGroup.value" mat-raised-button>Save</button>
+  <button color="warn" mat-dialog-close mat-button>Cancel</button>
+</div>

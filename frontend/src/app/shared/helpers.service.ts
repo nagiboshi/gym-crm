@@ -17,7 +17,7 @@ export class HelpersService {
 
 
   toFormData(obj: any, rootName?: string, ignoreList?: string) {
-    var formData = new FormData();
+    const formData = new FormData();
 
     const appendFormData = (data, root) => {
       if (!ignore(root)) {

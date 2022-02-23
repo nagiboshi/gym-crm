@@ -1,0 +1,21 @@
+@import "../../../shared/crud-table/crud-table.component";
+
+
+.purchase-voucher-item {
+  &:hover {
+    background-color: rgba(0, 117, 169, 0.6);
+    cursor: pointer;
+
+    td {
+      color: white;
+    }
+
+  }
+
+}
+
+td .supplier-item {
+  &:hover {
+    text-decoration: underline;
+  }
+}

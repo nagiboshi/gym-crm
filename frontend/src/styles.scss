@@ -10,7 +10,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .page-wrapper{
-  width: 1150px;
   margin: 0 auto;
   display:flex;
   height: 100vh;
@@ -30,16 +29,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     }
 }
 
-
-header {
-  margin-bottom: 30px;
-  background: $primaryColor6;
-  color: #FFF;
-  .mat-tab-link {
-    color: #FFF;
-    opacity: 1;
-  }
-}
 
 #schedule-datepicker .mat-calendar-body-range-start::after,
 #schedule-datepicker .mat-calendar-body-range-start:not(.mat-calendar-body-in-comparison-range)::before {

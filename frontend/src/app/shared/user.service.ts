@@ -3,10 +3,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {User} from '../models/user';
 import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../environments/environment';
 import {map, tap} from 'rxjs/operators';
-import jwt_decode from "jwt-decode";
-import {RequestQueryBuilder} from '@nestjsx/crud-request';
 export interface Token {
   access_token: string;
 }

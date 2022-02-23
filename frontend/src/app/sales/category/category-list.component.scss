@@ -1,1 +1,10 @@
 @import "../../shared/crud-table/crud-table.component";
+
+
+.edit-subcategory {
+  color: #929292;
+  &:hover {
+    color: #696969;
+
+  }
+}

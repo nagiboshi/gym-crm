@@ -41,7 +41,9 @@ export class MembershipListComponent implements OnInit, AfterViewInit{
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource<MembershipGroup>([]);
-    this.packageUpdateSub = this.membershipGroupService.getMembershipGroups$().subscribe(membershipCategories => this.dataSource.data = membershipCategories);
+    this.packageUpdateSub = this.membershipGroupService.getMembershipGroups$().subscribe(membershipCategories => {
+      console.log(membershipCategories);
+      this.dataSource.data = membershipCategories;} );
   }
 
   openDeletePromptDialog(membershipGroup: MembershipGroup) {

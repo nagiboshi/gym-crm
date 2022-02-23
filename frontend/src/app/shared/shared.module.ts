@@ -47,33 +47,43 @@ import {DiscountPipe} from './pipes/discount.pipe';
 import {TotalPricePipe} from '@shared/pipes/total-price';
 import {JwtInterceptor} from '../helpers/jwt.interceptor';
 import {FindMemberComponent} from '@shared/find-member/find-member.component';
-import {FindStockComponent} from '@shared/find-stock/find-stock.component';
 import {FindSupplierComponent} from '@shared/find-supplier/find-supplier.component';
-
+import {PropertiesComponent} from './properties/properties.component';
+import {PropertiesCrudComponent} from './properties/properties-crud/properties-crud.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {FindItemComponent} from '@shared/find-inventory-item/find-item.component';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatListModule} from '@angular/material/list';
+import {StockDetailsPipe} from '@shared/pipes/stock-details.pipe';
 
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent, FindSupplierComponent,
     AddMemberDialogComponent, FindProductComponent, YearMonthSelectorComponent,
     MembershipExpirationPipe, ClassCategoryNamePipe,
+    StockDetailsPipe,
     TotalPricePipe,
-    FindStockComponent,
+    FindProductComponent,
+    FindItemComponent,
     FindMemberComponent,
-    DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe, PricePipe, TaxPipe, DiscountPipe],
+    DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe, PricePipe, TaxPipe, DiscountPipe, PropertiesComponent, PropertiesCrudComponent],
   providers: [MatIconRegistry, DatePipe, HelpersService, GlobalErrorHandlerService,
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {
-    provide: MAT_DATE_FORMATS, useValue: {
-      parse: {
-        dateInput: 'LL',
-      },
-      display: {
-        dateInput: 'LL',
-        monthYearLabel: 'MMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY',
-      },
-    }
-  }],
+      provide: MAT_DATE_FORMATS, useValue: {
+        parse: {
+          dateInput: 'LL',
+        },
+        display: {
+          dateInput: 'LL',
+          monthYearLabel: 'MMM YYYY',
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY',
+        },
+      }
+    }],
   imports: [
     CommonModule,
     MatSelectModule,
@@ -84,8 +94,11 @@ import {FindSupplierComponent} from '@shared/find-supplier/find-supplier.compone
     MatIconModule,
     MatTreeModule,
     MatDialogModule,
+    MatSnackBarModule,
     MatDatepickerModule,
+    MatDividerModule,
     FlexLayoutModule,
+    MatMenuModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatButtonModule,
@@ -93,12 +106,15 @@ import {FindSupplierComponent} from '@shared/find-supplier/find-supplier.compone
     MatChipsModule,
     MatMomentDateModule,
     MatPaginatorModule,
-    FormsModule
+    FormsModule,
+    MatSidenavModule
   ],
   exports: [
     FlexLayoutModule,
     MatTabsModule,
     MatButtonModule,
+    MatMenuModule,
+    MatSidenavModule,
     ReactiveFormsModule,
     MatIconModule,
     MatStepperModule,
@@ -113,6 +129,9 @@ import {FindSupplierComponent} from '@shared/find-supplier/find-supplier.compone
     HttpClientModule,
     MatTableModule,
     MatCheckboxModule,
+    MatDividerModule,
+    MatExpansionModule,
+    MatListModule,
     // MomentDateModule,
     MatMomentDateModule,
     MatAutocompleteModule,
@@ -124,8 +143,10 @@ import {FindSupplierComponent} from '@shared/find-supplier/find-supplier.compone
     MatPaginatorModule,
     AddMemberDialogComponent,
     PurchaseHistoryComponent,
-    FindStockComponent,
+    FindItemComponent,
+    FindProductComponent,
     MatChipsModule,
+    PropertiesComponent,
     InputPromptDialogComponent,
     YearMonthSelectorComponent,
     MembershipExpirationPipe,
@@ -138,13 +159,16 @@ import {FindSupplierComponent} from '@shared/find-supplier/find-supplier.compone
     FindProductComponent,
     DiscountPipe,
     TaxPipe,
+    StockDetailsPipe,
     TotalPricePipe,
-    FindSupplierComponent
+    FindSupplierComponent,
+    PropertiesCrudComponent
   ]
 })
 export class SharedModule {
   constructor(private iconRegistry: MatIconRegistry, private sanitizer: DomSanitizer) {
     iconRegistry.addSvgIcon('schedule-icon', sanitizer.bypassSecurityTrustResourceUrl('/assets/schedule-icon.svg'));
+    iconRegistry.addSvgIcon('sales-icon', sanitizer.bypassSecurityTrustResourceUrl('/assets/sales-icon.svg'));
     iconRegistry.addSvgIcon('sharePeople', sanitizer.bypassSecurityTrustResourceUrl('/assets/share-people.svg'));
 
   }

@@ -18,9 +18,6 @@ export abstract class CrudTableService<T extends Entity> {
   }
 
   async save(entity: T, queryBuilder?: RequestQueryBuilder ): Promise<T> {
-    if( entity.id != 0 ) {
-      return this.http.patch<T>(`${this.apiPath}/${entity.id}${this.getQueryPath(queryBuilder)}`, entity).toPromise();
-    }
     return this.http.post<T>(`${this.apiPath}${this.getQueryPath(queryBuilder)}`, entity).toPromise();
   }
 
@@ -47,8 +44,8 @@ export abstract class CrudTableService<T extends Entity> {
 
   remove(entityOrId: T | number) {
     if (typeof entityOrId == 'number') {
-      return this.http.delete(`${this.apiPath}/${entityOrId}` + entityOrId,);
+      return this.http.delete(`${this.apiPath}/${entityOrId}`).toPromise();
     }
-    return this.http.delete(`${this.apiPath}/${entityOrId.id}`);
+    return this.http.delete(`${this.apiPath}/${entityOrId.id}`).toPromise();
   }
 }

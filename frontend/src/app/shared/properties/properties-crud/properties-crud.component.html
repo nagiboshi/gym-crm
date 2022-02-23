@@ -1,0 +1,11 @@
+<ng-container *ngFor="let property of this.editedProperties; let i = index">
+  <properties [useMultipleValue]="useMultipleValue" (changed)="saveProperty($event, i)" (remove)="removeProperty($event, i)"
+              [property]="property"></properties>
+</ng-container>
+<div (click)="addProperty()" fxLayoutGap="10px" fxLayoutAlign="start center" class="add-button-container">
+  <button mat-mini-fab color="accent">
+    <mat-icon>add</mat-icon>
+  </button>
+  <div class="add-property-title">Add property</div>
+
+</div>

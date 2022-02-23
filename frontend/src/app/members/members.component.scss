@@ -1,9 +1,13 @@
 .members-component {
   position: relative;
 
+  mat-paginator {
+    background: transparent;
+  }
+
   table {
     width: 100%;
-
+    background: transparent;
     tr.mat-header-row:hover {
       background-color: #FFF;
     }
@@ -40,7 +44,6 @@
   }
   .add-person-container {
     position: fixed;
-    width: 1150px;
     bottom: 20px;
   }
 }
