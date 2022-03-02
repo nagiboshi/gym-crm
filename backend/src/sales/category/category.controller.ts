@@ -41,8 +41,11 @@ export class CategoryController {
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() category: Category) {
 
+
     let subcategories: Subcategory[] = this.prepareBulkData('subcategories', category);
     const savedCategory = await this.service.createOne(req, category);
+
+    if( subcategories ) {
     subcategories = await Promise.all(subcategories.map(async sub => {
       sub.category = savedCategory;
       let subcategoryProperties = sub.properties;
@@ -58,6 +61,7 @@ export class CategoryController {
       createdSub.category = null;
       return createdSub;
     }));
+    }
     savedCategory.subcategories = subcategories;
     return savedCategory;
   }

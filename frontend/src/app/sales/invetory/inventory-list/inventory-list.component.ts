@@ -12,7 +12,7 @@ import {StockPurchase} from '@models/stock-purchase';
 import {first} from 'lodash';
 import {StockPurchaseFormComponent} from '../../product/product-purchase-form/stock-purchase-form.component';
 import {ProductService} from '../../product/product.service';
-import {ViewProductComponent} from '../../product/view-product/view-product.component';
+import {ViewItemComponent} from '../../product/view-product/view-item.component';
 import {SupplierViewComponent} from '../../suppliers/supplier-view/supplier-view.component';
 import {Product} from '@models/product';
 import {StockValuationReportComponent} from '../../../reports/stock-valuation-report/stock-valuation-report.component';
@@ -30,7 +30,7 @@ export class InventoryListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: MatTableDataSource<InventoryItem>;
 
-  constructor(private reportsService: ReportsService, private http: HttpClient, private dialog: MatDialog, private productPurchaseService: StockPurchaseService, private productService: ProductService) {
+  constructor(private reportsService: ReportsService, private http: HttpClient, private dialog: MatDialog, private stockPurchaseService: StockPurchaseService, private productService: ProductService) {
   }
 
 
@@ -59,7 +59,7 @@ export class InventoryListComponent implements OnInit {
       this.paginator.length = response.total;
     });
 
-    this.productPurchaseService.newPurchase$.subscribe( (productPurchase: StockPurchase) => {
+    this.stockPurchaseService.newPurchase$.subscribe( (productPurchase: StockPurchase) => {
       const tableData = this.dataSource.data;
       const prodIndex = tableData.findIndex( inventoryItem => inventoryItem.id == productPurchase.itemId);
       if( prodIndex != -1 ) {
@@ -89,13 +89,16 @@ export class InventoryListComponent implements OnInit {
   }
 
   async sell(row: InventoryItem) {
-    const product = await this.productService.getFullEntity(row.id);
-    this.dialog.open(StockPurchaseFormComponent, {data: product});
+    this.dialog.open(StockPurchaseFormComponent, {data: {stock: row, member: null}}).afterClosed().subscribe((stockPurchase) => {
+      if( stockPurchase ) {
+        this.stockPurchaseService.save(stockPurchase);
+      }
+    });
   }
 
   async showProductDetails(row: InventoryItem) {
-      const product = await this.productService.getFullEntity(row.id);
-      this.dialog.open(ViewProductComponent, {data: product});
+      // const product = await this.productService.getFullEntity(row.id);
+      this.dialog.open(ViewItemComponent, {data: row});
   }
 
 

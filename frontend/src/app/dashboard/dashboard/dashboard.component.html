@@ -1,20 +1,20 @@
-<h1>{{currentDate|date:'MMMM'}} Statistics</h1>
+<h3>{{currentDate|date:'MMMM'}} Statistics</h3>
 <div #dashBoards class="dashboards">
   <ng-container *ngIf="chartWidth!=0">
-  <div *ngIf="newMembersData" class="dashboard-board">
-    <h3 class="title">New Members</h3>
-    <google-chart [width]="chartWidth" [data]="newMembersData" [type]="salesChartType"   >
-    </google-chart>
-  </div>
-  <div class="dashboard-board">
-    <h3 class="title">Membership sold</h3>
-    <google-chart [options]="{minValue:0, hAxis: {title: 'Month'}, vAxis: {title: 'Amount'}}" [width]="chartWidth" [data]="membershipSoldData" [type]="salesChartType"></google-chart>
-  </div>
+<!--  <div *ngIf="newMembersData" class="dashboard-board">-->
+<!--    <h3 class="title">New Members</h3>-->
+<!--    <google-chart [width]="chartWidth" [data]="newMembersData" [type]="salesChartType"   >-->
+<!--    </google-chart>-->
+<!--  </div>-->
+<!--  <div class="dashboard-board">-->
+<!--    <h3 class="title">Membership sold</h3>-->
+<!--    <google-chart [options]="{minValue:0, hAxis: {title: 'Month'}, vAxis: {title: 'Amount'}}" [width]="chartWidth" [data]="membershipSoldData" [type]="salesChartType"></google-chart>-->
+<!--  </div>-->
 
-  <div class="dashboard-board">
-    <h3 class="title">Products sold: </h3>
-    <google-chart [width]="chartWidth" [data]="membershipSoldData" [type]="salesChartType"></google-chart>
-  </div>
+<!--  <div class="dashboard-board">-->
+<!--    <h3 class="title">Products sold: </h3>-->
+<!--    <google-chart [width]="chartWidth" [data]="membershipSoldData" [type]="salesChartType"></google-chart>-->
+<!--  </div>-->
 <!--  <div class="dashboard-board">-->
 <!--    <h3 class="title">Membership sold:</h3>-->
 <!--    <google-chart [width]="chartWidth" [data]="salesChartData" [columns]="salesChartColumns" [type]="salesChartType"></google-chart>-->

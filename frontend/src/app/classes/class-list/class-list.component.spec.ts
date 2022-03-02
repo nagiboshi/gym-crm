@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { ClassSettingsComponent } from './class-settings.component';
+import { ClassListComponent } from './class-list.component';
 
 describe('ClassSettingsComponent', () => {
-  let component: ClassSettingsComponent;
-  let fixture: ComponentFixture<ClassSettingsComponent>;
+  let component: ClassListComponent;
+  let fixture: ComponentFixture<ClassListComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ClassSettingsComponent ]
+      declarations: [ ClassListComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ClassSettingsComponent);
+    fixture = TestBed.createComponent(ClassListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

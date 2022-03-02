@@ -1,10 +1,16 @@
 <mat-dialog-content>
   <mat-vertical-stepper #stepper [linear]="true">
+    <mat-step *ngIf="memberFormGroup.value.member == null" [stepControl]="memberFormGroup">
+      <ng-template matStepLabel>Select Member</ng-template>
+      <form [formGroup]="memberFormGroup">
+        <app-find-member (memberSelected)="memberSelected($event)"></app-find-member>
+      </form>
+    </mat-step>
     <mat-step [stepControl]="stockFormGroup">
       <form [formGroup]="stockFormGroup">
         <ng-template matStepLabel>Select stock</ng-template>
         <div fxLayoutAlign="start center">
-          <find-inventory-item [joinFields]="joinFields" (stockSelected)="stockSelected($event)"></find-inventory-item>
+          <find-inventory-item [selectedItem]="data.stock" [joinFields]="joinFields" (stockSelected)="stockSelected($event)"></find-inventory-item>
         </div>
         <div class="next-button">
           <button [disabled]="!stockFormGroup.valid" mat-button matStepperNext>Next</button>
@@ -41,11 +47,11 @@
 
 <!--        product.qty -->
 
-        <div class="quantity-form-group available-items">Available Items: <span class="quantity-form-group qty">{{0}}</span> </div>
+        <div class="quantity-form-group available-items">Available Items:  <span class="quantity-form-group qty">{{quantityFormGroup.value.qty}}</span> </div>
         <div fxLayoutGap="30px" fxLayout="row">
           <mat-form-field floatLabel="always">
             <mat-label>Quantity</mat-label>
-            <input type="number" [max]="this.stockFormGroup.value.qty" class="align-right" min="1" placeholder="0" matInput formControlName="quantity">
+            <input type="number" [max]="quantityFormGroup.value.qty" class="align-right" min="1" placeholder="0" matInput formControlName="quantity">
           </mat-form-field>
         </div>
         <div>

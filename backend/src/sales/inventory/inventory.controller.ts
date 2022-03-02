@@ -1,6 +1,5 @@
-import {Body, Controller, Logger, UploadedFiles, UseGuards} from '@nestjs/common';
-import {ProductService} from '../product/product.service';
-import {Crud, CrudRequest, Override, ParsedRequest} from '@nestjsx/crud';
+import { Controller, Logger, UploadedFiles, UseGuards} from '@nestjs/common';
+import {Crud} from '@nestjsx/crud';
 import {Product} from '../product/product';
 import {JwtAuthGuard} from '../../auth/jwt-auth.guard';
 import {FileUploadingUtils} from '../../interceptors/file-uploading-utils.interceptor';

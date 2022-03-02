@@ -17,7 +17,7 @@ export class StockDetailsPipe implements PipeTransform {
     const property = properties.find( (p) => p.id == detail.propertyId);
 
     if( property )  {
-      stockDetails+= ` ${property.name} ${detail.value}`;
+      stockDetails+= ` ${property.name}: ${detail.value}`;
     }
 
     return stockDetails;

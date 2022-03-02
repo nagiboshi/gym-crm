@@ -12,16 +12,37 @@
       </div>
       <mat-divider></mat-divider>
       <mat-list>
-        <mat-list-item>
-          <a fxLayoutAlign="start center" class="main-route-link first" mat-button routerLink="/dashboard">
-            <mat-icon class="main-route-icon">dashboard</mat-icon>
-            Dashboard</a>
-        </mat-list-item>
+<!--        <mat-list-item>-->
+<!--          <a fxLayoutAlign="start center" class="main-route-link first" mat-button routerLink="/dashboard">-->
+<!--            <mat-icon class="main-route-icon">dashboard</mat-icon>-->
+<!--            Dashboard</a>-->
+<!--        </mat-list-item>-->
         <mat-list-item>
           <a fxLayoutAlign="start center" class="main-route-link" mat-button routerLink="/members">
             <mat-icon class="main-route-icon">group</mat-icon>
             Members</a>
         </mat-list-item>
+        <mat-list-item>
+          <button (click)="classesSubmenu.classList.toggle('opened')" fxLayoutAlign="start center" class="main-route-link" mat-button routerLink="/classes">
+            <mat-icon class="main-route-icon">assignment_turned_in</mat-icon>
+            Schedules
+            <mat-icon *ngIf="!classesSubmenu.classList.contains('opened')">expand_more</mat-icon>
+            <mat-icon *ngIf="classesSubmenu.classList.contains('opened')">expand_less</mat-icon>
+          </button>
+        </mat-list-item>
+
+        <div id="classes-submenu" #classesSubmenu>
+          <mat-list>
+            <mat-list-item>
+              <a class="submenu-sublink" mat-button routerLink="/classes/list">Classes</a>
+            </mat-list-item >
+            <mat-list-item>
+              <a class="submenu-sublink" mat-button routerLink="/classes/categories">Class Types</a>
+            </mat-list-item>
+
+          </mat-list>
+        </div>
+
         <mat-list-item>
           <button (click)="salesSubmenu.classList.toggle('opened')" fxLayoutAlign="start center" mat-button
                   class="main-route-link">
@@ -35,19 +56,19 @@
         <div id="sales-submenu" #salesSubmenu>
           <mat-list>
             <mat-list-item>
-              <a class="sales-submenu-sublink" mat-button routerLink="/sales/inventory">Inventory</a>
+              <a class="submenu-sublink" mat-button routerLink="/sales/inventory">Inventory</a>
             </mat-list-item>
             <mat-list-item>
-              <a class="sales-submenu-sublink" mat-button routerLink="/sales/purchase-voucher">Purchase Voucher</a>
+              <a class="submenu-sublink" mat-button routerLink="/sales/purchase-voucher">Purchase Voucher</a>
             </mat-list-item>
             <mat-list-item>
-              <a class="sales-submenu-sublink" mat-button routerLink="/sales/memberships">Memberships</a>
+              <a class="submenu-sublink" mat-button routerLink="/sales/memberships">Memberships</a>
             </mat-list-item>
             <mat-list-item>
-              <a class="sales-submenu-sublink" mat-button routerLink="/sales/suppliers">Suppliers</a>
+              <a class="submenu-sublink" mat-button routerLink="/sales/suppliers">Suppliers</a>
             </mat-list-item>
             <mat-list-item>
-              <a class="sales-submenu-sublink" mat-button routerLink="/sales/categories">Categories</a>
+              <a class="submenu-sublink" mat-button routerLink="/sales/categories">Categories</a>
             </mat-list-item>
           </mat-list>
         </div>
@@ -65,16 +86,22 @@
                              (memberSelected)="onMemberFound($event)"></app-find-member>
 <!--            <find-product labelColor="#A1A1A1" placeholder="Find product..."-->
 <!--                          (productSelected)="onProductFound($event)"></find-product>-->
-            <find-inventory-item labelColor="#A1A1A1" placeholder="Find stock..."
+            <find-inventory-item [clearAfterSelection]="true" labelColor="#A1A1A1" placeholder="Find stock..."
             (stockSelected)="onStockSelected($event)"></find-inventory-item>
             <div fxLayoutAlign="space-between center">
+
+
               <a fxLayoutAlign="center center" fxLayout="row" routerLinkActive="active" mat-button
                  [routerLink]="'/settings'">
-                <mat-icon>settings</mat-icon>
+                <mat-icon>tune_up</mat-icon>
               </a>
-              <button (click)="logout()" mat-button>
-                <mat-icon>exit_to_app</mat-icon>
+
+              <button class="user-avatar-button" mat-button [matMenuTriggerFor]="menu" >
+                  <img class="user-avatar" width="30" height="30" [src]="userAvatar | localImageLink">
               </button>
+              <mat-menu #menu="matMenu">
+                <button (click)="logout()" mat-menu-item>Logout</button>
+              </mat-menu>
             </div>
           </div>
         </div>

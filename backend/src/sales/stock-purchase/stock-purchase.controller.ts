@@ -31,8 +31,8 @@ export class StockPurchaseController {
     @Request() request,
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() body: StockPurchase) {
-    console.log(request.user);
     body.sellerId = request.user.userId;
+
     return this.service.createOne(req, body);
   }
 

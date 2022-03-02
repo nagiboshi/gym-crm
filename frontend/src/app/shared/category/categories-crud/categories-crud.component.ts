@@ -24,10 +24,6 @@ export class CategoriesCrudComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.category) {
-      this.category = emptyCategory();
-    }
-
     this.dataSource = new MatTableDataSource<Subcategory>(this.category.subcategories);
     this.formGroup = this.fb.group({
       id: [this.category.id],

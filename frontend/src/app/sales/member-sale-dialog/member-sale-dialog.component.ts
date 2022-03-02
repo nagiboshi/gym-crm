@@ -29,13 +29,13 @@ export class MemberSaleDialogComponent implements OnInit {
     if( type == 'stock') {
       if( purchase ) {
         let stockPurchase = purchase as StockPurchase;
-        stockPurchase = await this.salesService.saveStockPurchase(stockPurchase).toPromise();
-        console.log("Saved stock purchase", stockPurchase);
+        await this.salesService.saveStockPurchase(stockPurchase).toPromise();
       }
       this.dialog.close();
+      return;
     }
 
-    if ( type == 'service ') {
+    if ( type == 'service') {
       if (purchase) {
         const servicePurchase = purchase as ServicePurchaseModel;
         const savedMembershipPurchase = await this.salesService.savePurchase(servicePurchase).toPromise();

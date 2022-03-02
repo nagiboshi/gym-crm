@@ -38,7 +38,7 @@ a.active {
   }
 }
 
-#sales-submenu {
+#sales-submenu, #classes-submenu {
   display: none;
   &.opened {
     display: block;
@@ -46,6 +46,7 @@ a.active {
 
   padding-left: 40px;
 }
+
 
 .main-route-icon {
   margin-right: 10px;
@@ -58,7 +59,7 @@ a.active {
   color: #FFF;
 }
 
-.sales-submenu-sublink {
+.submenu-sublink {
   color: #FFF;
   font-weight: normal;
 }
@@ -77,4 +78,13 @@ header {
 
 .main-container {
   margin-top:30px;
+}
+
+.user-avatar-button {
+  padding: 0;
+  width: 30px;
+  min-width: 30px;
+  .user-avatar {
+    border-radius: 50%;
+  }
 }

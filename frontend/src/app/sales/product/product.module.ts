@@ -3,11 +3,11 @@ import {CommonModule} from '@angular/common';
 import {ProductService} from './product.service';
 import {SharedModule} from '@shared/shared.module';
 import {StockPurchaseFormComponent} from './product-purchase-form/stock-purchase-form.component';
-import { ViewProductComponent } from './view-product/view-product.component';
+import { ViewItemComponent } from './view-product/view-item.component';
 
 
 @NgModule({
-  declarations: [ StockPurchaseFormComponent, ViewProductComponent],
+  declarations: [ StockPurchaseFormComponent, ViewItemComponent],
   providers: [ProductService],
   imports: [
     CommonModule,

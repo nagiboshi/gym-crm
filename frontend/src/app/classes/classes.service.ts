@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {ClassModel} from './class.model';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {remove} from 'lodash';
+  import {Category} from '@models/category';
+import {CategoryService} from '@shared/category/category.service';
 import {tap} from 'rxjs/operators';
-import {ClassCategory} from './class.category';
-import {MembershipGroup} from '@models/membership-group';
 
 @Injectable({
   providedIn: 'root'
@@ -13,29 +13,21 @@ import {MembershipGroup} from '@models/membership-group';
 export class ClassesService {
   classesSubj = new BehaviorSubject<ClassModel[]>([]);
   classes$ = this.classesSubj.asObservable();
-  classCategoriesSubj = new BehaviorSubject<ClassCategory[]>([]);
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private categoryService: CategoryService) { }
 
-  fetchClasses(): Observable<ClassModel[]> {
-    return this.httpClient.get<ClassModel[]>('/api/classes').pipe(tap( classes  => {
-      this.classesSubj.next(classes);
-    }));
-  }
-
-
-  fetchClassCategories(): Observable<ClassCategory[]> {
-   return this.httpClient.get<ClassCategory[]>('/api/class-category').pipe(tap( classCategories => {
-      this.classCategoriesSubj.next(classCategories);
-    }));
-  }
-
-  getClassCategories(): ClassCategory[] {
-    return this.classCategoriesSubj.getValue();
+  getCategories(): Category[] {
+    return this.categoryService.getCategories('service');
   }
 
   getClasses(): ClassModel[] {
     return this.classesSubj.getValue();
+  }
+
+  fetchClasses(): Observable<ClassModel[]> {
+    return this.httpClient.get<ClassModel[]>('/api/classes').pipe(tap((classes) => {
+      this.classesSubj.next(classes);
+    }));
   }
 
   removeClass(id: number): Promise<void> {

@@ -1,0 +1,17 @@
+<div mat-dialog-title>Product {{item.product.name}}</div>
+<div mat-dialog-content>
+  <div fxLayout="row">
+    <div class="column-1">
+      <div *ngFor="let image of item.product.images">
+        <img class="product-image" width="120" height="150"
+             [src]="image | localImageLink">
+      </div>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="space-between" class="column-2">
+      <div>
+          <ng-container *ngIf="item.details"><span *ngFor="let detail of item.details" class="stock-detail">{{detail | stockDetail: item.product.properties }}</span></ng-container>
+      </div>
+      <button mat-raised-button mat-dialog-close color="primary">Close</button>
+    </div>
+  </div>
+</div>

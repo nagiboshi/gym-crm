@@ -9,14 +9,20 @@ import {FormsModule} from '@angular/forms';
 import {SignInDialogComponent} from './schedule-table/sign-in-dialog/sign-in-dialog.component';
 import {ScheduleCalendarHeaderComponent} from './schedule-table/schedule-calendar/schedule.calendar-header.component';
 import {SelectionStrategyEventEmitter} from './schedule-table/schedule-calendar/selection-strategy.event-emitter';
-import { ClassNameByIdPipe } from './class-name-by-id.pipe';
+import {ClassNameByIdPipe} from './class-name-by-id.pipe';
+import {ClassListComponent} from './class-list/class-list.component';
+import {CreateClassDialogComponent} from './class-list/create-class-dialog/create-class-dialog.component';
+import { ClassTypesComponent } from './class-types/class-types.component';
 
 @NgModule({
   declarations: [ScheduleTableComponent,
     ScheduleCalendarHeaderComponent,
     AddScheduleDialogComponent,
     SignInDialogComponent,
-    ClassNameByIdPipe],
+    ClassListComponent,
+    CreateClassDialogComponent,
+    ClassNameByIdPipe,
+    ClassTypesComponent],
   providers: [SelectionStrategyEventEmitter],
   imports: [
     CommonModule,

@@ -1,11 +1,13 @@
-<div mat-dialog-title>
+<div class="member-sale-dialog-header" mat-dialog-title>
   Selected Member: {{member.firstName}}
 </div>
-<mat-form-field>
+<div class="member-sale-dialog-purchase-type-select">
+  <mat-form-field>
   <mat-select placeholder="Select purchase type" #selection>
     <mat-option value="service">Service</mat-option>
     <mat-option value="product">Product</mat-option>
   </mat-select>
 </mat-form-field>
+</div>
 <service-purchase-form (servicePurchase)="addSale($event, 'service')" [predefinedMember]="member" *ngIf="selection.value=='service'"></service-purchase-form>
-<stock-purchase-form (stockPurchase)="addSale($event, 'stock')"  *ngIf="selection.value=='product'"></stock-purchase-form>
+<stock-purchase-form [member]="member" (stockPurchase)="addSale($event, 'stock')"  *ngIf="selection.value=='product'"></stock-purchase-form>

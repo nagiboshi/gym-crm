@@ -5,19 +5,22 @@ import {BehaviorSubject } from 'rxjs';
 import {UserService} from '@shared/user.service';
 import {HttpClient} from '@angular/common/http';
 import {MatDialog} from '@angular/material/dialog';
-import {Product} from '@models/product';
 import {StockPurchaseFormComponent} from './sales/product/product-purchase-form/stock-purchase-form.component';
-import {StockPurchase} from '@models/stock-purchase';
 import {StockPurchaseService} from './sales/product/product-purchase-form/stock-purchase.service';
 import {MembershipGroupService} from '@shared/membership-group.service';
 import {PaymentMethodService} from './settings/settings-page/payment-methods-settings/payment-method.service';
 import {InventoryItem} from './sales/invetory/inventory-list/inventory-item';
+import jwtDecode from 'jwt-decode';
+import {UserToken} from '@models/user';
+import {CategoryService} from '@shared/category/category.service';
+import {ClassesService} from './classes/classes.service';
 
 interface AppRoute {
   label: string;
   path: string;
   isActive: boolean;
 }
+
 
 @Component({
   selector: 'app-root',
@@ -31,6 +34,7 @@ export class AppComponent {
     {label: 'Members', isActive: false, path: '/members'},
     {label: 'Sales', isActive: false, path: '/sales'}
   ]);
+  userAvatar: string;
   activeRoute: AppRoute;
   company = {name: 'Primal Gym', logo: "/assets/primal-logo.svg"};
   title = 'primal-accounting';
@@ -40,13 +44,19 @@ export class AppComponent {
               private http: HttpClient,
               private productPurchaseService: StockPurchaseService,
               private paymentMethodService: PaymentMethodService,
+              private categoryService: CategoryService,
+              private classService: ClassesService,
               private dialog: MatDialog,
               private membershipGroupService: MembershipGroupService) {
     userService.token$.subscribe((t) => {
 
       if(t) {
+        this.userAvatar = jwtDecode<UserToken>(t.access_token).photoLink;
+
         membershipGroupService.fetchMembershipGroups().subscribe();
         paymentMethodService.fetchPaymentMethods().subscribe();
+        categoryService.fetchCategories().subscribe();
+        classService.fetchClasses().subscribe();
       }
     })
     router.events.subscribe(e => {
@@ -82,7 +92,7 @@ export class AppComponent {
     this.userService.logout();
   }
 
-  onStockSelected($event: InventoryItem) {
-
+  onStockSelected(stock: InventoryItem) {
+    this.dialog.open(StockPurchaseFormComponent, {data: {stock: stock, member: null}});
   }
 }

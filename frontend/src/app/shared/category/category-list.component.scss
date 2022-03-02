@@ -1,0 +1,19 @@
+@import "src/app/shared/crud-table/crud-table.component";
+
+
+.edit-subcategory {
+  color: #929292;
+  &:hover {
+    color: #696969;
+
+  }
+}
+
+.categories-settings-container {
+  table {
+    background-color: transparent;
+  }
+  mat-paginator {
+    background-color: transparent;
+  }
+}

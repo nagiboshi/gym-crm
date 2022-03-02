@@ -5,7 +5,15 @@
 }
 
 .stock-detail {
-  font-size: 12px;
+  font-style:italic;
+}
+
+.product-auto-complete-item {
+  line-height: 15px;
+}
+
+.product-name {
+  font-weight: bold;
 }
 
 mat-form-field {
@@ -19,19 +27,4 @@ mat-form-field {
   line-height: 1;
 }
 
-.product-auto-complete-item {
-  height: 15px;
-  font-size: 12px;
-  line-height: 15px;
-  font-weight: bold;
-  &.phone-number {
-    font-style: italic;
-  }
-}
 
-.register-new-person-icon {
-  width: 18px;
-  padding-left: 23px;
-  height: 18px;
-  background: url("/assets/person-icon.png") no-repeat 0 0 transparent;
-}

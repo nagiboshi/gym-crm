@@ -31,6 +31,8 @@ export class ReportsController {
       worksheet.addRow({'id': inventory[idx].id,
                              'name': inventory[idx].product.name,
                              'qty': inventory[idx].qty,
+                             'color': inventory[idx].details[1].value,
+                             'size': inventory[idx].details[0].value,
                              'price': inventory[idx].price,
                              'total': 'Total'});
     }

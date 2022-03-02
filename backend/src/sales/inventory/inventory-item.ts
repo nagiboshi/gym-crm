@@ -22,12 +22,6 @@ export class InventoryItem {
   @JoinTable()
   details: PropertyValue[];
 
-  @ManyToOne( type => PurchaseVoucher)
-  purchaseVoucher: PurchaseVoucher;
-
-  @Column()
-  purchaseVoucherId: number;
-
   constructor(purchaseVoucherItem?: PurchaseVoucherItem) {
     if( purchaseVoucherItem) {
         this.id = 0;
@@ -35,7 +29,6 @@ export class InventoryItem {
         this.qty = purchaseVoucherItem.qty;
         this.price = purchaseVoucherItem.price;
         this.details = purchaseVoucherItem.details;
-        this.purchaseVoucherId = purchaseVoucherItem.id;
     }
   }
 }

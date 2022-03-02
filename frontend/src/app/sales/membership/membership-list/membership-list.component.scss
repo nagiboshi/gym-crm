@@ -2,5 +2,11 @@
 
 
 .membership-settings-container {
-  height: 353px;
+  table {
+    background: transparent;
+  }
+
+  mat-paginator {
+    background: transparent;
+  }
 }

@@ -4,6 +4,7 @@ import {User} from '../models/user';
 import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {map, tap} from 'rxjs/operators';
+import jwtDecode from 'jwt-decode';
 export interface Token {
   access_token: string;
 }

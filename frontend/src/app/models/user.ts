@@ -16,43 +16,13 @@ export class User {
   role: String;
 }
 
-
-
-// @PrimaryGeneratedColumn()
-// id: number;
-//
-// @Column()
-// @IsNotEmpty()
-// username: string;
-//
-// @Column()
-// @IsNotEmpty()
-// password: string;
-//
-// @Column()
-// @IsNotEmpty()
-// firstName: string;
-//
-// @Column()
-// @IsNotEmpty()
-// lastName: string;
-//
-// @Column()
-// @IsNotEmpty()
-// photoLink: string
-//
-// @Column({nullable: true})
-// @IsMobilePhone()
-// phoneNumber: string;
-//
-// @Column()
-// @IsNotEmpty()
-// role: UserRole;
-//
-//
-// @OneToOne(() => Branch)
-// @JoinColumn({referencedColumnName: "id", name: 'branchId'})
-// branch: Branch;
-//
-// @Column({nullable: true})
-// branchId: number;
+export interface UserToken {
+  branches:   Branch[];
+  username: string;
+  photoLink: string;
+  exp: number;
+  firstName: string;
+  lastName:string;
+  iat:number;
+  id: number;
+}

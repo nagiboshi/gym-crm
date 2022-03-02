@@ -1,12 +1,13 @@
-<div fxLayout="column" fxLayoutAlign="space-between" class="class-settings-container">
-  <table mat-table [dataSource]="dataSource">
+<div fxLayout="column" fxLayoutAlign="space-between" class="class-list-container">
+  <table class="table" mat-table [dataSource]="dataSource">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>
         <div fxLayoutAlign="start center" fxLayout>
           <div class="table-header-title"> Classes</div>
           <mat-form-field>
-            <mat-select placeholder="Class type" (valueChange)="filterOutClassesByType($event)">
-              <mat-option *ngFor="let classCategory of classCategories"
+            <mat-select value="-1" placeholder="Class type" (valueChange)="filterOutClassesByType($event)">
+              <mat-option value="-1">All</mat-option>
+              <mat-option *ngFor="let classCategory of categoryService.categoriesTypeService$ | async"
                           [value]="classCategory.id">{{classCategory.name}}</mat-option>
             </mat-select>
 

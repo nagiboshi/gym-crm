@@ -43,6 +43,7 @@ export class PurchaseHistoryComponent implements OnChanges {
 
   addNewPurchase() {
     this.dialog.open(MemberSaleDialogComponent, {data: this.member}).afterClosed().subscribe((purchaseHistoryItem: MembershipPurchaseHistoryItem) => {
+      console.log(purchaseHistoryItem);
         if (purchaseHistoryItem) {
           this.purchasesSubj.next([purchaseHistoryItem, ...this.purchasesSubj.getValue()]);
           this.purchaseUpdated.next(purchaseHistoryItem);

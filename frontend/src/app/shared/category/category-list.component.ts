@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatDialog} from '@angular/material/dialog';
 import {CategoriesCrudComponent} from './categories-crud/categories-crud.component';
@@ -18,14 +18,13 @@ export class CategoryListComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<Category> = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   columns = ['category', 'subcategories', 'edit', 'delete'];
-
+  @Input()
+  type: 'service' | 'stock';
   constructor(private categoryService: CategoryService, private matDialog: MatDialog) {
   }
 
   ngOnInit(): void {
-    this.categoryService.getCategories().then((categories) => {
-      this.dataSource.data = categories;
-    });
+      this.dataSource.data = this.categoryService.getCategories(this.type);
   }
 
   openCrudDialog(category: Category) {
@@ -50,7 +49,7 @@ export class CategoryListComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      this.categoryService.updateCategory(result).then((updatedCategory) => {
+      this.categoryService.mergeCategory(result).then((updatedCategory) => {
         const idx = this.dataSource.data.findIndex(c => updatedCategory.id == c.id);
         const data = this.dataSource.data;
         data.splice(idx, 1, updatedCategory);
@@ -60,11 +59,11 @@ export class CategoryListComponent implements OnInit, AfterViewInit {
   }
 
   addCategory() {
-    this.openCrudDialog(emptyCategory()).afterClosed().subscribe((result) => {
+    this.openCrudDialog(emptyCategory(this.type)).afterClosed().subscribe((result) => {
       if (!result) {
         return;
       }
-      this.categoryService.saveCategory(result).then((newCategory) => {
+      this.categoryService.mergeCategory(result).then((newCategory) => {
         this.dataSource.data = [newCategory as Category, ...this.dataSource.data];
       });
     });
@@ -103,7 +102,7 @@ export class CategoryListComponent implements OnInit, AfterViewInit {
         const category = productCategories[categoryIndex];
         category.subcategories.splice(subcategoryIndex, 1, editedSubcategory);
         this.dataSource.data = [...productCategories];
-        this.categoryService.saveCategory(category);
+        this.categoryService.mergeCategory(category);
       }
     });
   }

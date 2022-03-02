@@ -58,6 +58,10 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatListModule} from '@angular/material/list';
 import {StockDetailsPipe} from '@shared/pipes/stock-details.pipe';
+import {MatCardModule} from '@angular/material/card';
+import {CategoryListComponent} from '@shared/category/category-list.component';
+import {CategoriesCrudComponent} from '@shared/category/categories-crud/categories-crud.component';
+import {SubcategoryCrudComponent} from '@shared/category/categories-crud/subcategory-crud.component/subcategory-crud.component';
 
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent, FindSupplierComponent,
@@ -67,8 +71,11 @@ import {StockDetailsPipe} from '@shared/pipes/stock-details.pipe';
     TotalPricePipe,
     FindProductComponent,
     FindItemComponent,
+    CategoryListComponent,
+    SubcategoryCrudComponent,
+    CategoriesCrudComponent,
     FindMemberComponent,
-    DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe, PricePipe, TaxPipe, DiscountPipe, PropertiesComponent, PropertiesCrudComponent],
+    DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe, PricePipe, TaxPipe, DiscountPipe, PropertiesComponent, PropertiesCrudComponent, CategoryListComponent],
   providers: [MatIconRegistry, DatePipe, HelpersService, GlobalErrorHandlerService,
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {
@@ -95,7 +102,9 @@ import {StockDetailsPipe} from '@shared/pipes/stock-details.pipe';
     MatTreeModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatTableModule,
     MatDatepickerModule,
+    MatCardModule,
     MatDividerModule,
     FlexLayoutModule,
     MatMenuModule,
@@ -125,6 +134,7 @@ import {StockDetailsPipe} from '@shared/pipes/stock-details.pipe';
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatDialogModule,
+    MatCardModule,
     MatTreeModule,
     HttpClientModule,
     MatTableModule,
@@ -132,6 +142,8 @@ import {StockDetailsPipe} from '@shared/pipes/stock-details.pipe';
     MatDividerModule,
     MatExpansionModule,
     MatListModule,
+    CategoriesCrudComponent,
+    CategoryListComponent,
     // MomentDateModule,
     MatMomentDateModule,
     MatAutocompleteModule,

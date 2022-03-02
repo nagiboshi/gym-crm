@@ -3,8 +3,8 @@ import {Property} from '@models/property';
 export interface Category {
   id: number;
   name: string;
-  subcategories: Subcategory[];
-  type: string;
+  subcategories?: Subcategory[];
+  type: 'stock' | 'service';
 }
 
 export interface Subcategory {
@@ -15,6 +15,6 @@ export interface Subcategory {
   properties?: Property[];
 }
 
-export const emptyCategory = () => { return {id: 0, name: '', subcategories: [], type: ''};};
+export const emptyCategory = (type: 'stock' | 'service'): Category => { return {id: 0, name: '', subcategories: [], type:type}};
 
 export const emptySubcategory = (category: Category) => {return {id: 0, name: '', category, categoryId: category.id}};

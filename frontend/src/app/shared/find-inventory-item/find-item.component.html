@@ -3,8 +3,11 @@
   <input [formControl]="searchFormControl" #searchField id="members-autocomplete" type="text" matInput [matAutocomplete]="auto">
   <mat-autocomplete (optionSelected)="stockSelect($event)" [displayWith]="displayFn" #auto="matAutocomplete">
     <mat-option *ngFor="let item of items$ | async" [value]="item">
-      <div class="product-auto-complete-item">{{item.product.name}}
+      <div class="product-auto-complete-item">
+        <div class="product-name">{{item.product.name}}</div>
+        <div>
         <ng-container *ngIf="item.details"><span *ngFor="let detail of item.details" class="stock-detail">{{detail | stockDetail: item.product.properties }}</span></ng-container>
+        </div>
       </div>
     </mat-option>
   </mat-autocomplete>

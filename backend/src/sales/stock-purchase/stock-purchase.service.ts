@@ -18,6 +18,9 @@ export class StockPurchaseService extends TypeOrmCrudService<StockPurchase>{
     // console.log(req.)
     // console.log(this.requestService.request.user);
     const item = await this.inventoryService.findOne(purchase.itemId);
+    if( item.qty == 0 || item.qty < purchase.qty ) {
+      this.throwBadRequestException(`There is not enough items in the store`);
+    }
     item.qty-=purchase.qty;
     await this.inventoryService.repo.save(item);
     return purchase;

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Inject, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
@@ -12,6 +12,12 @@ import {StockPurchase} from '@models/stock-purchase';
 import {StockPurchaseService} from './stock-purchase.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {InventoryItem} from '../../invetory/inventory-list/inventory-item';
+import {Member} from '@models/member';
+
+export interface StockPurchaseFormData {
+  stock?: InventoryItem;
+  member?: Member;
+}
 @Component({
   selector: 'stock-purchase-form',
   templateUrl: './stock-purchase-form.component.html',
@@ -23,7 +29,10 @@ export class StockPurchaseFormComponent implements OnInit {
   quantityFormGroup: FormGroup;
   paymentMethodFormGroup: FormGroup;
   stockFormGroup: FormGroup;
+  memberFormGroup: FormGroup;
   paymentMethods: PaymentMethod[];
+  @Input()
+  member: Member;
   @Output()
   stockPurchase: EventEmitter<StockPurchase> = new EventEmitter<StockPurchase>();
   joinFields: QueryJoin[] = [{field: 'product'}, {field: 'details'}];
@@ -34,24 +43,34 @@ export class StockPurchaseFormComponent implements OnInit {
               private _snackBar: MatSnackBar,
               private productPurchaseService: StockPurchaseService,
               private communication: CommunicationService,
-              @Inject(MAT_DIALOG_DATA) public stock: InventoryItem) {
+              @Inject(MAT_DIALOG_DATA) public data: StockPurchaseFormData) {
   }
 
   ngOnInit(): void {
     this.taxes = this.communication.getTaxes();
     // this.selectedStock = new BehaviorSubject<InventoryItem>(this.stock);
     // this.selectedStock$ = this.selectedStock.asObservable();
+    if( !this.data ) {
+      this.data = {};
+    }
+    if( this.member ) {
+        this.data['member'] = this.member;
+     }
+
     this.paymentMethods = this.paymentMethodService.getPaymentMethods();
+    this.memberFormGroup = this.fb.group({
+      member: [this.data.member]
+    });
 
     this.stockFormGroup = this.fb.group({
-      stock: [this.stock, [Validators.required]],
+      stock: [this.data.stock, [Validators.required]],
     });
     this.priceFormGroup = this.fb.group({
-      price: [this.stock?.price, [Validators.required, Validators.min(this.stock?.price), Validators.max(999999)]],
+      price: [this.data.stock?.price, [Validators.required, Validators.min(this.data.stock?.price), Validators.max(999999)]],
       discount: [0, [Validators.min(0), Validators.max(100)]]
     });
     this.quantityFormGroup = this.fb.group({
-      quantity: [1, [Validators.required, Validators.min(1), Validators.max(this.stock?.qty)]],
+      quantity: [this.data.stock?.qty, [Validators.required, Validators.min(1), Validators.max(this.data.stock?.qty)]],
     });
     this.paymentMethodFormGroup = this.fb.group({
       paymentMethod: [first(this.paymentMethodService.getPaymentMethods()),Validators.required]
@@ -74,6 +93,12 @@ export class StockPurchaseFormComponent implements OnInit {
   stockSelected(item: InventoryItem) {
     this.priceFormGroup.patchValue({price: item.price});
     this.stockFormGroup.patchValue({stock: item});
+    this.quantityFormGroup.patchValue({qty: item.qty});
     // this.selectedStock.next(item);
+  }
+
+  memberSelected(member: Member) {
+    this.memberFormGroup.patchValue({member: member});
+
   }
 }

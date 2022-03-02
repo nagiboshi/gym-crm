@@ -21,7 +21,7 @@ export class ClassCategoryNamePipe implements PipeTransform {
 
   transform(classModel: ClassModel, ...args: any[]): any {
     let [categoryId] = args;
-    return this.classesService.getClassCategories().find( c => c.id == categoryId).name;
+    return this.classesService.getCategories().find( c => c.id == categoryId)?.name;
   }
 
 }

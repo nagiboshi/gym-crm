@@ -3,6 +3,7 @@
   cursor: pointer;
   text-align: center;
   button{
+    background: transparent;
     padding: 0;
     min-width: 35px;
     max-width: 35px;
@@ -14,4 +15,9 @@ table {
   .table-header-title {
     margin-right: 20px;
   }
+  background: transparent;
+}
+
+mat-paginator {
+  background: transparent;
 }
