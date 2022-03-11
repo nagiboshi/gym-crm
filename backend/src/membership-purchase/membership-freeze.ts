@@ -5,11 +5,11 @@ export class MembershipFreeze {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({type: 'bigint'})
-  startDate: bigint;
+  @Column()
+  startDate: Date;
 
-  @Column({nullable: true, type: 'bigint'})
-  endDate: bigint;
+  @Column({  type: 'date', default: null,  nullable: true})
+  endDate: Date;
 
   @Column({nullable: true})
   note: string;

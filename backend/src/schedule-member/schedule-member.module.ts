@@ -7,6 +7,7 @@ import {ScheduleMember} from './schedule-member';
 @Module({
   imports: [TypeOrmModule.forFeature([ScheduleMember])],
   providers: [ScheduleMemberService],
-  controllers: [ScheduleMemberController]
+  controllers: [ScheduleMemberController],
+  exports: [ScheduleMemberService]
 })
 export class ScheduleMemberModule {}

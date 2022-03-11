@@ -38,6 +38,7 @@ import {PurchaseVoucher} from './sales/purchase-vouchers/purchase-voucher';
 import {InventoryItem} from './sales/inventory/inventory-item';
 import {PurchaseVoucherItem} from './sales/purchase-vouchers/purchase-voucher-item';
 import { ReportsModule } from './reports/reports.module';
+import {ScheduleMemberModule} from './schedule-member/schedule-member.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -60,7 +61,7 @@ import { ReportsModule } from './reports/reports.module';
       password: configService.get('POSTGRES_PASSWORD'),
       database: configService.get('POSTGRES_DB'),
       schema: 'public',
-      logging: true,
+      logging: false,
       keepConnectionAlive: true,
       entities: [
         InventoryItem,
@@ -91,6 +92,7 @@ import { ReportsModule } from './reports/reports.module';
     })
   }),
     MemberModule,
+    ScheduleMemberModule,
     UserModule,
     AuthModule,
     BranchModule,

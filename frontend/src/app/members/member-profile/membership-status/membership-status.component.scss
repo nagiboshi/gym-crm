@@ -4,6 +4,17 @@
   line-height: 1.4;
 }
 
+.membership-actions {
+  mat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    line-height: 40px;
+    cursor: pointer;
+  }
+  margin-bottom: 10px;
+}
+
 .shared-title {
   font-weight: bold;
 }

@@ -13,4 +13,5 @@ export interface Member {
   referalMember?: Member;
   created: Date;
   membershipPurchases?: ServicePurchaseModel[];
+  activeMembership: ServicePurchaseModel;
 }

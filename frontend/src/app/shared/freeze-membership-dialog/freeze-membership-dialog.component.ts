@@ -20,7 +20,7 @@ export class FreezeMembershipDialogComponent implements OnInit {
 
   ngOnInit(): void {
     if( !this.purchase.freeze ) {
-      this.purchase.freeze = {id: 0, note: "", startDate: moment.now(), endDate: null, purchaseId: this.purchase.id, totalDays: null};
+      this.purchase.freeze = {id: 0, note: "", startDate: new Date(moment.now()), endDate: null, purchaseId: this.purchase.id, totalDays: null};
     }
   }
 
@@ -30,11 +30,11 @@ export class FreezeMembershipDialogComponent implements OnInit {
       const prevFreeze = purchaseCopy.freeze;
       // updating existing freeze
       if( this.purchase.isFreezed ) {
-        prevFreeze.endDate = moment.now();
+        prevFreeze.endDate = new Date(moment.now());
         prevFreeze.totalDays =this.helpers.getTotalFreezeDays(prevFreeze.endDate, prevFreeze.startDate);
         prevFreeze.note = "";
       } else {
-        prevFreeze.startDate = moment.now();
+        prevFreeze.startDate = new Date(moment.now());
         prevFreeze.endDate = null;
       }
 

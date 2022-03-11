@@ -5,6 +5,7 @@ import {MembershipPurchaseHistoryItem, ServicePurchaseModel} from '@models/membe
 import {SalesService} from '../sales.service';
 import * as _moment from 'moment';
 import {StockPurchase} from '@models/stock-purchase';
+import {HelpersService} from '@shared/helpers.service';
 
 const moment = _moment;
 
@@ -18,6 +19,7 @@ export class MemberSaleDialogComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) public member: Member,
               private salesService: SalesService,
+              private helpers: HelpersService,
               private dialog: MatDialogRef<MemberSaleDialogComponent>) {
   }
 
@@ -39,7 +41,7 @@ export class MemberSaleDialogComponent implements OnInit {
       if (purchase) {
         const servicePurchase = purchase as ServicePurchaseModel;
         const savedMembershipPurchase = await this.salesService.savePurchase(servicePurchase).toPromise();
-        const newPurchaseHistoryItem: MembershipPurchaseHistoryItem = this.salesService.toPurchaseHistoryItem(savedMembershipPurchase, this.todayMoment);
+        const newPurchaseHistoryItem: MembershipPurchaseHistoryItem = this.helpers.extendMembership(savedMembershipPurchase);
         this.dialog.close(newPurchaseHistoryItem);
       }
     }

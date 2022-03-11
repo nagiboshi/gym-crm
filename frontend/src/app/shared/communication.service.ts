@@ -23,8 +23,8 @@ export interface ClassSchedule {
   timeEnd: number;
   day: number;
   capacity: number;
-  scheduleFrom: number;
-  scheduleUntil: number;
+  scheduleFrom: Date;
+  scheduleUntil: Date;
   signedMembers?: ScheduleMember[];
   branchId: number;
 }
@@ -36,10 +36,7 @@ export interface ScheduleWeekDay {
 }
 
 export interface DaySchedule extends ClassSchedule {
-  // scheduleId: number;
-  // dayOfWeek: number;
-  // primalClass: ClassModel;
-  signedMembers$?: BehaviorSubject<ScheduleMember[]>;
+  signedMembers$: BehaviorSubject<ScheduleMember[]>;
 }
 
 @Injectable({providedIn: 'root'})
@@ -76,10 +73,11 @@ export class CommunicationService {
   }
 
 
-  private _getSchedulesQuery(startDate: Date | number, endDate: Date | number) {
+  private _getSchedulesQuery(startDate: Date, endDate: Date) {
+
     const {from, to} = {
-      from: startDate instanceof Date ? startDate.getTime() : startDate,
-      to: endDate instanceof Date ? endDate.getTime() : endDate
+      from: JSON.stringify(startDate),
+      to: JSON.stringify(endDate)
     };
 
 
@@ -107,7 +105,7 @@ export class CommunicationService {
 
     return RequestQueryBuilder.create().setOr(query1).setOr(query2).setJoin({
       field: 'signedMembers',
-      select: ['memberId']
+      select: ['memberId', 'scheduleDate']
     }).query(false);
   }
 
@@ -120,9 +118,14 @@ export class CommunicationService {
   }
 
   classScheduleToDaySchedule( classSchedule: ClassSchedule) {
-    classSchedule.scheduleFrom = this.helpers.bigIntStringToNumber(classSchedule.scheduleFrom);
-    classSchedule.scheduleUntil = this.helpers.bigIntStringToNumber(classSchedule.scheduleUntil);
-    return {...classSchedule, ...{signedMembers$:new BehaviorSubject(classSchedule.signedMembers)}};
+    classSchedule.scheduleFrom = new Date(classSchedule.scheduleFrom);
+    classSchedule.scheduleUntil = new Date(classSchedule.scheduleUntil);
+    classSchedule.signedMembers.forEach( signedMember => {
+      if( typeof signedMember.scheduleDate == 'string') {
+        signedMember.scheduleDate = new Date(signedMember.scheduleDate);
+      }
+    });
+    return {...classSchedule, signedMembers$: new BehaviorSubject(classSchedule.signedMembers) };
   }
 
   addSchedules(schedules: ClassSchedule[]) {
@@ -130,7 +133,6 @@ export class CommunicationService {
     const scheduleExmpl = first(schedules);
     const query = this._getSchedulesQuery(scheduleExmpl.scheduleFrom, scheduleExmpl.scheduleUntil);
     return this.httpClient.post<ClassSchedule[]>('/api/class-schedule/bulk?' + query, {bulk: schedules}).pipe(
-      // map( /**/s => {...s, {..}})
       map( newSchedules => newSchedules.map( s => this.classScheduleToDaySchedule(s)) )
     );
   }
@@ -139,7 +141,7 @@ export class CommunicationService {
     return [{id:1, name: "VAT 5%", value: 5 }];
   }
 
-  signIn(scheduleId: number, memberIds: number[], scheduleDate: number): Observable<ScheduleMember[]> {
+  signIn(scheduleId: number, memberIds: number[], scheduleDate: Date): Observable<ScheduleMember[]> {
 
     const scheduleMembers = memberIds.map((memberId) => {
       return {

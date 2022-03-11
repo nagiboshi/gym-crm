@@ -7,7 +7,8 @@
       <ng-container matColumnDef="avatar">
         <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
         <td (click)="openProfile(row)" mat-cell *matCellDef="let row">
-            <img (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg class="avatar" height="45" [src]="row.photoLink | localImageLink">
+          <img (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg class="avatar" height="45"
+               [src]="row.photoLink | localImageLink">
         </td>
       </ng-container>
 
@@ -54,13 +55,13 @@
       </tr>
     </table>
 
-    <mat-paginator (page)="onPageChange($event)" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 
   </div>
-  <div fxLayoutAlign="end" class="add-person-container">
-  <button id="add-person-button" mat-fab (click)="addMember()" color="primary">
-    <mat-icon>person_add</mat-icon>
-  </button>
+  <div fxLayoutAlign="space-between" class="add-person-container">
+    <mat-paginator (page)="onPageChange($event)" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 
+    <button id="add-person-button" mat-fab (click)="addMember()" color="primary">
+      <mat-icon>person_add</mat-icon>
+    </button>
   </div>
 </div>

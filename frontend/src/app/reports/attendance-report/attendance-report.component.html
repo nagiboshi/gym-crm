@@ -1,0 +1,47 @@
+<form (ngSubmit)="generateAttendanceReport()" [formGroup]="form">
+  <div mat-dialog-title>
+    Attendance Report
+  </div>
+  <div fxLayout="column" mat-dialog-content>
+    <mat-form-field fxFlex="100" class="schedule-until-datepicker">
+      <mat-label>From - Until</mat-label>
+      <mat-date-range-input [max]="maxSelectionDate" [rangePicker]="picker">
+        <input formControlName="from" matStartDate placeholder="Start date">
+        <input formControlName="until" matEndDate placeholder="End date">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+    <div class="schedule-row">
+      <time-range-selector [clearTimeRange]="clearTimeRange" (startTimeChanged)="setStartTime($event)"
+                           (endTimeChanged)="setEndTime($event)"></time-range-selector>
+      <div>
+        <a href="#" class="default-link" (click)="clearStartEndTimeSelection($event)">Clear time</a>
+      </div>
+    </div>
+    <div>
+      <app-find-member labelColor="#000000" [clearAfterSelection]="true" (memberSelected)="addMemberFilter($event)"
+                       placeholder="Filter by member ..."></app-find-member>
+      <div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10"
+             *ngFor="let member of this.form.value.members">
+          <span>{{member.firstName + ' ' + member.lastName}}</span>
+          <div fxLayoutAlign="center" class="remove-member" (click)="removeMember(member)">
+            <mat-icon>close</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+    <mat-form-field>
+      <mat-select multiple placeholder="Filter by classes" formControlName="attendedClassIds">
+        <mat-option [value]="clazz.id" *ngFor="let clazz of classes">
+          {{clazz.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button type="submit" mat-raised-button color="primary">Submit</button>
+    <button type="button" matDialogClose mat-raised-button color="primary">Cancel</button>
+  </div>
+</form>

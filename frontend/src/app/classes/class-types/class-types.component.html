@@ -1,0 +1,14 @@
+<form [formGroup]="form">
+  <div mat-dialog-title>
+    New Class Type
+  </div>
+  <div mat-dialog-content>
+    <mat-form-field>
+      <input matInput placeholder="Name" formControlName="name">
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-raised-button [mat-dialog-close]="form.value" color="primary">Save</button>
+    <button mat-raised-button mat-dialog-close color="warn">Cancel</button>
+  </div>
+</form>

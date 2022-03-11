@@ -1,11 +1,11 @@
 <mat-form-field class="time-selection from-time-select">
-  <mat-select placeholder="From" (selectionChange)="startValueChanged($event)">
+  <mat-select [value]="start" placeholder="From" (selectionChange)="startValueChanged($event)">
     <mat-option [value]="timeOption"
                 *ngFor="let timeOption of startTimePossibleValues">{{timeOption | date: 'HH:mm':'+0000'}}</mat-option>
   </mat-select>
 </mat-form-field>
 <mat-form-field class="time-selection to-time-select">
-  <mat-select placeholder="To" (selectionChange)="endValueChanged($event)">
+  <mat-select [value]="end" placeholder="To" (selectionChange)="endValueChanged($event)">
     <mat-option [value]="timeOption"
                 *ngFor="let timeOption of endTimePossibleValues">{{timeOption | date: 'HH:mm':'+0000'}}</mat-option>
   </mat-select>

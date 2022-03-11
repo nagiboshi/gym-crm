@@ -4,17 +4,20 @@ import {MembershipFreeze} from './membership-freeze';
 import {Member} from '../member/member';
 import {Membership} from '../membership-group/membership';
 
+export const MembershipPurchaseFields = {
+  membership: 'membership'
+}
 
 @Entity()
 export class MembershipPurchase {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({type: 'bigint'})
-  saleDate: number;
+  @Column()
+  saleDate: Date;
 
-  @Column({type: 'bigint'})
-  startDate: number;
+  @Column()
+  startDate: Date;
 
   @Column()
   price: number;

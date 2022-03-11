@@ -10,7 +10,7 @@ export class LocalImageLinkPipe implements PipeTransform {
       value = first(value);
     }
 
-    if( value.startsWith("public")) {
+    if( value && value.startsWith("public")) {
       return value.replace("public", "/api");
     }
     return value;

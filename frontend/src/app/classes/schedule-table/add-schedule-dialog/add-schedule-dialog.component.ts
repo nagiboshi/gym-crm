@@ -17,8 +17,8 @@ export interface PrimalClassSchedule {
   startTime: number;
   endTime: number;
   capacity: number;
-  scheduleFrom: number;
-  scheduleUntil: number;
+  scheduleFrom: Date;
+  scheduleUntil: Date;
 }
 
 @Component({

@@ -111,8 +111,8 @@ export class ServicePurchaseFormComponent implements OnInit {
       members: [this.predefinedMember? this.predefinedMember : this.member],
       note,
       freezeId: null,
-      saleDate: moment.now(),
-      startDate: startDateMoment.toDate().getTime(),
+      saleDate: new Date(),
+      startDate: startDateMoment.toDate(),
       paymentMethodId: this.selectPaymentFormGroup.value.paymentMethod.id,
       membershipId: this.selectedMembership.id,
     };

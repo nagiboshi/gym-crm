@@ -4,19 +4,23 @@ import { ReportsComponent } from './reports/reports.component';
 import {ReportsRoutingModule} from './reports-routing.module';
 import { StockValuationReportComponent } from './stock-valuation-report/stock-valuation-report.component';
 import {SharedModule} from '@shared/shared.module';
+import { AttendanceReportComponent } from './attendance-report/attendance-report.component';
+import {ClassesModule} from '../classes/classes.module';
 
 
 
 @NgModule({
   declarations: [
     ReportsComponent,
-    StockValuationReportComponent
+    StockValuationReportComponent,
+    AttendanceReportComponent
   ],
   imports: [
     CommonModule,
     ReportsRoutingModule,
-    SharedModule
+    SharedModule,
+    ClassesModule
   ],
-  exports: [StockValuationReportComponent]
+  exports: [StockValuationReportComponent, AttendanceReportComponent]
 })
 export class ReportsModule { }

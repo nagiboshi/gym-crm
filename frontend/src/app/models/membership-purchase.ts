@@ -8,8 +8,8 @@ export interface ServicePurchaseModel {
   id: number;
   membershipId: number;
   membership?: Membership;
-  saleDate: number;
-  startDate: number;
+  saleDate: Date;
+  startDate: Date;
   freeze?: PurchaseFreeze;
   freezeId: number;
   price: number;

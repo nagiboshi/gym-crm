@@ -20,14 +20,20 @@ import {Between} from 'typeorm';
       membershipPurchases: {
         eager: false
       },
-      'membershipPurchases.membership': {
-        alias: 'membership'
+      activeMembership: {
+        eager: false
       },
-      'membershipPurchases.members': {
-        alias: 'membershipPurchaseMembers'
+      'activeMembership.membership': {
+        alias: 'activeMembershipInfo',
+        eager: false
       },
-      'membershipPurchases.freeze': {
-        alias: 'membershipPurchaseFreeze'
+      'activeMembership.members': {
+        alias: 'activerMembershipMembers',
+        eager: false
+      },
+      'activeMembership.freeze': {
+        alias: 'freezeMembership',
+        eager: false
       }
     }
   },
@@ -50,7 +56,9 @@ export class MemberController {
     @ParsedBody() dto: Member,
     @UploadedFile() image: any & UploadedImage,
   ) {
-    dto.photoLink = image.path;
+    if(image?.path) {
+      dto.photoLink = image.path;
+    }
     return this.service.createOne(req, dto);
   }
 

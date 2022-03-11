@@ -95,4 +95,6 @@ export class AppComponent {
   onStockSelected(stock: InventoryItem) {
     this.dialog.open(StockPurchaseFormComponent, {data: {stock: stock, member: null}});
   }
+
+
 }

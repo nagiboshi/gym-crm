@@ -1,11 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog} from '@angular/material/dialog';
-import {CommunicationService, DaySchedule} from '@shared/communication.service';
+import {DaySchedule, ScheduleWeekDay} from '@shared/communication.service';
 import {Member} from '@models/member';
 import {ScheduleMember} from '@models/schedule-member';
-import {Moment} from 'moment';
 import * as _moment from 'moment';
-import {remove, first} from 'lodash';
+import {Moment} from 'moment';
+import {first, remove} from 'lodash';
 import {MembershipPurchaseHistoryItem, ServicePurchaseModel} from '@models/membership-purchase';
 import {Router} from '@angular/router';
 import {map, tap} from 'rxjs/operators';
@@ -13,15 +13,17 @@ import {SalesService} from '../../../sales/sales.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {ServicePurchaseFormComponent} from '../../../sales/membership/service-purchase-form/service-purchase-form.component';
 import {MembersService} from '../../../members/members.service';
+import {SignedMembersPipe} from '../../signed-members.pipe';
+import {HelpersService} from '@shared/helpers.service';
 
 export interface SignInDialogData {
   daySchedule: DaySchedule;
   signInDate: Moment;
+  scheduleWeekDay: ScheduleWeekDay;
 }
 
 export interface SignInMember {
   member: Member;
-  // scheduleMember: ScheduleMember;
   activeMembership: MembershipPurchaseHistoryItem;
 }
 
@@ -34,33 +36,31 @@ const moment = _moment;
 })
 export class SignInDialogComponent implements OnInit {
   purchaseItems: MembershipPurchaseHistoryItem[];
-  // memberIdToPurchaseItem: Dictionary<PurchaseHistoryItem[]>;
-  today = moment();
-  displayedColumns: string[] = ['fullName', 'package', 'expiryDate', 'sell' ];
+  displayedColumns: string[] = ['fullName', 'package', 'expiryDate', 'sell'];
   dataSource: MatTableDataSource<SignInMember> = new MatTableDataSource<SignInMember>();
+
   constructor(@Inject(MAT_DIALOG_DATA) public signInDialogData: SignInDialogData,
               private communicationService: MembersService,
               private router: Router,
+              private helpers: HelpersService,
               private salesService: SalesService,
+              private signedMembersPipe: SignedMembersPipe,
               private dialog: MatDialog) {
   }
 
 
   ngOnInit(): void {
-    const scheduleMembers = this.signInDialogData.daySchedule.signedMembers$.getValue();
-    const memberIds = scheduleMembers.filter( sm => !sm.member ).map( sm => sm.memberId);
-
-    // this.schedu
-    console.log("memberids" , memberIds);
-    this.communicationService.getMembersByIds(memberIds).pipe(map<Member[], SignInMember[]>( (members) => {
-      return members.map(  m => {
-      console.log(m);
-      return {
-        member: m,
-        activeMembership: m.membershipPurchases.length > 0 ? this.salesService.toPurchaseHistoryItem(first(m.membershipPurchases), this.today) : null
-      }})
-  }
-    )).toPromise().then(members =>  this.dataSource.data = members );
+    const scheduleMembers = this.signedMembersPipe.transform(this.signInDialogData.daySchedule.signedMembers$, this.signInDialogData.scheduleWeekDay) ;
+    const memberIds = scheduleMembers.filter(sm => !sm.member).map(sm => sm.memberId);
+    this.communicationService.getMembersByIds(memberIds).pipe(map<Member[], SignInMember[]>((members) => {
+        return members.map(m => {
+          return {
+            member: m,
+            activeMembership: m.activeMembership ? this.helpers.extendMembership(m.activeMembership):null
+          };
+        });
+      }
+    )).toPromise().then(members => this.dataSource.data = members);
   }
 
   removeFromSchedule(signedMember: ScheduleMember) {
@@ -76,10 +76,12 @@ export class SignInDialogComponent implements OnInit {
     if (isMemberAlreadyThere) {
       return;
     }
-    this.communicationService.getMemberWithPurchases(member.id, false, true, false ).toPromise().then((memberWithPurchases) => {
-      const activeMembership = memberWithPurchases.membershipPurchases?.length > 0 ?  this.salesService.toPurchaseHistoryItem(first(memberWithPurchases.membershipPurchases), this.today): null;
-      scheduleMembers.push({member: memberWithPurchases,
-        activeMembership: activeMembership});
+    this.communicationService.getMemberWithMembershipInfo(member.id).toPromise().then((m) => {
+      const activeMembership = m.activeMembership ? this.helpers.extendMembership(m.activeMembership) : null;
+      scheduleMembers.push({
+        member: m,
+        activeMembership: activeMembership
+      });
       this.dataSource.data = [...scheduleMembers];
     });
   }
@@ -87,29 +89,28 @@ export class SignInDialogComponent implements OnInit {
   openSellDialog(signInMember: SignInMember) {
     const memberId = signInMember.member.id;
     this.dialog.open(ServicePurchaseFormComponent,
-          {data: signInMember.member })
-            .afterClosed().subscribe((purchase: ServicePurchaseModel) => {
+      {data: signInMember.member})
+      .afterClosed().subscribe((purchase: ServicePurchaseModel) => {
       if (purchase) {
-          // const purchaseModel = toPurchaseItemModel(purchase);
-          this.salesService.savePurchase(purchase)
-                                   .pipe( map( p =>  this.salesService.toPurchaseHistoryItem(p, this.today),
-                                        tap((historyItem: MembershipPurchaseHistoryItem) => {
-                                          this.purchaseItems.push(historyItem);
-                                        //  this.memberIdToPurchaseItem[memberId].push(historyItem);
-                                        } )))
-                                   .toPromise().then((savedPurchaseItem) => {
-                                  debugger;
-                                     if( savedPurchaseItem ) {
-                                       const scheduleMembers = this.dataSource.data;
-                                       // scheduleMembers.
-                                       const scheduleMember = scheduleMembers.find(scheduleMember => scheduleMember.member.id == memberId);
-                                       if (scheduleMember.member) {
-                                         scheduleMember.member.membershipPurchases.push(savedPurchaseItem);
-                                         scheduleMember.activeMembership = savedPurchaseItem; // this.salesService.toPurchaseHistoryItem(savedPurchaseItem, this.today);
-                                       }
-                                       this.dataSource.data = [...scheduleMembers];
-                                     }
-          });
+        // const purchaseModel = toPurchaseItemModel(purchase);
+        this.salesService.savePurchase(purchase)
+          .pipe(map(p => this.helpers.extendMembership(p),
+            tap((historyItem: MembershipPurchaseHistoryItem) => {
+              this.purchaseItems.push(historyItem);
+              //  this.memberIdToPurchaseItem[memberId].push(historyItem);
+            })))
+          .toPromise().then((savedPurchaseItem) => {
+          if (savedPurchaseItem) {
+            const scheduleMembers = this.dataSource.data;
+            // scheduleMembers.
+            const scheduleMember = scheduleMembers.find(scheduleMember => scheduleMember.member.id == memberId);
+            if (scheduleMember.member) {
+              scheduleMember.member.membershipPurchases.push(savedPurchaseItem);
+              scheduleMember.activeMembership = this.helpers.extendMembership(savedPurchaseItem);
+            }
+            this.dataSource.data = [...scheduleMembers];
+          }
+        });
       }
     });
 

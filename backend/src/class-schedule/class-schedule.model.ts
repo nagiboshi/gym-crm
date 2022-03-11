@@ -2,8 +2,22 @@ import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn
 import {ClassModel} from '../classes/class-model';
 import {Branch} from '../branch/branch';
 import {ScheduleMember} from '../schedule-member/schedule-member';
+import {Type} from 'class-transformer';
 
-
+export const ClassScheduleFields = {
+  id: 'id',
+  scheduleClass: 'scheduleClass',
+  classId: 'classId',
+  timeStart: 'timeStart',
+  timeEnd: 'timeEnd',
+  day: 'day',
+  capacity: 'capacity',
+  scheduleFrom: 'scheduleFrom',
+  sheduleUntil: 'scheduleUntil',
+  signedMembers: 'signedMembers',
+  branch: 'branch',
+  branchId: 'branchId'
+}
 @Entity()
 export class ClassSchedule {
   @PrimaryGeneratedColumn()
@@ -11,7 +25,7 @@ export class ClassSchedule {
 
   @ManyToOne(type => ClassModel, {onDelete:"CASCADE"})
   @JoinColumn({referencedColumnName: 'id', name: 'classId'})
-  scheduleClass;
+  scheduleClass: ClassModel;
 
   @Column()
   classId: number;
@@ -28,11 +42,13 @@ export class ClassSchedule {
   @Column({type: 'smallint'})
   capacity: number;
 
-  @Column({type: 'bigint'})
-  scheduleFrom: number;
+  @Type(() => Date)
+  @Column()
+  scheduleFrom: Date;
 
-  @Column({type: 'bigint'})
-  scheduleUntil: number;
+  @Type(() => Date)
+  @Column()
+  scheduleUntil: Date;
 
   @OneToMany(type => ScheduleMember,  scheduleMember => scheduleMember.schedule, {nullable: true})
   signedMembers?: ScheduleMember[];

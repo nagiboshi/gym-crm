@@ -107,6 +107,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color:  $primaryColor8;
 }
 
+.default-link {
+  color: $primaryColor6;
+}
+
 .mat-form-field.mat-focused.mat-primary .mat-select-arrow {
   color: $primaryColor8;
 }

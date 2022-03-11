@@ -2,6 +2,11 @@ import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGen
 import {IsEmail, IsMobilePhone, IsNotEmpty, MinLength} from 'class-validator';
 import {MembershipPurchase} from '../membership-purchase/membership-purchase';
 
+export const MemberFields = {
+  membershipPurchases: 'membershipPurchases',
+  activeMembership: 'activeMembership'
+}
+
 @Entity()
 export class Member {
 
@@ -17,7 +22,7 @@ export class Member {
   @IsNotEmpty()
   lastName: string;
 
-  @Column()
+  @Column({nullable: true})
   photoLink: string;
 
   @Column({nullable: true})
@@ -47,4 +52,7 @@ export class Member {
 
   @ManyToMany( type => MembershipPurchase, membershipPurchase => membershipPurchase.members, {onDelete: "CASCADE", onUpdate: "CASCADE", cascade: true})
   membershipPurchases: MembershipPurchase[];
+
+  @ManyToOne(type => MembershipPurchase, {nullable: true})
+  activeMembership: MembershipPurchase;
 }

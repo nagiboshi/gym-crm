@@ -15,7 +15,7 @@
             <div
               *ngIf="daySchedule.day == scheduleWeekDay.day && scheduleWeekDay.date.getTime() >= daySchedule.scheduleFrom && scheduleWeekDay.date.getTime() <= daySchedule.scheduleUntil "
               class="schedule-row" fxLayout="row" fxLayoutAlign="start">
-              <div (click)="signIn(daySchedule)" fxLayoutAlign="center center" fxLayout="row" class="schedule-time">
+              <div (click)="signIn(daySchedule, scheduleWeekDay)" fxLayoutAlign="center center" fxLayout="row" class="schedule-time">
                 <div class="schedule-start">
                   {{daySchedule.timeStart | date: 'HH:mm': '+0000' }}
                 </div>
@@ -24,12 +24,10 @@
                   {{daySchedule.timeEnd | date: 'HH:mm':'+0000' }}
                 </div>
               </div>
-              <!--            <button [ngClass]="'sign-in-button'" mat-button (click)="signIn(daySchedule)" color="primary">Sign in-->
-              <!--            </button>-->
-              <div (click)="signIn(daySchedule)" fxLayoutAlign="center center" class="class-sign">
-                <span class="signed-user">{{daySchedule.signedMembers$.value.length}} of {{daySchedule.capacity}}</span>
+              <div (click)="signIn(daySchedule, scheduleWeekDay )" fxLayoutAlign="center center" class="class-sign">
+                <span class="signed-user">{{daySchedule.signedMembers$ | signedMembersSize:scheduleWeekDay }} of {{daySchedule.capacity}}</span>
               </div>
-              <div (click)="signIn(daySchedule)" fxLayoutAlign="center center" class="class-name">
+              <div (click)="signIn(daySchedule, scheduleWeekDay)" fxLayoutAlign="center center" class="class-name">
                 {{daySchedule.classId | classNameById}}
               </div>
               <button [ngClass]="'remove-schedule'" mat-icon-button (click)="remove(daySchedule)">
@@ -46,7 +44,10 @@
       <mat-calendar (monthSelected)="filterScheduleDates($event)" [headerComponent]="scheduleCalendarHeader"
                     (selectedChange)="filterScheduleDates($event)"
                     [selected]="scheduleDate"></mat-calendar>
-      <div fxLayoutAlign="end" id="add-schedule-container">
+      <div fxLayoutGap="15" fxLayoutAlign="end" id="add-schedule-container">
+        <button (click)="attendanceReport()" id="attendance-report-schedule" mat-fab color="primary">
+          <mat-icon>article</mat-icon>
+        </button>
         <button (click)="addSchedule()" id="add-schedule" mat-fab color="primary">
           <mat-icon>add</mat-icon>
         </button>

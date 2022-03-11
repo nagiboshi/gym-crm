@@ -2,6 +2,16 @@ import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGener
 import {Member} from '../member/member';
 import {ClassSchedule} from '../class-schedule/class-schedule.model';
 
+
+export const ScheduleMemberFields = {
+  id: 'id',
+  member: 'member',
+  memberId:'memberId',
+  scheduleDate: 'scheduleDate',
+  schedule: 'schedule',
+  scheduleId: 'scheduleId'
+}
+
 @Entity()
 export class ScheduleMember {
   @PrimaryGeneratedColumn()
@@ -14,9 +24,8 @@ export class ScheduleMember {
   @Column()
   memberId: number;
 
-  @Column({type: 'bigint'})
-  scheduleDate: number;
-
+  @Column()
+  scheduleDate: Date;
 
   @ManyToOne(type => ClassSchedule, {onDelete: "CASCADE"})
   @JoinColumn({referencedColumnName: 'id', name: 'scheduleId'})

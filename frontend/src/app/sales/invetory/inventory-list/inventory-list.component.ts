@@ -17,6 +17,7 @@ import {SupplierViewComponent} from '../../suppliers/supplier-view/supplier-view
 import {Product} from '@models/product';
 import {StockValuationReportComponent} from '../../../reports/stock-valuation-report/stock-valuation-report.component';
 import {ReportsService} from '../../../reports/reports.service';
+import {HelpersService} from '@shared/helpers.service';
 @Component({
   selector: 'inventory-list',
   templateUrl: './inventory-list.component.html',
@@ -30,7 +31,7 @@ export class InventoryListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: MatTableDataSource<InventoryItem>;
 
-  constructor(private reportsService: ReportsService, private http: HttpClient, private dialog: MatDialog, private stockPurchaseService: StockPurchaseService, private productService: ProductService) {
+  constructor(private reportsService: ReportsService, private helpers: HelpersService, private http: HttpClient, private dialog: MatDialog, private stockPurchaseService: StockPurchaseService, private productService: ProductService) {
   }
 
 
@@ -75,12 +76,7 @@ export class InventoryListComponent implements OnInit {
   makeReport() {
       this.reportsService.generateValuationReport()
         .subscribe(blob => {
-          const a = document.createElement('a')
-          const objectUrl = URL.createObjectURL(blob)
-          a.href = objectUrl
-          a.download = 'valuation-report.xls';
-          a.click();
-          URL.revokeObjectURL(objectUrl);
+          this.helpers.download(blob, 'valuation-report.xls');
         });
   }
 

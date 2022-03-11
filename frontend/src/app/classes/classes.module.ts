@@ -13,6 +13,8 @@ import {ClassNameByIdPipe} from './class-name-by-id.pipe';
 import {ClassListComponent} from './class-list/class-list.component';
 import {CreateClassDialogComponent} from './class-list/create-class-dialog/create-class-dialog.component';
 import { ClassTypesComponent } from './class-types/class-types.component';
+import { SignedMembersPipe } from './signed-members.pipe';
+import { SignedMembersSizePipe } from './signed-members-size.pipe';
 
 @NgModule({
   declarations: [ScheduleTableComponent,
@@ -22,8 +24,10 @@ import { ClassTypesComponent } from './class-types/class-types.component';
     ClassListComponent,
     CreateClassDialogComponent,
     ClassNameByIdPipe,
-    ClassTypesComponent],
-  providers: [SelectionStrategyEventEmitter],
+    ClassTypesComponent,
+    SignedMembersPipe,
+    SignedMembersSizePipe],
+  providers: [SelectionStrategyEventEmitter, SignedMembersPipe],
   imports: [
     CommonModule,
     SharedModule,

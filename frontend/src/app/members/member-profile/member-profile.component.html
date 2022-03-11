@@ -53,7 +53,7 @@
           </div>
         </div>
         <div fxFlex="33">
-          <membership-status *ngIf="_activeMembership$ | async as activeMembership" [member]="loadedMemberValue" [activeMembership]="activeMembership"></membership-status>
+          <membership-status (membershipUpdated)="updateMembership($event)" *ngIf="_activeMembership$ | async as activeMembership; else nomembership" [member]="loadedMemberValue" [activeMembership]="activeMembership"></membership-status>
         </div>
       </div>
     </div>
@@ -65,6 +65,14 @@
 
   </form>
   <div fxLayoutAlign="start">
-  <app-purchase-history (purchaseUpdated)="onNewPurchase($event)"  *ngIf="loadedMember$ | async as member"  [member]="member"></app-purchase-history>
+<!--  <app-purchase-history (purchaseUpdated)="onNewPurchase($event)"  *ngIf="loadedMember$ | async as member"  [member]="member"></app-purchase-history>-->
 </div>
+</div>
+
+
+<ng-template #nomembership>
+  <h3>Member has no membership!</h3>
+</ng-template>
+<div>
+<button (click)="addNewPurchase()" mat-fab><mat-icon>attach_money</mat-icon></button>
 </div>

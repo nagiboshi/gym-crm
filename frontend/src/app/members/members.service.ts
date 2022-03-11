@@ -19,30 +19,21 @@ export class MembersService {
 
   }
 
-  getMemberWithPurchases(id: string | number, joinPurchaseFreeze = true, joinPurchaseProduct = true, joinPurchaseMembers = true) {
+  getMemberWithMembershipInfo(id: string | number) {
     const query = RequestQueryBuilder.create()
-      .setJoin({field: 'membershipPurchases'})
-      .setJoin({field: 'membershipPurchases.membership'});
-    if (joinPurchaseFreeze) {
-      query.setJoin({field: 'membershipPurchases.freeze'});
-    }
-
-
-    if (joinPurchaseMembers) {
-      query.setJoin({field: 'membershipPurchases.members'});
-    }
-    query.sortBy({
-      field: 'membershipPurchases.saleDate',
-      order: 'DESC'
-    });
+      .setJoin({field: 'activeMembership'})
+      .setJoin({field: 'activeMembership.freeze'})
+      .setJoin({field: 'activeMembership.members'})
+      .setJoin({field: 'activeMembership.membership'});
     const resultedQuery = '/?' + query.query(false);
-    return this.httpClient.get<Member>('/api/member/' + id + resultedQuery).pipe(map<Member, Member>(member => {
+    return this.httpClient.get<Member>('/api/member/' + id + resultedQuery)
+      .pipe(map<Member, Member>(member => {
       member.membershipPurchases?.forEach(p => {
-        p.startDate = this.helpers.bigIntStringToNumber(p.startDate);
-        p.saleDate = this.helpers.bigIntStringToNumber(p.saleDate);
+        p.startDate =  p.startDate ? new Date(p.startDate) : null; // this.helpers.bigIntStringToNumber(p.startDate);
+        p.saleDate =  p.startDate ? new Date(p.saleDate): null; // this.helpers.bigIntStringToNumber(p.saleDate);
         if (p.freeze) {
-          p.freeze.startDate = this.helpers.bigIntStringToNumber(p.freeze.startDate);
-          p.freeze.endDate = this.helpers.bigIntStringToNumber(p.freeze.endDate);
+          p.freeze.startDate = p.freeze.startDate?new Date(p.freeze.startDate):null; // this.helpers.bigIntStringToNumber(p.freeze.startDate);
+          p.freeze.endDate = p.freeze.endDate?new Date(p.freeze.endDate):null; //  this.helpers.bigIntStringToNumber(p.freeze.endDate);
         }
       });
       return member;

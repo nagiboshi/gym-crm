@@ -62,7 +62,6 @@ import {MatCardModule} from '@angular/material/card';
 import {CategoryListComponent} from '@shared/category/category-list.component';
 import {CategoriesCrudComponent} from '@shared/category/categories-crud/categories-crud.component';
 import {SubcategoryCrudComponent} from '@shared/category/categories-crud/subcategory-crud.component/subcategory-crud.component';
-
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent, FindSupplierComponent,
     AddMemberDialogComponent, FindProductComponent, YearMonthSelectorComponent,
@@ -125,6 +124,7 @@ import {SubcategoryCrudComponent} from '@shared/category/categories-crud/subcate
     MatMenuModule,
     MatSidenavModule,
     ReactiveFormsModule,
+    FormsModule,
     MatIconModule,
     MatStepperModule,
     MatFormFieldModule,

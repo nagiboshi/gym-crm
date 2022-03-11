@@ -17,7 +17,7 @@ import {JwtAuthGuard} from '../auth/jwt-auth.guard';
   }}
 )
 @Controller('class-schedule')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class ClassScheduleController {
 
   constructor(private service: ClassScheduleService) {

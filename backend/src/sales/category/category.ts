@@ -1,6 +1,13 @@
 import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Subcategory} from './subcategory';
 
+export const CategoryFields = {
+  id: 'id',
+  name: 'name',
+  subcategories: 'subcategories',
+  type: 'type'
+}
+
 @Entity()
 export class Category {
 

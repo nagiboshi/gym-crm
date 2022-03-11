@@ -36,9 +36,6 @@ export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-
-
-
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     const size = this.paginator.pageSize;
@@ -59,10 +56,6 @@ export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
     return Math.random() * (max - min) + min;
   }
 
-  getRandomBool(): boolean {
-    return Math.random() <= 0.5;
-  }
-
   addMember() {
     const newMember = {id: 0, firstName: '', file: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
 
@@ -72,20 +65,6 @@ export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
     this.dialog.open(AddMemberDialogComponent, {data: newMember})
       .afterClosed()
       .subscribe((newMember: Member) => {
-        // if (newMember) {
-        //   interval(200).pipe(take(500)).subscribe((n) => {
-        //     newMember.firstName =  'Test ' + n;
-        //     newMember.lastName = 'Test ' + n;
-        //     newMember.email = 'test_' + n + '@example.com';
-        //     const random = this.getRandomArbitrary(moment().startOf('year').toDate().getTime(), moment().toDate().getTime() );
-        //     newMember.gender = this.getRandomBool() ? 'male':'female';
-        //     newMember.created = new Date(random);
-        //     this.membersService.saveMember(newMember).toPromise();
-        //   });
-          // .forEach((num) => {
-
-          // })
-          // console.log(newMember);
           this.membersService.saveMember(newMember).toPromise().then((savedMember) => {
             this.membersService.memberCreated.next(savedMember);
           });

@@ -6,10 +6,14 @@ import {CommunicationService} from '@shared/communication.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Member} from '@models/member';
 import * as _moment from 'moment';
-import {first, last, sortBy, isEmpty } from 'lodash';
+import {first, last, sortBy, isEmpty, clone} from 'lodash';
 import {MembershipPurchaseHistoryItem} from '@models/membership-purchase';
 import {SalesService} from '../../sales/sales.service';
 import {MembersService} from '../members.service';
+import {FreezeMembershipDialogComponent} from '@shared/freeze-membership-dialog/freeze-membership-dialog.component';
+import {SharePurchaseDialogComponent} from '@shared/share-purchase-dialog/share-purchase-dialog.component';
+import {MemberSaleDialogComponent} from '../../sales/member-sale-dialog/member-sale-dialog.component';
+import {HelpersService} from '@shared/helpers.service';
 
 const moment = _moment;
 
@@ -30,6 +34,7 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
   constructor(public dialog: MatDialog, private fb: FormBuilder,
               private communicationService: MembersService,
               private activatedRoute: ActivatedRoute,
+              private helpers: HelpersService,
               private salesService: SalesService,
               private cd: ChangeDetectorRef) {
   }
@@ -63,8 +68,21 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
     );
   }
 
+
+  addNewPurchase() {
+    this.dialog.open(MemberSaleDialogComponent, {data: this._loadedMemberSubject.getValue()}).afterClosed().subscribe((purchaseHistoryItem: MembershipPurchaseHistoryItem) => {
+      this._activeMembership.next(purchaseHistoryItem);
+      // if (purchaseHistoryItem) {
+        // this.purchasesSubj.next([purchaseHistoryItem, ...this.purchasesSubj.getValue()]);
+        // this.purchaseUpdated.next(purchaseHistoryItem);
+      // }
+    });
+
+  }
+
   loadProfile(memberId: number) {
-    this.communicationService.getMemberWithPurchases(memberId.toString()).toPromise().then((member) => {
+
+    this.communicationService.getMemberWithMembershipInfo(memberId.toString()).toPromise().then((member) => {
       if( member ) {
         this._loadedMemberSubject.next( member );
         this._activeMembership.next(this.getActiveMembership(member));
@@ -84,10 +102,10 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
   }
 
   getActiveMembership(member: Member) {
-    if( isEmpty(member.membershipPurchases)) {
+    if( isEmpty(member.activeMembership)) {
       return null;
     }
-   return this.salesService.toPurchaseHistoryItem(first(member.membershipPurchases), this.todayMoment);
+   return this.helpers.extendMembership( member.activeMembership);
   }
 
   ngOnDestroy() {
@@ -106,5 +124,11 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
 
   onNewPurchase(purchaseHistoryItem: MembershipPurchaseHistoryItem) {
       this._activeMembership.next(purchaseHistoryItem);
+  }
+
+  updateMembership(membership: MembershipPurchaseHistoryItem) {
+    this._activeMembership.next(membership);
+    // this._loadedMemberSubject.getValue().activeMembership = membership;
+
   }
 }

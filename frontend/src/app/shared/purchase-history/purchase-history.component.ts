@@ -43,24 +43,12 @@ export class PurchaseHistoryComponent implements OnChanges {
 
   addNewPurchase() {
     this.dialog.open(MemberSaleDialogComponent, {data: this.member}).afterClosed().subscribe((purchaseHistoryItem: MembershipPurchaseHistoryItem) => {
-      console.log(purchaseHistoryItem);
         if (purchaseHistoryItem) {
           this.purchasesSubj.next([purchaseHistoryItem, ...this.purchasesSubj.getValue()]);
           this.purchaseUpdated.next(purchaseHistoryItem);
         }
     });
 
-    // this.dialog.open(MembershipPurchaseFormComponent, {data: this.member}).afterClosed().subscribe((purchase: MembershipPurchaseModel) => {
-    //   if (purchase) {
-    //     const savedMembershipPurchase = this.salesService.savePurchase(purchase);
-    //     savedMembershipPurchase.toPromise().then((newMembershipPurchase) => {
-    //       const newPurchaseHistoryItem = this.salesService.toPurchaseHistoryItem(newMembershipPurchase, this.todayMoment);
-    //       this.purchasesSubj.next([newPurchaseHistoryItem, ...this.purchasesSubj.getValue()]);
-    //       this.purchaseUpdated.next(newPurchaseHistoryItem);
-    //
-    //     });
-    //   }
-    // });
   }
 
 

@@ -8,8 +8,9 @@
   table {
     width: 100%;
     background: transparent;
+
     tr.mat-header-row:hover {
-      background-color: #FFF;
+      background-color: transparent;
     }
 
     tr:not(.no-data,.mat-header-row):hover {
@@ -29,7 +30,7 @@
     }
 
     .avatar {
-     object-fit:cover;
+      object-fit: cover;
     }
 
     .edit-cell, .delete-cell {
@@ -42,8 +43,9 @@
 
 
   }
+
   .add-person-container {
-    position: fixed;
     bottom: 20px;
+    width: 100%;
   }
 }

@@ -3,6 +3,15 @@ import {ClassCategory} from '../class-category/class-category';
 import {Branch} from '../branch/branch';
 import {Category} from '../sales/category/category';
 
+export const ClassModelFields = {
+  id: 'id',
+  name: 'name',
+  category: 'category',
+  categoryId: 'categoryId',
+  branch: 'branch',
+  branchId: 'branchId'
+}
+
 @Entity()
 export class ClassModel {
   @PrimaryGeneratedColumn()
@@ -12,7 +21,7 @@ export class ClassModel {
   name: string;
 
   @ManyToOne( type => Category, (c) => c.type)
-  classCategory: Category;
+  category: Category;
 
   @Column({nullable: true})
   categoryId: number;
