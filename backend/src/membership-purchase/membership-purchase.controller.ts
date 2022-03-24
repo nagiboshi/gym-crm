@@ -5,6 +5,7 @@ import {MembershipPurchaseService} from './membership-purchase.service';
 import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import {MemberService} from '../member/member.service';
 import {cloneDeep} from 'lodash';
+import {PaymentService} from '../payments/payment.service';
 
 @Crud(
   {
@@ -16,7 +17,8 @@ import {cloneDeep} from 'lodash';
         membership: {eager: false},
         members: {eager: false},
         'members.activeMembership': {eager: false},
-        freeze: {eager: false}
+        freeze: {eager: false},
+        payments: {eager: false},
       }
     }
   }
@@ -25,7 +27,7 @@ import {cloneDeep} from 'lodash';
 @UseGuards(JwtAuthGuard)
 export class MembershipPurchaseController {
 
-  constructor(private service: MembershipPurchaseService, private memberService: MemberService) {
+  constructor(private service: MembershipPurchaseService, private paymentService: PaymentService, private memberService: MemberService) {
   }
 
   @Override()
@@ -33,7 +35,16 @@ export class MembershipPurchaseController {
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: MembershipPurchase,
   ) {
+
+    let payments = dto.payments;
+    dto.payments = [];
+
     const membershipPurchase = await this.service.createOne(req, dto);
+
+    payments.forEach( p =>  { p.membershipPurchaseId = membershipPurchase.id;});
+    payments = await this.paymentService.repo.save(payments);
+    membershipPurchase.payments = payments;
+
     for (let member of membershipPurchase.members) {
       member.activeMembership = cloneDeep(membershipPurchase);
     }

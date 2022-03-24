@@ -3,18 +3,17 @@ import {PaymentMethod} from '../payment-method/payment-method';
 import {MembershipFreeze} from './membership-freeze';
 import {Member} from '../member/member';
 import {Membership} from '../membership-group/membership';
+import {Payment} from '../payments/payment';
 
 export const MembershipPurchaseFields = {
-  membership: 'membership'
+  membership: 'membership',
+  payments: 'payments'
 }
 
 @Entity()
 export class MembershipPurchase {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
-  saleDate: Date;
 
   @Column()
   startDate: Date;
@@ -25,19 +24,18 @@ export class MembershipPurchase {
   @Column()
   note: string;
 
+  @Column()
+  discount: number;
+
+  @OneToMany(type => Payment, purchase => purchase.membershipPurchase )
+  payments: Payment[];
+
   @ManyToOne(type => Membership, {onDelete: "CASCADE"})
   @JoinColumn({name: 'membershipId', referencedColumnName: 'id'})
   membership: Membership;
 
   @Column()
   membershipId: number;
-
-  @ManyToOne( type => PaymentMethod)
-  @JoinColumn({name: 'paymentMethodId', referencedColumnName: 'id'})
-  paymentMethod: PaymentMethod;
-
-  @Column()
-  paymentMethodId: number;
 
   @OneToOne(type => MembershipFreeze, {nullable: true, cascade: true})
   @JoinColumn({name: 'freezeId'})

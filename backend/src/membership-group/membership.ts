@@ -1,6 +1,7 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {MembershipGroup} from './membership-group';
 
+
 @Entity({
   orderBy: {'id': 'ASC'}
 })

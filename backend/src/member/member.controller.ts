@@ -1,11 +1,11 @@
-import {Controller, Get, Param, Query, Req, UploadedFile, UseGuards} from '@nestjs/common';
+import {Controller, UploadedFile, UseGuards} from '@nestjs/common';
 import {Crud, CrudRequest, Override, ParsedBody, ParsedRequest} from '@nestjsx/crud';
 import {Member} from './member';
 import {MemberService} from './member.service';
 import {FileUploadingUtils} from '../interceptors/file-uploading-utils.interceptor';
 import {JwtAuthGuard} from '../auth/jwt-auth.guard';
-import {Request} from 'express';
-import {Between} from 'typeorm';
+import {SocialNetworkAccountService} from '../social-network-account/social-network-account.service';
+import {Equal} from 'typeorm';
 
 @Crud({
   model: {
@@ -27,12 +27,19 @@ import {Between} from 'typeorm';
         alias: 'activeMembershipInfo',
         eager: false
       },
+      'activeMembership.payments': {
+        alias: 'activeMembershipPayments',
+        eager: false
+      },
       'activeMembership.members': {
-        alias: 'activerMembershipMembers',
+        alias: 'activeMembershipMembers',
         eager: false
       },
       'activeMembership.freeze': {
         alias: 'freezeMembership',
+        eager: false
+      },
+      socialAccounts: {
         eager: false
       }
     }
@@ -46,7 +53,7 @@ import {Between} from 'typeorm';
 @Controller('member')
 @UseGuards(JwtAuthGuard)
 export class MemberController {
-  constructor(public service: MemberService) {
+  constructor(public service: MemberService, public socialNetworkAccService: SocialNetworkAccountService) {
 
   }
 
@@ -56,27 +63,27 @@ export class MemberController {
     @ParsedBody() dto: Member,
     @UploadedFile() image: any & UploadedImage,
   ) {
-    if(image?.path) {
+    if (image?.path) {
       dto.photoLink = image.path;
     }
     return this.service.createOne(req, dto);
   }
 
+  @Override('updateOneBase')
+  async updateOne(
+    @ParsedRequest() req: CrudRequest,
+    @ParsedBody() dto: Member,
+  ) {
+    let socialAccounts = dto.socialAccounts;
+    if (socialAccounts && socialAccounts.length > 0) {
+      socialAccounts.forEach(socialAccount => socialAccount.memberId = dto.id);
+      const existingSocialAccounts = await this.socialNetworkAccService.repo.find({where: {memberId: Equal( dto.id)}});
 
-  @Get('newMembersStatistic')
-  async countNewMembers(@Req() request: Request, @Query('from') from: string, @Query('to') to: string ){
-    const fromDate = new Date(parseInt(from));
+      await this.socialNetworkAccService.repo.remove(existingSocialAccounts);
+      dto.socialAccounts = await this.socialNetworkAccService.repo.save(socialAccounts);
+    }
 
-    const toDate = new Date(parseInt(to));
-   // console.log(typeof from, Date.now(), fromDate, toDate);
-    // const condition:
-   const res = await this.service.repo.count({where: {
-      created: Between(fromDate, toDate)
-      }});
-   console.log(res);
-   //  // return of([['Men', 200], ['Women', 250]]);
-    return 1;
+    return await this.service.updateOne(req, dto);
   }
-
 
 }

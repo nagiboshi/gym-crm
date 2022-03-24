@@ -1,10 +1,13 @@
-import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {IsEmail, IsMobilePhone, IsNotEmpty, MinLength} from 'class-validator';
 import {MembershipPurchase} from '../membership-purchase/membership-purchase';
+import {SocialNetworkAccount} from '../social-network-account/social-network-account';
 
 export const MemberFields = {
   membershipPurchases: 'membershipPurchases',
-  activeMembership: 'activeMembership'
+  activeMembership: 'activeMembership',
+  socialAccounts: 'socialAccounts',
+  created: 'created'
 }
 
 @Entity()
@@ -28,6 +31,16 @@ export class Member {
   @Column({nullable: true})
   @IsMobilePhone()
   phoneNumber: string;
+
+  @Column({nullable: true})
+  @IsMobilePhone()
+  emergencyPhone: string;
+
+  @OneToMany( type => SocialNetworkAccount, social => social.member, {nullable: true})
+  socialAccounts: SocialNetworkAccount[];
+
+  @Column({nullable: true})
+  dob: Date;
 
   @Column()
   @IsEmail()

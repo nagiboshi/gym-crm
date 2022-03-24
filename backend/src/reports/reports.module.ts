@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
-import { ReportsController } from './reports.controller';
-import { SalesModule} from '../sales/sales.module';
-import {ClassScheduleModule} from '../class-schedule/class-schedule.module';
-import {ScheduleMemberService} from '../schedule-member/schedule-member.service';
+import {Module} from '@nestjs/common';
+import {ReportsController} from './reports.controller';
+import {SalesModule} from '../sales/sales.module';
 import {ScheduleMemberModule} from '../schedule-member/schedule-member.module';
+import {MemberModule} from '../member/member.module';
 
 @Module({
   controllers: [ReportsController],
-  imports: [SalesModule, ScheduleMemberModule],
+  imports: [SalesModule, ScheduleMemberModule, MemberModule],
   providers: []
 })
-export class ReportsModule {}
+export class ReportsModule {
+}

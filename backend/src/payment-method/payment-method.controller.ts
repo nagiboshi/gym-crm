@@ -1,8 +1,8 @@
 import {Controller, UseGuards} from '@nestjs/common';
 import {Crud} from '@nestjsx/crud';
+import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import {PaymentMethod} from './payment-method';
 import {PaymentMethodService} from './payment-method.service';
-import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 
 
 @Crud({

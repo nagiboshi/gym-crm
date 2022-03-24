@@ -7,12 +7,12 @@ import {Between, FindManyOptions, In} from 'typeorm';
 import {ScheduleMemberService} from '../schedule-member/schedule-member.service';
 import * as moment from 'moment';
 import {ScheduleMember, ScheduleMemberFields} from '../schedule-member/schedule-member';
-import {ClassSchedule, ClassScheduleFields} from '../class-schedule/class-schedule.model';
-import {CategoryFields} from '../sales/category/category';
-import {ClassModel, ClassModelFields} from '../classes/class-model';
-import {MemberFields} from '../member/member';
+import {ClassScheduleFields} from '../class-schedule/class-schedule.model';
+import {ClassModelFields} from '../classes/class-model';
+import {Member, MemberFields} from '../member/member';
 import {Moment} from 'moment';
-import {MembershipPurchaseFields} from '../membership-purchase/membership-purchase';
+import {MembershipPurchase, MembershipPurchaseFields} from '../membership-purchase/membership-purchase';
+import {MemberService} from '../member/member.service';
 
 interface AttendanceFilter {
   attendanceClassIds: Array<number>;
@@ -23,14 +23,111 @@ interface AttendanceFilter {
   memberIds: Array<number>;
 }
 
+interface DateFilter {
+  fromDate: Date;
+  toDate: Date;
+}
+
 @Controller('reports')
 export class ReportsController {
 
-  constructor(public inventoryService: InventoryService, private scheduleMemberService: ScheduleMemberService) {
+  constructor(public inventoryService: InventoryService, private memberService: MemberService, private scheduleMemberService: ScheduleMemberService) {
   }
 
+  private getMembershipExpirationMoment(membership: MembershipPurchase): Moment {
+    let membershipExpirationDate: Moment;
+    if( membership ) {
+       membershipExpirationDate = moment(membership.startDate);
+      const expirationType = membership.membership.expirationType;
 
-  // "not" | "lessThan" | "lessThanOrEqual" | "moreThan" | "moreThanOrEqual" | "equal" | "between" | "in" | "any" | "isNull" | "ilike" | "like" | "raw";
+      if (expirationType == 'day') {
+        membershipExpirationDate.add(membership.membership.expirationLength, 'day');
+      } else if (expirationType == 'month') {
+        membershipExpirationDate.add(membership.membership.expirationLength, 'month');
+      } else {
+        membershipExpirationDate.add(membership.membership.expirationLength, 'year');
+      }
+    }
+    return membershipExpirationDate;
+  }
+
+  @Post('/membersReport')
+  async activeMemberReport(@Req() req, @Res() res) {
+    const filter: DateFilter = req.body;
+    filter.fromDate = new Date(filter.fromDate);
+    filter.toDate = new Date(filter.toDate);
+
+    const RELATION_ACTIVE_MEMBERSHIP = MemberFields.activeMembership;
+    const RELATION_MEMBERSHIP = `${MemberFields.activeMembership}.${MembershipPurchaseFields.membership}`;
+    const RELATION_MEMBERSHIP_PAYMENTS = `${MemberFields.activeMembership}.${MembershipPurchaseFields.payments}`;
+    const RELATION_SOCIAL_ACCOUNTS = MemberFields.socialAccounts;
+    const queryFilter: FindManyOptions = {relations: [RELATION_ACTIVE_MEMBERSHIP, RELATION_MEMBERSHIP, RELATION_SOCIAL_ACCOUNTS, RELATION_MEMBERSHIP_PAYMENTS], where: {
+      }}
+    queryFilter.where[MemberFields.created] = Between(filter.fromDate, filter.toDate)
+    const members: Member[] = await this.memberService.find(queryFilter);
+
+    // Membership Reports ( Active member report ) , email address, day of birth, instagram account, . date of sales, emergency contact person, phone number , membership , start date , end date.
+    //   In case if we are creating purchase voucher and want to update existing Men
+
+    const wb = new ExcelJS.Workbook();
+    const worksheet: Worksheet = wb.addWorksheet('Member Report');
+    worksheet.columns = [
+      {header: 'Name', width: 20, key: 'name'},
+      {header: 'Email', width: 20, key: 'email'},
+      {header: 'DOB', width: 10, key: 'dob'},
+      {header: 'Phone number', width: 20, key: 'phone'},
+      {header: 'Social Accounts', width: 20, key: 'socialAccounts'},
+      {header: 'Emergency Contact', width: 20, key: 'emergency'},
+      {header: 'Membership', width: 20, key: 'membership'},
+      {header: 'Sale Date', width: 20, key: 'saleDate'},
+      {header: 'Start Date', width: 20, key: 'startDate'},
+      {header: 'Expiry Date', width: 20, key: 'expiryDate'}
+    ];
+
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber == 1) {
+        row.height = 22;
+        row.fill = {type: 'pattern', fgColor: {argb: '0075a9'}, pattern: 'solid'};
+        row.font = {bold: true, color: {argb: 'ffffff'}, size: 15};
+      }
+    });
+
+    for (let idx = 0; idx < members.length; idx++) {
+      let socialAccounts = '';
+
+      if( members[idx].socialAccounts && members[idx].socialAccounts.length > 0 ) {
+        socialAccounts = members[idx].socialAccounts.map( socialAccount => socialAccount.address).reduce( (previousValue, currentValue ) => {
+          if( !previousValue ) {
+            previousValue = "";
+          }
+          return previousValue + ", " + currentValue;
+        });
+      }
+
+      worksheet.addRow({
+          'name': `${members[idx].firstName} ${members[idx].lastName}`,
+          'email': members[idx].email,
+          'dob': members[idx].dob,
+          'phone': members[idx].phoneNumber,
+          'socialAccounts': socialAccounts,
+          'emergencyContact': members[idx].emergencyPhone,
+          'membership': members[idx].activeMembership?.membership.name,
+          'saleDate': members[idx].activeMembership ? moment(members[idx].activeMembership?.payments[0].date).format('L'):'n\\a',
+          'startDate': members[idx].activeMembership ? moment(members[idx].activeMembership?.startDate).format('L'):'n\\a',
+          'expiryDate': members[idx].activeMembership ? this.getMembershipExpirationMoment(members[idx].activeMembership).format('L'):'n\\a'
+        }
+      );
+    }
+    const buffer = await wb.xlsx.writeBuffer({filename: 'member-report'});
+    res.header('Content-Disposition', 'attachment; filename="member-report.xlsx"');
+    res.type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    return res.send(buffer);
+  }
+
+  @Post('/salesReport')
+  async salesReport(@Req() req, @Res() res) {
+
+  }
 
   @Post('/attendanceReport')
   async attendanceReport(@Req() req, @Res() res) {
@@ -60,7 +157,6 @@ export class ReportsController {
     const RELATION_ACTIVE_MEMBERSHIP = `${ScheduleMemberFields.member}.${MemberFields.activeMembership}`;
     const RELATION_MEMBERSHIP_INFO = `${ScheduleMemberFields.member}.${MemberFields.activeMembership}.${MembershipPurchaseFields.membership}`;
     const queryFilter: FindManyOptions = {relations: [RELATION_MEMBER, RELATION_SCHEDULE, RELATION_SCHEDULE_CLASS, RELATION_CLASS_CATEGORY,RELATION_ACTIVE_MEMBERSHIP, RELATION_MEMBERSHIP_INFO ],
-
       where: {}};
     if (filter.fromDate && filter.toDate) {
       queryFilter.where[ScheduleMemberFields.scheduleDate] = Between(filter.fromDate, filter.toDate);
@@ -76,7 +172,6 @@ export class ReportsController {
     }
 
     const scheduleMembers: ScheduleMember[] = await this.scheduleMemberService.find(queryFilter);
-    console.log(scheduleMembers);
     const wb = new ExcelJS.Workbook();
     const worksheet: Worksheet = wb.addWorksheet('Attendance Report');
     worksheet.columns = [
@@ -105,19 +200,7 @@ export class ReportsController {
     for (let idx = 0; idx < scheduleMembers.length; idx++) {
       const scheduleDateMoment = moment(scheduleMembers[idx].scheduleDate);
       const activeMembership = scheduleMembers[idx].member.activeMembership;
-      let membershipExpirationDate;
-      if( activeMembership ) {
-        let membershipExpirationDate: Moment = moment(activeMembership.saleDate);
-        const expirationType = activeMembership.membership.expirationType;
-
-        if (expirationType == 'day') {
-          membershipExpirationDate.add(activeMembership.membership.expirationLength, 'day');
-        } else if (expirationType == 'month') {
-          membershipExpirationDate.add(activeMembership.membership.expirationLength, 'month');
-        } else {
-          membershipExpirationDate.add(activeMembership.membership.expirationLength, 'year');
-        }
-      }
+      const membershipExpirationDate = this.getMembershipExpirationMoment(activeMembership);
 
       worksheet.addRow({
         'date': scheduleDateMoment.format('L'),

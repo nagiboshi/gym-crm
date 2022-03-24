@@ -39,6 +39,9 @@ import {InventoryItem} from './sales/inventory/inventory-item';
 import {PurchaseVoucherItem} from './sales/purchase-vouchers/purchase-voucher-item';
 import { ReportsModule } from './reports/reports.module';
 import {ScheduleMemberModule} from './schedule-member/schedule-member.module';
+import {Payment} from './payments/payment';
+import { SocialNetworkAccountModule } from './social-network-account/social-network-account.module';
+import {SocialNetworkAccount} from './social-network-account/social-network-account';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -73,7 +76,9 @@ import {ScheduleMemberModule} from './schedule-member/schedule-member.module';
         ClassModel,
         Membership,
         ClassSchedule,
+        SocialNetworkAccount,
         MembershipGroup,
+        Payment,
         PaymentMethod,
         PurchaseVoucher,
         PurchaseVoucherItem,
@@ -103,7 +108,8 @@ import {ScheduleMemberModule} from './schedule-member/schedule-member.module';
     MembershipPurchaseModule,
     SalesModule,
     ClassScheduleModule,
-    ReportsModule,],
+    ReportsModule,
+    SocialNetworkAccountModule,],
   controllers: [AppController],
   providers: [AppService ],
 })
