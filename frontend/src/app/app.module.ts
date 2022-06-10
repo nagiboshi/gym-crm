@@ -8,11 +8,13 @@ import {CommunicationService} from '@shared/communication.service';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {ErrorInterceptor} from './helpers/errors.interceptor';
 import {GlobalErrorHandlerService} from '@shared/global-error-handler.service';
+import { AppMenuComponent } from './app-menu/app-menu.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+    declarations: [
+        AppComponent,
+        AppMenuComponent
+    ],
   imports: [
     BrowserAnimationsModule,
     BrowserModule,

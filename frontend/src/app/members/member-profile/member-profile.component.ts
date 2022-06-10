@@ -1,17 +1,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute} from '@angular/router';
-import {BehaviorSubject, Observable, of, Subject, Subscription} from 'rxjs';
-import {CommunicationService} from '@shared/communication.service';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Member} from '@models/member';
+import {Member, SocialNetworkAccount} from '@models/member';
 import * as _moment from 'moment';
-import {first, last, sortBy, isEmpty, clone} from 'lodash';
-import {MembershipPurchaseHistoryItem} from '@models/membership-purchase';
+import {last,  isEmpty} from 'lodash';
+import {ExtendedMembershipPurchaseModel} from '@models/membership-purchase';
 import {SalesService} from '../../sales/sales.service';
 import {MembersService} from '../members.service';
-import {FreezeMembershipDialogComponent} from '@shared/freeze-membership-dialog/freeze-membership-dialog.component';
-import {SharePurchaseDialogComponent} from '@shared/share-purchase-dialog/share-purchase-dialog.component';
 import {MemberSaleDialogComponent} from '../../sales/member-sale-dialog/member-sale-dialog.component';
 import {HelpersService} from '@shared/helpers.service';
 
@@ -25,8 +22,8 @@ const moment = _moment;
 })
 export class MemberProfileComponent implements OnDestroy, OnInit {
   _loadedMemberSubject: BehaviorSubject<Member>;
-  _activeMembership: BehaviorSubject<MembershipPurchaseHistoryItem>;
-  _activeMembership$: Observable<MembershipPurchaseHistoryItem>;
+  _activeMembership: BehaviorSubject<ExtendedMembershipPurchaseModel>;
+  _activeMembership$: Observable<ExtendedMembershipPurchaseModel>;
   private routeChangeSub: Subscription;
   form: FormGroup;
   todayMoment = moment().startOf('day');
@@ -62,20 +59,21 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
         lastName: new FormControl(member.lastName, Validators.required),
         notes: new FormControl(member.notes),
         referalType: new FormControl(member.referalType),
+        dob: new FormControl(member.dob),
+        socialAccounts: new FormControl(member.socialAccounts),
         email: new FormControl(member.email, Validators.email),
-        phoneNumber: new FormControl(member.phoneNumber, Validators.required)
+        phoneNumber: new FormControl(member.phoneNumber, Validators.required),
+        emergencyPhone: new FormControl(member.emergencyPhone)
       }
     );
   }
 
 
   addNewPurchase() {
-    this.dialog.open(MemberSaleDialogComponent, {data: this._loadedMemberSubject.getValue()}).afterClosed().subscribe((purchaseHistoryItem: MembershipPurchaseHistoryItem) => {
-      this._activeMembership.next(purchaseHistoryItem);
-      // if (purchaseHistoryItem) {
-        // this.purchasesSubj.next([purchaseHistoryItem, ...this.purchasesSubj.getValue()]);
-        // this.purchaseUpdated.next(purchaseHistoryItem);
-      // }
+    this.dialog.open(MemberSaleDialogComponent, {data: this._loadedMemberSubject.getValue()}).afterClosed().subscribe((membership: ExtendedMembershipPurchaseModel) => {
+      if( membership ) {
+        this._activeMembership.next(membership);
+      }
     });
 
   }
@@ -97,10 +95,6 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
   }
 
 
-  get loadedMember$(): Observable<Member> {
-    return this._loadedMemberSubject.asObservable();
-  }
-
   getActiveMembership(member: Member) {
     if( isEmpty(member.activeMembership)) {
       return null;
@@ -115,20 +109,24 @@ export class MemberProfileComponent implements OnDestroy, OnInit {
   updateMember() {
     if (this.form.valid) {
       this._loadedMemberSubject.next(Object.assign(this.loadedMemberValue, this.form.value));
-      this.communicationService.updateMember(this.loadedMemberValue);
+      this.communicationService.updateMember(this.loadedMemberValue).toPromise();
       this._activeMembership.next(this.getActiveMembership(this.loadedMemberValue));
       this.form = this.initForm();
       this.cd.markForCheck();
     }
   }
 
-  onNewPurchase(purchaseHistoryItem: MembershipPurchaseHistoryItem) {
+  onNewPurchase(purchaseHistoryItem: ExtendedMembershipPurchaseModel) {
       this._activeMembership.next(purchaseHistoryItem);
   }
 
-  updateMembership(membership: MembershipPurchaseHistoryItem) {
-    this._activeMembership.next(membership);
-    // this._loadedMemberSubject.getValue().activeMembership = membership;
-
+  updateMembership(membership: ExtendedMembershipPurchaseModel) {
+    this._activeMembership.next({...membership});
   }
+
+  updateMemberSocialNetworks(socialNetworkAccounts: SocialNetworkAccount[]) {
+      this.form.patchValue({socialAccounts: socialNetworkAccounts});
+      this.form.markAsDirty();
+  }
+
 }

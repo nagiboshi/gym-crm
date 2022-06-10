@@ -29,9 +29,10 @@ import {StockPurchaseController} from './stock-purchase/stock-purchase.controlle
 import {PurchaseVoucherItem} from './purchase-vouchers/purchase-voucher-item';
 import {PurchaseVoucherItemService} from './purchase-vouchers/purchase-voucher-item.service';
 import {RequestService} from '../shared/request.service';
+import {PaymentsModule} from '../payments/payments.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([InventoryItem, PurchaseVoucherItem, Property, Supplier, StockPurchase, PurchaseVoucher, PropertyValue, Category, Subcategory, Product])],
+  imports: [TypeOrmModule.forFeature([InventoryItem, PurchaseVoucherItem, Property, Supplier, StockPurchase, PurchaseVoucher, PropertyValue, Category, Subcategory, Product]),PaymentsModule],
   providers: [InventoryService, RequestService, PurchaseVoucherItemService, PropertyValueService, StockPurchaseService, PurchaseVoucherService, SubcategoryService, PropertyService, ProductService, CategoryService, SupplierService],
   controllers: [InventoryController, PropertyController, PurchaseVoucherController, StockPurchaseController, SubcategoryController, CategoryController, ProductController, SupplierController],
   exports: [InventoryService]

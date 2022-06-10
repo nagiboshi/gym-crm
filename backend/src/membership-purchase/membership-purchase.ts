@@ -4,10 +4,13 @@ import {MembershipFreeze} from './membership-freeze';
 import {Member} from '../member/member';
 import {Membership} from '../membership-group/membership';
 import {Payment} from '../payments/payment';
+import {Branch} from '../branch/branch';
 
 export const MembershipPurchaseFields = {
   membership: 'membership',
-  payments: 'payments'
+  payments: 'payments',
+  buyer: 'buyer',
+  saleLocation: 'saleLocation',
 }
 
 @Entity()
@@ -17,6 +20,9 @@ export class MembershipPurchase {
 
   @Column()
   startDate: Date;
+
+  @Column({default: new Date()})
+  saleDate: Date;
 
   @Column()
   price: number;
@@ -33,6 +39,20 @@ export class MembershipPurchase {
   @ManyToOne(type => Membership, {onDelete: "CASCADE"})
   @JoinColumn({name: 'membershipId', referencedColumnName: 'id'})
   membership: Membership;
+
+  @ManyToOne(type => Member, { onDelete: "CASCADE", onUpdate: "CASCADE",  cascade: true, nullable: true})
+  @JoinColumn({name: 'buyerId', referencedColumnName: 'id'})
+  buyer: Member;
+
+  @ManyToOne(type => Branch, { onDelete: "CASCADE", onUpdate: "CASCADE",  cascade: true, nullable: true})
+  @JoinColumn({name: 'saleLocationId', referencedColumnName: 'id'})
+  saleLocation: Branch;
+
+  @Column({nullable: true})
+  saleLocationId: number;
+
+  @Column()
+  buyerId: number;
 
   @Column()
   membershipId: number;

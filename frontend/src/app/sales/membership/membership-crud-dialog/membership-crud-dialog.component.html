@@ -2,7 +2,13 @@
   <mat-dialog-content fxLayout="column" class="sales-dialog">
     <h6 class="unsaved-changes" *ngIf="formGroup.dirty">*You have unsaved changes</h6>
     <mat-form-field>
-      <input matInput formControlName="name" placeholder="Name">
+      <mat-select formControlName="type" placeholder="Type">
+        <mat-option value="local">Local</mat-option>
+        <mat-option value="shared">Shared</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput formControlName="name" placeholder="Membership Group Name">
     </mat-form-field>
     <ng-container formArrayName="memberships">
       <div class="sales-grid">
@@ -52,7 +58,7 @@
     </ng-container>
   </mat-dialog-content>
   <mat-dialog-actions>
-    <button mat-dialog-close mat-button>Cancel</button>
+    <button mat-dialog-close mat-button>Close</button>
     <button type="submit" [disabled]="formGroup.invalid" mat-raised-button color="primary">Save</button>
     <button type="button" (click)="addMembership()" mat-raised-button>Add Membership</button>
   </mat-dialog-actions>

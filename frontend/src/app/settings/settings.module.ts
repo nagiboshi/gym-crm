@@ -8,6 +8,11 @@ import {PaymentMethodCreateDialogComponent} from './settings-page/payment-method
 import {UsersComponent} from './settings-page/users/users.component';
 import {UserMergeDialogComponent} from './settings-page/users/user-merge-dialog/user-merge-dialog.component';
 import { UserRolePipe } from './settings-page/users/user-role.pipe';
+import {TaxesComponent} from './settings-page/taxes/taxes.component';
+import {TaxMergeDialogComponent} from './settings-page/taxes/tax-merge-dialog/tax-merge-dialog.component';
+import {BranchesListComponent} from './settings-page/branches-list/branches-list.component';
+import {AddBranchDialogComponent} from './settings-page/branches-list/add-branch-dialog/add-branch-dialog.component';
+import {BranchService} from './settings-page/branch.service';
 
 
 @NgModule({
@@ -15,8 +20,12 @@ import { UserRolePipe } from './settings-page/users/user-role.pipe';
     PaymentMethodCreateDialogComponent,
     PaymentMethodsSettingsComponent,
     UserMergeDialogComponent,
+    BranchesListComponent,
+    AddBranchDialogComponent,
     UsersComponent,
-    UserRolePipe],
+    TaxesComponent,
+    TaxMergeDialogComponent,
+    UserRolePipe,],
   imports: [
     CommonModule,
     SharedModule,

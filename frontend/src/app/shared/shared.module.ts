@@ -62,6 +62,9 @@ import {MatCardModule} from '@angular/material/card';
 import {CategoryListComponent} from '@shared/category/category-list.component';
 import {CategoriesCrudComponent} from '@shared/category/categories-crud/categories-crud.component';
 import {SubcategoryCrudComponent} from '@shared/category/categories-crud/subcategory-crud.component/subcategory-crud.component';
+import { PaymentNamePipe } from './payment-name.pipe';
+import { SocialAccountsComponent } from './social-accounts/social-accounts.component';
+import {MatGridListModule} from '@angular/material/grid-list';
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent, FindSupplierComponent,
     AddMemberDialogComponent, FindProductComponent, YearMonthSelectorComponent,
@@ -74,8 +77,8 @@ import {SubcategoryCrudComponent} from '@shared/category/categories-crud/subcate
     SubcategoryCrudComponent,
     CategoriesCrudComponent,
     FindMemberComponent,
-    DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe, PricePipe, TaxPipe, DiscountPipe, PropertiesComponent, PropertiesCrudComponent, CategoryListComponent],
-  providers: [MatIconRegistry, DatePipe, HelpersService, GlobalErrorHandlerService,
+    DeletePromptDialogComponent, FreezeMembershipDialogComponent, LocalImageLinkPipe, BranchNamePipe, SharePurchaseDialogComponent, GlobalErrorDialogComponent, InputPromptDialogComponent, DelimeterSeparatedValuePipe, PricePipe, TaxPipe, DiscountPipe, PropertiesComponent, PropertiesCrudComponent, CategoryListComponent, PaymentNamePipe, SocialAccountsComponent],
+  providers: [MatIconRegistry, TotalPricePipe, TaxPipe, DatePipe, HelpersService, GlobalErrorHandlerService, DiscountPipe,
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {
       provide: MAT_DATE_FORMATS, useValue: {
@@ -112,6 +115,7 @@ import {SubcategoryCrudComponent} from '@shared/category/categories-crud/subcate
     MatButtonModule,
     MatCheckboxModule,
     MatChipsModule,
+    MatGridListModule,
     MatMomentDateModule,
     MatPaginatorModule,
     FormsModule,
@@ -120,6 +124,7 @@ import {SubcategoryCrudComponent} from '@shared/category/categories-crud/subcate
   exports: [
     FlexLayoutModule,
     MatTabsModule,
+    MatGridListModule,
     MatButtonModule,
     MatMenuModule,
     MatSidenavModule,
@@ -174,7 +179,9 @@ import {SubcategoryCrudComponent} from '@shared/category/categories-crud/subcate
     StockDetailsPipe,
     TotalPricePipe,
     FindSupplierComponent,
-    PropertiesCrudComponent
+    PropertiesCrudComponent,
+    PaymentNamePipe,
+    SocialAccountsComponent
   ]
 })
 export class SharedModule {
@@ -182,6 +189,8 @@ export class SharedModule {
     iconRegistry.addSvgIcon('schedule-icon', sanitizer.bypassSecurityTrustResourceUrl('/assets/schedule-icon.svg'));
     iconRegistry.addSvgIcon('sales-icon', sanitizer.bypassSecurityTrustResourceUrl('/assets/sales-icon.svg'));
     iconRegistry.addSvgIcon('sharePeople', sanitizer.bypassSecurityTrustResourceUrl('/assets/share-people.svg'));
-
+    iconRegistry.addSvgIcon('facebook', sanitizer.bypassSecurityTrustResourceUrl('/assets/facebook.svg'));
+    iconRegistry.addSvgIcon('twitter', sanitizer.bypassSecurityTrustResourceUrl('/assets/twitter.svg'));
+    iconRegistry.addSvgIcon('instagram', sanitizer.bypassSecurityTrustResourceUrl('/assets/instagram.svg'));
   }
 }

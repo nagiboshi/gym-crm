@@ -1,0 +1,23 @@
+<div *ngFor="let payment of payments; let index=index" fxLayout="column">
+  <div fxLayoutAlign="start center" fxLayout="row">
+    <div fxLayout="column">
+    <mat-form-field [style.width.px]="styleWidth">
+      <mat-select [required]="true" [disabled]="payment.id != 0" [(ngModel)]="payment.paymentMethodId" placeholder="Payment Method"
+                  (selectionChange)="paymentChanged()">
+        <mat-option [value]="paymentMethod.id" *ngFor="let paymentMethod of paymentMethods">
+          {{paymentMethod.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field [style.width.px]="styleWidth">
+      <input [min]="1" [disabled]="payment.id != 0" (keyup)="revalidatePaidAmount()" (change)="paymentChanged()" [(ngModel)]="payment.amount" matInput
+             placeholder="Amount" type="number">
+    </mat-form-field>
+    </div>
+    <div (click)="removePayment(index)" class="default-link">Remove</div>
+  </div>
+</div>
+<div (click)="addPayment()" class="add-payment-link">Add payment</div>
+<mat-error *ngIf="totalAmount < totalToPay ">Warn: Paid amount {{totalAmount|  currency:'AED'}} is less then
+  price {{totalToPay | currency:'AED'}}!
+</mat-error>

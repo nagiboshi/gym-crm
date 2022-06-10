@@ -25,7 +25,7 @@
                 </div>
               </div>
               <div (click)="signIn(daySchedule, scheduleWeekDay )" fxLayoutAlign="center center" class="class-sign">
-                <span class="signed-user">{{daySchedule.signedMembers$ | signedMembersSize:scheduleWeekDay }} of {{daySchedule.capacity}}</span>
+                <span class="signed-user">{{daySchedule.signedMembers$ | async | signedMembersSize:scheduleWeekDay }} of {{daySchedule.capacity}}</span>
               </div>
               <div (click)="signIn(daySchedule, scheduleWeekDay)" fxLayoutAlign="center center" class="class-name">
                 {{daySchedule.classId | classNameById}}

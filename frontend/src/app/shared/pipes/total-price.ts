@@ -15,9 +15,11 @@ export class TotalPricePipe implements PipeTransform {
     return arg as number;
   }
 
-  transform(price: number, ...args: [qty: number, discount: number, taxes: Tax[]]): number {
+  transform(price: number, ...args: [qty: number, discount: number, taxes: Tax[]|any]): number {
     let [qty, discount, taxes] = args;
-
+    if( taxes != null && !Array.isArray(taxes)) {
+      taxes = [taxes];
+    }
     if(!qty) {
       qty = 1;
     }
@@ -32,9 +34,9 @@ export class TotalPricePipe implements PipeTransform {
     const discountNumber = this.toNumber(discount);
 
     let discountedValue = totalPrice -  totalPrice * (discountNumber / 100);
-    const sumOfTaxes =
+    const sumOfTaxes = taxes != null ?
       taxes.map((tax) => discountedValue * (tax.value/ 100))
-        .reduce((acc, next) => acc + next);
+        .reduce((acc, next) => acc + next) : 0;
     return discountedValue + sumOfTaxes;
   }
 

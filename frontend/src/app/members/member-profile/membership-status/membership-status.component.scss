@@ -4,6 +4,15 @@
   line-height: 1.4;
 }
 
+.payment-th, .payment-cell {
+  text-align: left;
+}
+
+.payments-left {
+  font-size: 16px;
+  color: #ff0000;
+}
+
 .membership-actions {
   mat-icon {
     width: 40px;

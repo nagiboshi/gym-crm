@@ -1,4 +1,9 @@
-import {ServicePurchaseModel} from '@models/membership-purchase';
+import {MembershipPurchaseModel} from '@models/membership-purchase';
+
+export interface SocialNetworkAccount {
+  id: number;
+  address: string;
+}
 
 export interface Member {
   id: number;
@@ -7,11 +12,15 @@ export interface Member {
   photoLink: string;
   email: string;
   phoneNumber: string;
+  emergencyPhone: string;
   gender: string;
   notes?: string;
   referalType?: string;
   referalMember?: Member;
+  socialAccounts?: SocialNetworkAccount[];
+  dob: Date;
   created: Date;
-  membershipPurchases?: ServicePurchaseModel[];
-  activeMembership: ServicePurchaseModel;
+  type: 'local'|'shared';
+  membershipPurchases?: MembershipPurchaseModel[];
+  activeMembership: MembershipPurchaseModel;
 }

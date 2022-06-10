@@ -6,6 +6,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {first} from 'rxjs/operators';
 import {Observable, Subject} from 'rxjs';
 import {Branch} from '@models/branch';
+import {BranchService} from '../settings/settings-page/branch.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit {
   constructor(private router: Router,
               private communicationService: CommunicationService,
               private accountService: UserService,
+              private branchService: BranchService,
               private route: ActivatedRoute,
               private fb: FormBuilder) {
     // redirect to home if already logged in
@@ -34,7 +36,7 @@ export class LoginComponent implements OnInit {
       branchId: ['', Validators.required]
     });
 
-    this.branches$ = this.communicationService.fetchBranches();
+    this.branches$ = this.branchService.fetchBranches();
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 

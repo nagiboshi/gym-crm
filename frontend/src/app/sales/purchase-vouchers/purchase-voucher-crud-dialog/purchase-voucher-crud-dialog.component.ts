@@ -20,9 +20,10 @@ import {QueryJoin} from '@nestjsx/crud-request';
 })
 export class PurchaseVoucherCrudDialogComponent implements OnInit {
   dataSource: MatTableDataSource<PurchaseVoucherItem>;
-  columns = ['name', 'qty', 'price'];
+  columns = ['name', 'qty', 'price', 'edit', 'delete'];
   form: FormGroup;
   minDateTo: any;
+  voucherItemsToRemove: PurchaseVoucherItem[];
   findProductJoinFields: QueryJoin[] = [{field: 'properties'}, {field: 'properties.values'}];
 
   constructor(@Inject(MAT_DIALOG_DATA) public purchaseVoucher: PurchaseVoucher,
@@ -50,11 +51,21 @@ export class PurchaseVoucherCrudDialogComponent implements OnInit {
   }
 
   addNewItem(product: Product) {
-    const voucherItem: PurchaseVoucherItem = {id: 0, productId: product.id, product, price: 0, qty: 1, details: [], purchaseVoucher: this.form.value };
-      this.dialog.open(VoucherItemComponent, {data: voucherItem}).afterClosed().subscribe(async (newVoucherItem: PurchaseVoucherItem) => {
-         this.dataSource.data = [newVoucherItem, ...this.dataSource.data];
-         this.form.patchValue({items: this.dataSource.data});
-      });
+    const voucherItem: PurchaseVoucherItem = {
+      id: 0,
+      productId: product.id,
+      product,
+      price: 0,
+      qty: 1,
+      details: [],
+      purchaseVoucher: this.form.value
+    };
+    this.dialog.open(VoucherItemComponent, {data: voucherItem}).afterClosed().subscribe(async (newVoucherItem: PurchaseVoucherItem) => {
+      if (newVoucherItem) {
+        this.dataSource.data = [newVoucherItem, ...this.dataSource.data];
+        this.form.patchValue({items: this.dataSource.data});
+      }
+    });
   }
 
 
@@ -62,22 +73,40 @@ export class PurchaseVoucherCrudDialogComponent implements OnInit {
     this.form.patchValue({supplier});
   }
 
-  openDeletePromptDialog(row) {
-
-  }
-
   removeSupplier() {
     this.form.patchValue({supplier: null});
   }
 
   updateFromDateField(changeDateEvent: MatDatepickerInputEvent<unknown, unknown | null>) {
-    const jsonFromDate  = (changeDateEvent.value as Moment).toJSON();
+    const jsonFromDate = (changeDateEvent.value as Moment).toJSON();
     this.form.patchValue({from: jsonFromDate});
-    this.minDateTo  = jsonFromDate;
+    this.minDateTo = jsonFromDate;
   }
 
   updateToDateField(changeDateEvent: MatDatepickerInputEvent<unknown, unknown | null>) {
     this.form.patchValue({to: (changeDateEvent.value as Moment).toJSON()});
   }
 
+  editVoucherItem(idx: number) {
+    const voucherItem = this.dataSource.data[idx];
+    this.dialog.open(VoucherItemComponent, {data: voucherItem}).afterClosed().subscribe(async (editedVoucherItem: PurchaseVoucherItem) => {
+      if( editedVoucherItem ) {
+        let data = this.dataSource.data;
+        data.splice(idx, 1, editedVoucherItem );
+        this.dataSource.data = [...data];
+        this.form.patchValue({items: this.dataSource.data});
+      }
+    });
+  }
+
+  deletePurchaseVoucherItem(idx: number) {
+
+        const voucherItems = this.dataSource.data;
+        const removedVoucherItems = voucherItems.splice(idx, 1);
+        this.dataSource.data = [...voucherItems];
+        this.form.patchValue({items: this.dataSource.data});
+    // if( this.purchaseVoucher.id !=0 ) {
+    //   this.voucherItemsToRemove.push(...removedVoucherItems);
+    // }
+  }
 }

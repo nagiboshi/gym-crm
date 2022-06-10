@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {fromEvent, Observable, of} from 'rxjs';
-import {debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
+import {concatMap, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Member} from '@models/member';
 import {Router} from '@angular/router';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
@@ -68,7 +68,7 @@ export class FindMemberComponent implements OnInit, AfterViewInit {
 
   loadMembers(search): Observable<Member[]> {
     if( !isEmpty(search)) {
-      return this.membersService.findMembers(search);
+      return this.membersService.findMembers(search).pipe( concatMap(value => of(value.data)));
     }
     return of([]);
   }

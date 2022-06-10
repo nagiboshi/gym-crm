@@ -1,1 +1,5 @@
-<h1>Reports</h1>
+<mat-grid-list cols="4" >
+  <mat-grid-tile *ngFor="let report of reportsService.reports$ | async">
+    <button (click)="showReport(report)" class="report-name" mat-raised-button color="primary">{{report.name}}</button>
+  </mat-grid-tile>
+</mat-grid-list>

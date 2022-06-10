@@ -1,46 +1,62 @@
-  <div fxLayout="column" fxLayoutAlign="space-between" class="membership-settings-container">
-    <h3>Services</h3>
-    <table mat-table [dataSource]="dataSource" matSort>
+<div fxLayout="column" fxLayoutAlign="space-between" class="membership-settings-container">
+  <h3>Memberships</h3>
+  <table mat-table [dataSource]="dataSource" matSort>
 
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Membership list</th>
-        <td mat-cell *matCellDef="let row"> {{row.name}} </td>
-      </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mat-form-field [ngClass]="'membership-type'">
+          <mat-select placeholder="Type" [(ngModel)]="type" (ngModelChange)="filterMemberships($event)">
+            <mat-option value="local">Local</mat-option>
+            <mat-option value="shared">Local & Shared</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </th>
+      <td [ngClass]="'membership-group-name-column'" mat-cell *matCellDef="let row"> {{row.name}} </td>
+    </ng-container>
 
-      <ng-container matColumnDef="items">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
-        <td class="edit-cell" mat-cell *matCellDef="let row">
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+      <td [ngClass]="'membership-type'" mat-cell *matCellDef="let row">
+        {{row.type | titlecase}}
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="edit">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
-        <td class="edit-cell" mat-cell *matCellDef="let row">
-          <mat-icon (click)="openSalesDialog(row)">edit</mat-icon>
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="memberships">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Memberships
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-hint>{{row|comaSeparatedMembership}}</mat-hint>
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="delete">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td class="delete-cell" mat-cell *matCellDef="let row">
-          <mat-icon (click)="openDeletePromptDialog(row)">delete</mat-icon>
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="edit">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+      <td class="edit-cell" mat-cell *matCellDef="let row">
+        <mat-icon (click)="openSalesDialog(row)">edit</mat-icon>
+      </td>
+    </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="columns"></tr>
-      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td class="delete-cell" mat-cell *matCellDef="let row">
+        <mat-icon (click)="openDeletePromptDialog(row)">delete</mat-icon>
+      </td>
+    </ng-container>
 
-      <!-- Row shown when there is no matching data. -->
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" colspan="5">No memberships created yet</td>
-      </tr>
-    </table>
-    <div fxLayoutAlign="space-between center">
-      <mat-paginator [hidePageSize]="true" [pageSizeOptions]="[5]" showFirstLastButtons></mat-paginator>
-      <button (click)="openSalesDialog()" class="add-button" mat-mini-fab>
-        <mat-icon>add
-        </mat-icon>
-      </button>
-    </div>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="5">No memberships created yet</td>
+    </tr>
+  </table>
+  <div fxLayoutAlign="space-between center">
+    <mat-paginator [hidePageSize]="true" [pageSizeOptions]="[5]" showFirstLastButtons></mat-paginator>
+    <button (click)="openSalesDialog()" class="add-button" mat-mini-fab>
+      <mat-icon>add
+      </mat-icon>
+    </button>
   </div>
+</div>
 

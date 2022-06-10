@@ -5,6 +5,9 @@ import {Product} from '../../product/product';
 import {InventoryItem} from '../../inventory/inventory-item';
 import {PurchaseVoucherItem} from '../../purchase-vouchers/purchase-voucher-item';
 
+export const PropertyValueFields = {
+  property: 'property'
+}
 @Entity()
 export class PropertyValue {
   @PrimaryGeneratedColumn()

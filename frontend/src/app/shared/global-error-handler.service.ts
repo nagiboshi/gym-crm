@@ -8,7 +8,6 @@ export class GlobalErrorHandlerService implements ErrorHandler{
   constructor(private dialog: MatDialog, private zone: NgZone) { }
 
   handleError(error: Error): void {
-    console.error(error);
     this.zone.run(() => this.dialog.open(GlobalErrorDialogComponent, {data: error.message || 'Undefined client error'}) );
   }
 }

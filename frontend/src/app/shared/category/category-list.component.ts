@@ -8,6 +8,13 @@ import {MatPaginator} from '@angular/material/paginator';
 import {Category, emptyCategory, Subcategory} from '@models/category';
 import {CategoryService} from './category.service';
 import {SubcategoryCrudComponent} from './categories-crud/subcategory-crud.component/subcategory-crud.component';
+import {ActivatedRoute, Data} from '@angular/router';
+
+type CategoryListType  = Data & {
+  type: 'service'|'stock'
+};
+
+
 
 @Component({
   selector: 'category-list',
@@ -18,13 +25,16 @@ export class CategoryListComponent implements OnInit, AfterViewInit {
   dataSource: MatTableDataSource<Category> = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   columns = ['category', 'subcategories', 'edit', 'delete'];
-  @Input()
   type: 'service' | 'stock';
-  constructor(private categoryService: CategoryService, private matDialog: MatDialog) {
+  constructor(private categoryService: CategoryService, private matDialog: MatDialog, private activatedRoute: ActivatedRoute) {
+    activatedRoute.data.subscribe((data:CategoryListType) => {
+      this.type = data.type;
+      console.log(data);
+      this.dataSource.data = this.categoryService.getCategories(this.type);
+    });
   }
 
   ngOnInit(): void {
-      this.dataSource.data = this.categoryService.getCategories(this.type);
   }
 
   openCrudDialog(category: Category) {

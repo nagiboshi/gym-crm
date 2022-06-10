@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MembershipPurchaseHistoryItem, ServicePurchaseModel} from '@models/membership-purchase';
+import {ExtendedMembershipPurchaseModel, MembershipPurchaseModel} from '@models/membership-purchase';
 import {Observable} from 'rxjs';
 import {RequestQueryBuilder} from '@nestjsx/crud-request';
 import {HttpClient} from '@angular/common/http';
@@ -7,6 +7,7 @@ import {Moment} from 'moment';
 import * as _moment from 'moment';
 import {HelpersService} from '@shared/helpers.service';
 import {StockPurchase} from '@models/stock-purchase';
+import {Payment} from '@models/payment';
 
 const moment = _moment;
 const threeDaysTS = 2.592e+8;
@@ -21,32 +22,43 @@ export class SalesService {
     return this.httpClient.post<StockPurchase>('/api/stock-purchase', purchase);
   }
 
-  savePurchase(purchase: ServicePurchaseModel): Observable<ServicePurchaseModel> {
+  createPayments(payments: Payment[]): Promise<Payment[]> {
+    return this.httpClient.post<Payment[]>('/api/payment/bulk', {bulk: payments}).toPromise();
+  }
+
+  deletePayments(payments: Payment[]): Promise<Payment[]> {
+    const promises = [];
+    payments.forEach( p => promises.push(this.httpClient.delete(`/api/payment/${p.id}`).toPromise()));
+    return Promise.all(promises);
+  }
+
+  savePurchase(purchase: MembershipPurchaseModel): Observable<MembershipPurchaseModel> {
     const query = '/?' + RequestQueryBuilder.create()
+      .setJoin({field: 'membership'})
       .setJoin({field: 'members'})
       .setJoin({field: 'members.activeMembership'})
       .setJoin({field: 'members.activeMembership.membership'})
-      .setJoin({field: 'membership'})
+      .setJoin({field: 'members.activeMembership.payments'})
       .setJoin({field: 'freeze'})
       .query(false);
-    return this.httpClient.post<ServicePurchaseModel>('/api/membership-purchase' + query, purchase);
+    return this.httpClient.post<MembershipPurchaseModel>('/api/membership-purchase' + query, purchase);
   }
 
 
-  toPurchaseItemModel(purchaseHistoryItem: MembershipPurchaseHistoryItem ): ServicePurchaseModel {
+  toPurchaseItemModel(purchaseHistoryItem: ExtendedMembershipPurchaseModel ): MembershipPurchaseModel {
     return {
       id: purchaseHistoryItem.id,
       members: purchaseHistoryItem.members,
       membershipId: purchaseHistoryItem.membershipId,
       membership: purchaseHistoryItem.membership,
+      discount: purchaseHistoryItem.discount,
       note: purchaseHistoryItem.note,
+      payments: purchaseHistoryItem.payments,
+      buyerId: purchaseHistoryItem.buyerId,
       freeze: purchaseHistoryItem.freeze,
       freezeId: purchaseHistoryItem.freezeId,
-      paymentMethodId: purchaseHistoryItem.paymentMethodId,
       price: purchaseHistoryItem.price,
-      saleDate: purchaseHistoryItem.saleDate,
       startDate: purchaseHistoryItem.startDate,
-
     }
   }
 
@@ -55,7 +67,7 @@ export class SalesService {
    * @param purchaseItem
    * @param expirationMoment
    */
-  toPurchaseHistoryItem(purchaseItem: ServicePurchaseModel, expirationMoment: Moment): MembershipPurchaseHistoryItem {
+  toPurchaseHistoryItem(purchaseItem: MembershipPurchaseModel, expirationMoment: Moment): ExtendedMembershipPurchaseModel {
     if( !purchaseItem ) {
       return;
     }
@@ -66,7 +78,6 @@ export class SalesService {
     }
     //
     purchaseItem.startDate = new Date(purchaseItem.startDate); // this.helpers.bigIntStringToNumber(purchaseItem.startDate);
-    purchaseItem.saleDate = new Date(purchaseItem.saleDate); // this.helpers.bigIntStringToNumber(purchaseItem.saleDate);
 
     const purchaseExpiration = moment(purchaseItem.startDate)
       .add(purchaseItem.membership.expirationLength, purchaseItem.membership.expirationType).startOf('day')
@@ -77,6 +88,7 @@ export class SalesService {
     return {
       ...purchaseItem, isExpired: expirationMoment.toDate().getTime() >= purchaseExpiration,
       isFreezed: purchaseItem.freeze && purchaseItem.freeze.endDate == null,
+      isFullyPaid: true,
       isNearlyExpire: expirationTimeLeft > 0 && expirationTimeLeft <= threeDaysTS
     };
   }

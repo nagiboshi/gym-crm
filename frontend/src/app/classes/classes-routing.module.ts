@@ -8,7 +8,7 @@ const routes: Routes = [
   {path: '', component: ScheduleTableComponent},
   {path: 'schedules', component: ScheduleTableComponent},
   {path: 'list', component: ClassListComponent},
-  {path: 'categories', component: CategoryListComponent}];
+  {path: 'class-categories', component: CategoryListComponent, data: {type: 'service'}}];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

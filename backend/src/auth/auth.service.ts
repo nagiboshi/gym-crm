@@ -11,7 +11,7 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = {id: user.id, username: user.username, firstName: user.firstName, lastName: user.lastName, branches: user.branches,  photoLink: user.photoLink  };
+    const payload = {selectedBranch: user.selectedBranch, id: user.id, username: user.username, firstName: user.firstName, lastName: user.lastName,  photoLink: user.photoLink  };
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -25,7 +25,7 @@ export class AuthService {
         const branch = user.branches.find( b => b.id == branchId);
         if( branch ) {
           const {password, ...result} = user;
-          return result;
+          return {...{selectedBranch: branch}, ...result}
         }
       }
     return null;

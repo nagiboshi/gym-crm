@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 import {HelpersService} from '@shared/helpers.service';
 
 @Pipe({
@@ -11,9 +11,9 @@ export class DiscountPipe implements PipeTransform {
   }
 
   transform(value: any, ...args: any[]): any {
-    let [discountInPercentage] =  args;
+    let [discountInPercentage] = args;
     discountInPercentage = this.helpers.toNumber(discountInPercentage);
-    return value -  value * (discountInPercentage / 100);
+    return value - value * (discountInPercentage / 100);
   }
 
 }

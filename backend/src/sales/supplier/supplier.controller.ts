@@ -33,12 +33,13 @@ export class SupplierController {
     @ParsedBody() dto: Supplier
   ) {
     try {
-      this.logger.log("Custom method CreateOne supplier executed with params ", dto);
       const supplierProperties: Property[] = dto.properties;
       dto.properties = null;
       const savedSupplier = await this.service.createOne(req, dto);
-      supplierProperties.forEach( s => s.supplier = savedSupplier);
-      await this.propertyService.saveBatch(supplierProperties);
+      if( supplierProperties ) {
+        supplierProperties.forEach(s => s.supplierId = savedSupplier.id);
+        savedSupplier.properties = await this.propertyService.saveBatch(supplierProperties);
+      }
       return savedSupplier;
     } catch (e) {
       if( e.code == DbErrorCodes.ENTITY_DUPLICATION_ERROR) {

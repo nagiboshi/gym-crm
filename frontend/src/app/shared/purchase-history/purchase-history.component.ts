@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {MembershipPurchaseHistoryItem, ServicePurchaseModel} from '@models/membership-purchase';
+import {ExtendedMembershipPurchaseModel, MembershipPurchaseModel} from '@models/membership-purchase';
 import {FreezeMembershipDialogComponent} from '../freeze-membership-dialog/freeze-membership-dialog.component';
 import {clone} from 'lodash';
 import {MatDialog} from '@angular/material/dialog';
@@ -21,11 +21,11 @@ const moment = _moment;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PurchaseHistoryComponent implements OnChanges {
-  purchasesSubj: BehaviorSubject<MembershipPurchaseHistoryItem[]> = new BehaviorSubject([]);
+  purchasesSubj: BehaviorSubject<ExtendedMembershipPurchaseModel[]> = new BehaviorSubject([]);
   todayMoment = moment().startOf('day');
 
   @Output()
-  purchaseUpdated: EventEmitter<MembershipPurchaseHistoryItem> = new EventEmitter();
+  purchaseUpdated: EventEmitter<ExtendedMembershipPurchaseModel> = new EventEmitter();
 
   @Input()
   member: Member;
@@ -42,7 +42,7 @@ export class PurchaseHistoryComponent implements OnChanges {
 
 
   addNewPurchase() {
-    this.dialog.open(MemberSaleDialogComponent, {data: this.member}).afterClosed().subscribe((purchaseHistoryItem: MembershipPurchaseHistoryItem) => {
+    this.dialog.open(MemberSaleDialogComponent, {data: this.member}).afterClosed().subscribe((purchaseHistoryItem: ExtendedMembershipPurchaseModel) => {
         if (purchaseHistoryItem) {
           this.purchasesSubj.next([purchaseHistoryItem, ...this.purchasesSubj.getValue()]);
           this.purchaseUpdated.next(purchaseHistoryItem);
@@ -55,9 +55,9 @@ export class PurchaseHistoryComponent implements OnChanges {
   constructor(public dialog: MatDialog, private salesService: SalesService) {
   }
 
-  freezePurchase(purchase: MembershipPurchaseHistoryItem) {
+  freezePurchase(purchase: ExtendedMembershipPurchaseModel) {
     // const freeze = !this.isFreezed(purchase);
-    this.dialog.open(FreezeMembershipDialogComponent, {data: purchase}).afterClosed().subscribe((changedPurchase: MembershipPurchaseHistoryItem) => {
+    this.dialog.open(FreezeMembershipDialogComponent, {data: purchase}).afterClosed().subscribe((changedPurchase: ExtendedMembershipPurchaseModel) => {
         if (changedPurchase) {
           this.salesService.savePurchase(this.salesService.toPurchaseItemModel(changedPurchase)).toPromise().then((savedPurchase) => {
               const purchases = this.purchasesSubj.getValue();
@@ -75,7 +75,7 @@ export class PurchaseHistoryComponent implements OnChanges {
     );
   }
 
-  sharePurchase(purchaseHistoryItem: MembershipPurchaseHistoryItem) {
+  sharePurchase(purchaseHistoryItem: ExtendedMembershipPurchaseModel) {
     this.dialog.open(SharePurchaseDialogComponent, {data: purchaseHistoryItem}).afterClosed().subscribe((sharedMembers) => {
 
       if (sharedMembers) {

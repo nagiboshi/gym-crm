@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {ChartType, Column, Row} from 'angular-google-charts';
-import {DataTableService} from 'angular-google-charts/lib/services/data-table.service';
+import {Component} from '@angular/core';
+import {Report, ReportsService} from '../reports.service';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-reports',
@@ -10,8 +10,19 @@ import {DataTableService} from 'angular-google-charts/lib/services/data-table.se
 export class ReportsComponent {
 
 
-  constructor() { }
+  constructor(public reportsService: ReportsService, private dialog: MatDialog) {
+
+  }
 
 
+  showReport(report: Report) {
+    if( !report.dialog && report.func ) {
+      report.func();
+      return;
+    }
 
+    if( report.dialog ) {
+      this.dialog.open(report.dialog).afterClosed().subscribe((data) => report.func(data));
+    }
+  }
 }

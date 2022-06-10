@@ -1,0 +1,2 @@
+<payments (paymentRemoved)="paymentRemoved($event)" [membershipPurchaseId]="membershipPurchaseModel.id" (paymentsChanged)="paymentsUpdate($event)" [payments]="membershipPurchaseModel.payments" [totalToPay]="membershipPurchaseModel.price|totalPrice:1: membershipPurchaseModel.discount:taxes"></payments>
+<button [mat-dialog-close]="{newPayments: payments, removedPayments: paymentsToRemove}" mat-raised-button>Save</button>

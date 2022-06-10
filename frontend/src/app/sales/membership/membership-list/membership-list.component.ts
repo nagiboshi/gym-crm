@@ -14,16 +14,17 @@ import {MembershipGroupService} from '@shared/membership-group.service';
   styleUrls: ['./membership-list.component.scss']
 })
 export class MembershipListComponent implements OnInit, AfterViewInit{
-  columns = ['name', 'items', 'edit', 'delete'];
+  columns = ['name', 'type', 'memberships', 'edit', 'delete'];
   dataSource: MatTableDataSource<MembershipGroup>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   packageUpdateSub: Subscription;
+  type: string = 'local';
 
   constructor(private membershipGroupService: MembershipGroupService, private dialog: MatDialog) {
   }
 
   _newMembershipGroup(): MembershipGroup {
-    return {memberships: [], id: 0, name: ''};
+    return {memberships: [], id: 0, name: '', type: 'local'};
   }
 
   openSalesDialog(membershipGroup?: MembershipGroup) {
@@ -41,8 +42,9 @@ export class MembershipListComponent implements OnInit, AfterViewInit{
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource<MembershipGroup>([]);
-    this.packageUpdateSub = this.membershipGroupService.getMembershipGroups$().subscribe(membershipCategories => {
-      this.dataSource.data = membershipCategories;} );
+    this.packageUpdateSub = this.membershipGroupService.getMembershipGroups$().subscribe(() => {
+
+      this.dataSource.data = this.membershipGroupService.getMembershipGroups(this.type);} );
   }
 
   openDeletePromptDialog(membershipGroup: MembershipGroup) {
@@ -50,5 +52,9 @@ export class MembershipListComponent implements OnInit, AfterViewInit{
       this.membershipGroupService.removeMembershipGroup(membershipGroup);
     });
 
+  }
+
+  filterMemberships(type) {
+    this.dataSource.data = this.membershipGroupService.getMembershipGroups(type);
   }
 }

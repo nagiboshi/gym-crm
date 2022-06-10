@@ -5,11 +5,18 @@
 
       <!-- Avatar column -->
       <ng-container matColumnDef="avatar">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        </th>
         <td (click)="openProfile(row)" mat-cell *matCellDef="let row">
-          <img (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg class="avatar" height="45"
+          <img (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg class="avatar" width="30" height="45"
                [src]="row.photoLink | localImageLink">
         </td>
+      </ng-container>
+
+      <!-- Account type column -->
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Type</th>
+        <td (click)="openProfile(row)" mat-cell *matCellDef="let row"> {{row.type}} </td>
       </ng-container>
 
       <!-- First name column -->
@@ -58,10 +65,17 @@
 
   </div>
   <div fxLayoutAlign="space-between" class="add-person-container">
-    <mat-paginator (page)="onPageChange($event)" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-
-    <button id="add-person-button" mat-fab (click)="addMember()" color="primary">
-      <mat-icon>person_add</mat-icon>
-    </button>
+    <mat-paginator  [pageSize]="10" (page)="onPageChange($event)" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    <div class="control-buttons">
+      <button id="report-button" [matMenuTriggerFor]="menu" mat-fab color="accent">
+        <mat-icon>article</mat-icon>
+      </button>
+      <button id="add-person-button" mat-fab (click)="addMember()" color="primary">
+        <mat-icon>person_add</mat-icon>
+      </button>
+    </div>
   </div>
 </div>
+<mat-menu #menu="matMenu">
+  <button (click)="makeReport()" mat-menu-item>Active Member Report</button>
+</mat-menu>

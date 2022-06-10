@@ -6,14 +6,18 @@ import {Membership} from '@models/membership';
 import {Observable, of} from 'rxjs';
 import {CommunicationService} from '@shared/communication.service';
 import * as _moment from 'moment';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {PaymentMethod} from '@models/payment-method';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MembershipGroupService} from '@shared/membership-group.service';
 import {Member} from '@models/member';
 import {PaymentMethodService} from '../../../settings/settings-page/payment-methods-settings/payment-method.service';
-import {environment} from '../../../../environments/environment';
-import {ServicePurchaseModel} from '@models/membership-purchase';
+import {MembershipPurchaseModel} from '@models/membership-purchase';
+import {Payment} from '@models/payment';
+import {TaxService} from '@shared/tax.service';
+import {Tax} from '@models/tax';
+import {DiscountPipe} from '@shared/pipes/discount.pipe';
+
 const moment = _moment;
+
 
 @Component({
   selector: 'service-purchase-form',
@@ -31,28 +35,29 @@ export class ServicePurchaseFormComponent implements OnInit {
   selectPaymentFormGroup: FormGroup;
   startDateFormGroup: FormGroup;
   salePriceFormGroup: FormGroup;
+  paymentFormGroup: FormGroup;
   noteFormGroup: FormGroup;
   selectedMembershipGroup: MembershipGroup;
   allMembershipGroups: MembershipGroup[];
   selectedMembership: Membership;
   memberships$: Observable<Membership[]>;
-  paymentMethods: PaymentMethod[];
+  payments: Payment[] = [];
+  taxes: Tax[];
 
-  constructor(private dialogRef: MatDialogRef<ServicePurchaseFormComponent>,
-              private fb: FormBuilder,
+  constructor(private fb: FormBuilder,
               public paymentService: PaymentMethodService,
+              public taxService: TaxService,
+              public discoutPipe: DiscountPipe,
               public membershipGroupService: MembershipGroupService,
               public communicationService: CommunicationService,
               @Inject(MAT_DIALOG_DATA) private member: Member) {
   }
 
   ngOnInit(): void {
-
-    this.allMembershipGroups = this.membershipGroupService.getMembershipGroups();
-    this.paymentMethods = this.paymentService.getPaymentMethods();
-    if ( isEmpty(this.allMembershipGroups)) {
-        this.dialogRef.close();
-        throw Error('Memberships not created yet! Please configure memberships first');
+    this.taxes = this.taxService.getTaxes();
+    this.allMembershipGroups = this.membershipGroupService.getMembershipGroups('shared');
+    if (isEmpty(this.allMembershipGroups)) {
+      throw Error('Memberships not created yet! Please configure memberships first');
     }
     this.selectedMembershipGroup = first(this.allMembershipGroups);
     this.selectedMembership = first(this.selectedMembershipGroup.memberships);
@@ -68,12 +73,13 @@ export class ServicePurchaseFormComponent implements OnInit {
       membership: [this.selectedMembership, Validators.required]
     });
 
-    this.selectPaymentFormGroup = this.fb.group({
-      paymentMethod: [first(this.paymentMethods), Validators.required]
+    this.paymentFormGroup = this.fb.group({
+      payments: [this.payments, [Validators.required]]
     });
 
     this.salePriceFormGroup = this.fb.group({
-      price: [0, [Validators.required, Validators.min(0), Validators.max(999999999)]]
+      price: [0, [Validators.required, Validators.min(0), Validators.max(999999999)]],
+      discount: [0, [Validators.required, Validators.min(0)]]
     });
 
     this.noteFormGroup = this.fb.group({
@@ -94,8 +100,10 @@ export class ServicePurchaseFormComponent implements OnInit {
     return this.salePriceFormGroup.value.price;
   }
 
-  getTax() {
-    return Math.round(parseFloat(this.salePriceFormGroup.value.price) * environment.vat);
+  getTax(tax: Tax) {
+    const price = this.salePriceFormGroup.value.price;
+    const discount = this.salePriceFormGroup.value.discount;
+    return this.discoutPipe.transform(price, discount)  * tax.value/100;
   }
 
   afterMembershipFormGroupSelection(membership: Membership) {
@@ -105,18 +113,22 @@ export class ServicePurchaseFormComponent implements OnInit {
   submitPurchase(): void {
     const startDateMoment = this.startDateFormGroup.value.startDate;
     const note = this.noteFormGroup.value.note;
-    const servicePurchase: Partial<ServicePurchaseModel> = {
+    const servicePurchase: Partial<MembershipPurchaseModel> = {
       id: 0,
       price: this.salePriceFormGroup.value.price,
-      members: [this.predefinedMember? this.predefinedMember : this.member],
+      members: [this.predefinedMember ? this.predefinedMember : this.member],
+      buyerId: this.predefinedMember ? this.predefinedMember.id : this.member.id,
       note,
       freezeId: null,
-      saleDate: new Date(),
+      discount: this.salePriceFormGroup.value.discount,
       startDate: startDateMoment.toDate(),
-      paymentMethodId: this.selectPaymentFormGroup.value.paymentMethod.id,
+      payments: this.paymentFormGroup.value.payments,
       membershipId: this.selectedMembership.id,
     };
-    this.servicePurchase.emit(servicePurchase)
-    this.dialogRef.close(servicePurchase);
+    this.servicePurchase.emit(servicePurchase);
+  }
+
+  patchPayments(payments: Payment[]) {
+    this.paymentFormGroup.patchValue({'payments': payments});
   }
 }

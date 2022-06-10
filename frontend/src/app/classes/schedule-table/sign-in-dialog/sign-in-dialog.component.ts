@@ -1,12 +1,12 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog} from '@angular/material/dialog';
 import {DaySchedule, ScheduleWeekDay} from '@shared/communication.service';
 import {Member} from '@models/member';
 import {ScheduleMember} from '@models/schedule-member';
 import * as _moment from 'moment';
 import {Moment} from 'moment';
-import {first, remove} from 'lodash';
-import {MembershipPurchaseHistoryItem, ServicePurchaseModel} from '@models/membership-purchase';
+import {remove} from 'lodash';
+import {ExtendedMembershipPurchaseModel, MembershipPurchaseModel} from '@models/membership-purchase';
 import {Router} from '@angular/router';
 import {map, tap} from 'rxjs/operators';
 import {SalesService} from '../../../sales/sales.service';
@@ -15,6 +15,8 @@ import {ServicePurchaseFormComponent} from '../../../sales/membership/service-pu
 import {MembersService} from '../../../members/members.service';
 import {SignedMembersPipe} from '../../signed-members.pipe';
 import {HelpersService} from '@shared/helpers.service';
+import {QueryJoin} from '@nestjsx/crud-request';
+import {MatPaginator} from '@angular/material/paginator';
 
 export interface SignInDialogData {
   daySchedule: DaySchedule;
@@ -24,7 +26,7 @@ export interface SignInDialogData {
 
 export interface SignInMember {
   member: Member;
-  activeMembership: MembershipPurchaseHistoryItem;
+  activeMembership: ExtendedMembershipPurchaseModel;
 }
 
 const moment = _moment;
@@ -35,9 +37,10 @@ const moment = _moment;
   styleUrls: ['./sign-in-dialog.component.scss']
 })
 export class SignInDialogComponent implements OnInit {
-  purchaseItems: MembershipPurchaseHistoryItem[];
+  purchaseItems: ExtendedMembershipPurchaseModel[];
   displayedColumns: string[] = ['fullName', 'package', 'expiryDate', 'sell'];
   dataSource: MatTableDataSource<SignInMember> = new MatTableDataSource<SignInMember>();
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(@Inject(MAT_DIALOG_DATA) public signInDialogData: SignInDialogData,
               private communicationService: MembersService,
@@ -48,15 +51,18 @@ export class SignInDialogComponent implements OnInit {
               private dialog: MatDialog) {
   }
 
-
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
   ngOnInit(): void {
-    const scheduleMembers = this.signedMembersPipe.transform(this.signInDialogData.daySchedule.signedMembers$, this.signInDialogData.scheduleWeekDay) ;
+    const scheduleMembers = this.signedMembersPipe.transform(this.signInDialogData.daySchedule.signedMembers$, this.signInDialogData.scheduleWeekDay);
     const memberIds = scheduleMembers.filter(sm => !sm.member).map(sm => sm.memberId);
-    this.communicationService.getMembersByIds(memberIds).pipe(map<Member[], SignInMember[]>((members) => {
+    const memberJoinFields: QueryJoin[] = [{field: 'activeMembership'}, {field: 'activeMembership.membership'}, {field: 'freeze'}, {field: 'activeMembership.payments'}];
+    this.communicationService.getMembersByIds(memberIds, memberJoinFields).pipe(map<Member[], SignInMember[]>((members) => {
         return members.map(m => {
           return {
             member: m,
-            activeMembership: m.activeMembership ? this.helpers.extendMembership(m.activeMembership):null
+            activeMembership: m.activeMembership ? this.helpers.extendMembership(m.activeMembership) : null
           };
         });
       }
@@ -90,12 +96,12 @@ export class SignInDialogComponent implements OnInit {
     const memberId = signInMember.member.id;
     this.dialog.open(ServicePurchaseFormComponent,
       {data: signInMember.member})
-      .afterClosed().subscribe((purchase: ServicePurchaseModel) => {
+      .afterClosed().subscribe((purchase: MembershipPurchaseModel) => {
       if (purchase) {
         // const purchaseModel = toPurchaseItemModel(purchase);
         this.salesService.savePurchase(purchase)
           .pipe(map(p => this.helpers.extendMembership(p),
-            tap((historyItem: MembershipPurchaseHistoryItem) => {
+            tap((historyItem: ExtendedMembershipPurchaseModel) => {
               this.purchaseItems.push(historyItem);
               //  this.memberIdToPurchaseItem[memberId].push(historyItem);
             })))

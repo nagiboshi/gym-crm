@@ -1,19 +1,20 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReportsComponent } from './reports/reports.component';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ReportsComponent} from './reports/reports.component';
 import {ReportsRoutingModule} from './reports-routing.module';
-import { StockValuationReportComponent } from './stock-valuation-report/stock-valuation-report.component';
 import {SharedModule} from '@shared/shared.module';
-import { AttendanceReportComponent } from './attendance-report/attendance-report.component';
+import {AttendanceReportComponent} from './attendance-report/attendance-report.component';
 import {ClassesModule} from '../classes/classes.module';
-
+import {MembersReportComponent} from './members-report/members-report.component';
+import {SalesReportComponent} from './sales-report/sales-report.component';
 
 
 @NgModule({
   declarations: [
     ReportsComponent,
-    StockValuationReportComponent,
-    AttendanceReportComponent
+    AttendanceReportComponent,
+    MembersReportComponent,
+    SalesReportComponent
   ],
   imports: [
     CommonModule,
@@ -21,6 +22,7 @@ import {ClassesModule} from '../classes/classes.module';
     SharedModule,
     ClassesModule
   ],
-  exports: [StockValuationReportComponent, AttendanceReportComponent]
+  exports: [AttendanceReportComponent, MembersReportComponent, SalesReportComponent]
 })
-export class ReportsModule { }
+export class ReportsModule {
+}

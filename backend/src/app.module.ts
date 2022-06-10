@@ -12,8 +12,6 @@ import {AuthModule} from './auth/auth.module';
 import {BranchModule} from './branch/branch.module';
 import {Branch} from './branch/branch';
 import {ClassesModule} from './classes/classes.module';
-import {ClassCategoryModule} from './class-category/class-category.module';
-import {ClassCategory} from './class-category/class-category';
 import {ClassModel} from './classes/class-model';
 import {MembershipGroupModule} from './membership-group/membership-group.module';
 import {MembershipGroup} from './membership-group/membership-group';
@@ -38,10 +36,14 @@ import {PurchaseVoucher} from './sales/purchase-vouchers/purchase-voucher';
 import {InventoryItem} from './sales/inventory/inventory-item';
 import {PurchaseVoucherItem} from './sales/purchase-vouchers/purchase-voucher-item';
 import { ReportsModule } from './reports/reports.module';
+
 import {ScheduleMemberModule} from './schedule-member/schedule-member.module';
 import {Payment} from './payments/payment';
 import { SocialNetworkAccountModule } from './social-network-account/social-network-account.module';
 import {SocialNetworkAccount} from './social-network-account/social-network-account';
+import {Tax} from './tax/tax';
+import {TaxModule} from './tax/tax.module';
+import {Company} from './company/company';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -71,9 +73,9 @@ import {SocialNetworkAccount} from './social-network-account/social-network-acco
         Member,
         User,
         Branch,
-        ClassCategory,
         ScheduleMember,
         ClassModel,
+        Company,
         Membership,
         ClassSchedule,
         SocialNetworkAccount,
@@ -89,6 +91,7 @@ import {SocialNetworkAccount} from './social-network-account/social-network-acco
         Product,
         PropertyValue,
         Supplier,
+        Tax,
         Property,
         Category,
         Subcategory,
@@ -100,9 +103,9 @@ import {SocialNetworkAccount} from './social-network-account/social-network-acco
     ScheduleMemberModule,
     UserModule,
     AuthModule,
+    TaxModule,
     BranchModule,
     ClassesModule,
-    ClassCategoryModule,
     MembershipGroupModule,
     PaymentMethodModule,
     MembershipPurchaseModule,

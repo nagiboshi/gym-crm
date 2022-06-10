@@ -9,10 +9,11 @@
                        'status-yellow': activeMembership.isNearlyExpire,
                        'status-red': !activeMembership || activeMembership.isExpired,
                        'status-freeze': activeMembership.isFreezed}"
-                        (error)="avatarImg.src='/assets/member-not-found.png'"
-                        #avatarImg width="220" height="220" [src]="loadedMemberValue.photoLink | localImageLink"/>
+           (error)="avatarImg.src='/assets/member-not-found.png'"
+           #avatarImg width="220" height="220" [src]="loadedMemberValue.photoLink | localImageLink"/>
       <ng-template #expiredMembership>
-        <img class="status-red" (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg width="220" height="220" [src]="loadedMemberValue.photoLink | localImageLink"/>
+        <img class="status-red" (error)="avatarImg.src='/assets/member-not-found.png'" #avatarImg width="220"
+             height="220" [src]="loadedMemberValue.photoLink | localImageLink"/>
       </ng-template>
     </div>
     <div class="member-info-right-part">
@@ -38,6 +39,19 @@
               <input matInput placeholder="Phone number" formControlName="phoneNumber"/>
             </mat-form-field>
           </div>
+          <div fxLayout="row" class="member-info-row">
+            <mat-form-field>
+              <input matInput placeholder="Emergency phone number" formControlName="emergencyPhone"/>
+            </mat-form-field>
+          </div>
+          <div class="member-info-row">
+            <mat-form-field>
+              <mat-label>Date of Birth</mat-label>
+              <input (click)="picker.open()" formControlName="dob" matInput [matDatepicker]="picker">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
         </div>
         <div fxFlex="33">
           <div class="member-info-row">
@@ -45,34 +59,46 @@
               <input matInput placeholder="Referal type" formControlName="referalType"/>
             </mat-form-field>
           </div>
+
           <div fxLayout="row" class="member-info-row">
             <mat-form-field>
             <textarea matInput placeholder="Notes" formControlName="notes">
             </textarea>
             </mat-form-field>
           </div>
+          <div fxLayout="column" class="member-info-row">
+            <social-accounts *ngIf="loadedMemberValue" [socialAccounts]="loadedMemberValue.socialAccounts"
+                             (socialAccountsChanged)="updateMemberSocialNetworks($event)"></social-accounts>
+          </div>
         </div>
-        <div fxFlex="33">
-          <membership-status (membershipUpdated)="updateMembership($event)" *ngIf="_activeMembership$ | async as activeMembership; else nomembership" [member]="loadedMemberValue" [activeMembership]="activeMembership"></membership-status>
+        <div fxLayoutAlign="space-between" fxLayout="column" fxFlex="33">
+          <membership-status (membershipUpdated)="updateMembership($event)"
+                             *ngIf="_activeMembership$ | async as activeMembership; else nomembership"
+                             [member]="loadedMemberValue" [activeMembership]="activeMembership"></membership-status>
+          <div fxLayoutAlign="start center" id="sell-button">
+
+            <button (click)="addNewPurchase()" mat-fab>
+              <mat-icon>attach_money</mat-icon>
+            </button>
+            <div class="member-profile-save" fxLayoutAlign="start end" *ngIf="form.dirty">
+              <button (click)="updateMember()" mat-mini-fab>
+                <mat-icon>save</mat-icon>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="member-profile-save" fxLayoutAlign="start end" *ngIf="form.touched">
-      <button (click)="updateMember()" mat-mini-fab>
-        <mat-icon>save</mat-icon>
-      </button>
-    </div>
+
 
   </form>
   <div fxLayoutAlign="start">
-<!--  <app-purchase-history (purchaseUpdated)="onNewPurchase($event)"  *ngIf="loadedMember$ | async as member"  [member]="member"></app-purchase-history>-->
-</div>
+    <!--  <app-purchase-history (purchaseUpdated)="onNewPurchase($event)"  *ngIf="loadedMember$ | async as member"  [member]="member"></app-purchase-history>-->
+  </div>
 </div>
 
 
 <ng-template #nomembership>
   <h3>Member has no membership!</h3>
 </ng-template>
-<div>
-<button (click)="addNewPurchase()" mat-fab><mat-icon>attach_money</mat-icon></button>
-</div>
+

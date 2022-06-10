@@ -1,6 +1,6 @@
-<div fxFill fxLayout="column" fxLayoutAlign="start">
+<div *ngIf="activeMembership.membership" fxFill fxLayout="column" fxLayoutAlign="start">
   <div>
-    <div class="membership-name">{{activeMembership.membership.name}}</div>
+    <div class="membership-name">{{activeMembership.membership?.name}}</div>
     <div class="row">
       <span class="label">Active Date:</span>
       <span class="value">{{activeMembership.startDate | date}}
@@ -35,6 +35,36 @@
       </ng-container>
     </div>
 
+
   </div>
+  <div fxLayout="column" fxLayoutAlign="start start">
+    <div>Membership Price with VAT: {{activeMembership.price|totalPrice:1:activeMembership.discount:taxes | currency:'AED'}}</div>
+    <div><b>Payments:</b></div>
+    <table>
+      <thead>
+      <tr>
+        <th class="payment-th">Date</th>
+        <th class="payment-th">Amount</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let payment of payments$ | async">
+        <td class="payment-cell">{{payment.date | date:'short'}}</td>
+        <td class="payment-cell">{{payment.amount | currency: 'AED'}}</td>
+      </tr>
+      <ng-container *ngIf="!activeMembership.isFullyPaid">
+        <ng-container *ngIf="payments$ | async as payments">
+        <mat-divider></mat-divider>
+          <div class="payments-left"><b>{{activeMembership | paymentsLeft:payments }}</b> left to pay</div>
+        </ng-container>
+      </ng-container>
+      </tbody>
+    </table>
+    <mat-error></mat-error>
+
+    <mat-divider></mat-divider>
+    <div  *ngIf="!activeMembership.isFullyPaid" (click)="openFinalizationPaymentDialog()" class="default-link">Finish Payment</div>
+  </div>
+
 
 </div>

@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {fromEvent, Observable, of} from 'rxjs';
-import {concatMap, debounceTime, distinctUntilChanged, map, mapTo, switchMap, tap} from 'rxjs/operators';
+import {concatMap, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Supplier} from '@models/supplier';
 import {Router} from '@angular/router';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
@@ -9,6 +9,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {isEmpty} from 'lodash';
 import {SupplierService} from '../../sales/suppliers/supplier.service';
 import {SuppliersCrudComponent} from '../../sales/suppliers/suppliers-crud/suppliers-crud.component';
+import {Property} from '@models/property';
+import {PropertyService} from '@shared/properties/property.service';
 @Component({
   selector: 'find-supplier',
   templateUrl: './find-supplier.component.html',
@@ -30,11 +32,11 @@ export class FindSupplierComponent implements OnInit, AfterViewInit {
   searchFormControl: FormControl;
   showNewSupplierOption = false;
 
-  constructor(public dialog: MatDialog, private supplierService: SupplierService, private router: Router) {
+  constructor(public dialog: MatDialog, private propertyService: PropertyService, private supplierService: SupplierService, private router: Router) {
   }
 
   displayFn(supplier: Supplier) {
-    return supplier?.name ?? "";
+    return supplier?.name ?? '';
 
   }
 
@@ -45,7 +47,9 @@ export class FindSupplierComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.suppliers$ = fromEvent<any>(this.searchInput.nativeElement, 'keyup')
       .pipe(
-        tap(() => { this.showNewSupplierOption = true; }),
+        tap(() => {
+          this.showNewSupplierOption = true;
+        }),
         map(event => event.target.value),
         debounceTime(100),
         distinctUntilChanged(),
@@ -63,7 +67,7 @@ export class FindSupplierComponent implements OnInit, AfterViewInit {
   }
 
   loadMembers(search): Observable<Supplier[]> {
-    if( !isEmpty(search)) {
+    if (!isEmpty(search)) {
       return this.supplierService.getSuppliers(10, 0, search).pipe(concatMap(supplierPage => of(supplierPage.data)));
     }
     return of([]);
@@ -75,11 +79,19 @@ export class FindSupplierComponent implements OnInit, AfterViewInit {
     this.showNewSupplierOption = false;
     this.dialog.open(SuppliersCrudComponent, {data: newSupplier})
       .afterClosed()
-      .subscribe((newSupplier: Supplier) => {
-        if ( newSupplier ) {
-          this.supplierService.save(newSupplier).then((savedSupplier) => {
-            this.supplierSelected.emit(savedSupplier);
-          });
+      .subscribe(async (supplierAndPropertiesToRemove: [Supplier, Property[]]) => {
+        if (supplierAndPropertiesToRemove) {
+          const [supplier, propertiesToRemove] = supplierAndPropertiesToRemove;
+
+          // Removing properties which changed
+          if( !isEmpty(propertiesToRemove )) {
+            for( const prop of propertiesToRemove ) {
+              await this.propertyService.remove(prop.id);
+            }
+          }
+
+          const savedSupplier = await this.supplierService.save(supplier);
+          this.supplierSelected.emit(savedSupplier);
         }
       });
   }

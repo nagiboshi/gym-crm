@@ -1,14 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {ClassModel} from '../../classes/class.model';
-import {ClassesService} from '../../classes/classes.service';
-import {CommunicationService} from '@shared/communication.service';
+import {BranchService} from '../../settings/settings-page/branch.service';
 
 @Pipe({
   name: 'branchName'
 })
 export class BranchNamePipe implements PipeTransform {
 
-  constructor(private communicationService: CommunicationService) {
+  constructor(private branchService: BranchService) {
   }
 
 
@@ -17,7 +15,7 @@ export class BranchNamePipe implements PipeTransform {
     if( !branchId ) {
       return 'All';
     }
-    return this.communicationService.getBranches().find( c => c.id == branchId).name;
+    return this.branchService.getBranches().find( c => c.id == branchId).name;
   }
 
 }

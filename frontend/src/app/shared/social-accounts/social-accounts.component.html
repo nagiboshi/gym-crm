@@ -1,0 +1,33 @@
+<form [formGroup]="formGroup">
+  <ng-container formArrayName="socialAccounts">
+    <ng-container *ngFor="let _ of socialAccountsFormArray.controls; let i=index">
+      <ng-container [formGroupName]="i">
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <mat-form-field class="social-acc-form-field" fxLayout="row">
+            <mat-label>Social Account Link</mat-label>
+            <mat-icon matSuffix [svgIcon]="socialNetworkIcon"
+                      *ngIf="inputElement.value.startsWith('https://instagram')"></mat-icon>
+            <mat-icon matSuffix svgIcon="instagram"
+                      *ngIf="inputElement.value.startsWith('https://www.instagram')"></mat-icon>
+            <mat-icon matSuffix svgIcon="facebook"
+                      *ngIf="inputElement.value.startsWith('https://facebook')"></mat-icon>
+            <mat-icon matSuffix svgIcon="facebook"
+                      *ngIf="inputElement.value.startsWith('https://www.facebook')"></mat-icon>
+            <mat-icon matSuffix svgIcon="twitter"
+                      *ngIf="inputElement.value.startsWith('https://twitter')"></mat-icon>
+            <mat-icon matSuffix svgIcon="twitter"
+                      *ngIf="inputElement.value.startsWith('https://www.twitter')"></mat-icon>
+            <mat-error *ngIf="socialAccountsFormArray.invalid">Social account is not valid</mat-error>
+            <input formControlName="address" #inputElement matInput>
+          </mat-form-field>
+          <button (click)="removeSocialAcc(i)" mat-icon-button>
+            <mat-icon *ngIf="i>0">delete</mat-icon>
+          </button>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</form>
+<div (click)="addSocialAccount()" [ngClass]="{'default-link': true, 'disabled':socialAccountsFormArray.invalid}">Add
+  Social Account
+</div>

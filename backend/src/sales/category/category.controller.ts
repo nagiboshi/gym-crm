@@ -1,4 +1,4 @@
-import {Controller, UseGuards} from '@nestjs/common';
+import {Controller, Request, UseGuards} from '@nestjs/common';
 import {Crud, CrudRequest, Override, ParsedBody, ParsedRequest} from '@nestjsx/crud';
 import {Category} from './category';
 import {CategoryService} from './category.service';
@@ -38,10 +38,12 @@ export class CategoryController {
 
   @Override()
   async createOne(
+    @Request() request: Request & {user: any},
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() category: Category) {
 
-
+    const userBranchId = request.user.selectedBranch.id;
+    category.branchId = userBranchId;
     let subcategories: Subcategory[] = this.prepareBulkData('subcategories', category);
     const savedCategory = await this.service.createOne(req, category);
 

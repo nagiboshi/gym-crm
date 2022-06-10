@@ -3,20 +3,21 @@ import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatDialog} from '@angular/material/dialog';
 import {Router} from '@angular/router';
-import {CommunicationService} from '@shared/communication.service';
 import {Member} from '@models/member';
 import {AddMemberDialogComponent} from '@shared/add-member-dialog/add-member-dialog.component';
 import {MatTableDataSource} from '@angular/material/table';
 import {DeletePromptDialogComponent} from '@shared/delete-prompt-dialog/delete-prompt-dialog.component';
 import {remove} from 'lodash';
-import {interval, of, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {MembersService} from './members.service';
-import {cloneDeep,range} from 'lodash';
-import {concatMap, delay, take} from 'rxjs/operators';
 import * as _moment from 'moment';
+import {ReportsService} from '../reports/reports.service';
+import {HelpersService} from '@shared/helpers.service';
+import {MatSelectChange} from '@angular/material/select';
 
 
 const moment = _moment;
+
 @Component({
   selector: 'app-members',
   templateUrl: './members.component.html',
@@ -24,15 +25,15 @@ const moment = _moment;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
-  displayedColumns: string[] = ['avatar', 'firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'delete'];
+  displayedColumns: string[] = ['avatar', 'firstName', 'lastName', 'type', 'email', 'phoneNumber', 'gender', 'delete'];
   dataSource: MatTableDataSource<Member>;
   memberCreatedSub: Subscription;
+  memberType: 'local' | 'shared' = 'shared';
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(public dialog: MatDialog, private membersService: MembersService, private router: Router) {
 
-
+  constructor(private helpers: HelpersService, private reportsService: ReportsService, public dialog: MatDialog, private membersService: MembersService, private router: Router) {
   }
 
   ngAfterViewInit() {
@@ -40,8 +41,12 @@ export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
     this.dataSource.sort = this.sort;
     const size = this.paginator.pageSize;
     const offset = this.paginator.pageIndex * size;
-    this.membersService.getMembers(size, null, offset).subscribe((members) => {
-      this.dataSource.data = members;
+    this.fetchMembers(size, null, offset, this.memberType);
+  }
+
+  fetchMembers(size, filterNameLastNameOrPhone, offset, accountType: 'local' | 'shared') {
+    this.membersService.getMembers(size, null, offset, accountType).subscribe((membersPage) => {
+      this.dataSource.data = membersPage.data;
     });
   }
 
@@ -49,26 +54,31 @@ export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
     this.dataSource = new MatTableDataSource<Member>();
     this.memberCreatedSub = this.membersService.memberCreated$.subscribe((createdMember) => {
       this.dataSource.data = [createdMember, ...this.dataSource.data];
-    })
-  }
-
-  getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
+    });
   }
 
   addMember() {
-    const newMember = {id: 0, firstName: '', file: '', lastName: '', email: '', gender: 'Male', phoneNumber: ''};
-
-
+    const newMember: Partial<Member> = {
+      id: 0,
+      firstName: '',
+      photoLink: '',
+      dob: null,
+      lastName: '',
+      email: '',
+      gender: 'Male',
+      phoneNumber: '',
+      type: 'shared'
+    };
 
 
     this.dialog.open(AddMemberDialogComponent, {data: newMember})
       .afterClosed()
       .subscribe((newMember: Member) => {
+        if (newMember) {
           this.membersService.saveMember(newMember).toPromise().then((savedMember) => {
             this.membersService.memberCreated.next(savedMember);
           });
-
+        }
       });
   }
 
@@ -78,7 +88,7 @@ export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
 
   onPageChange(pageEvent: PageEvent) {
     const offset = pageEvent.pageIndex * pageEvent.pageSize;
-    this.membersService.getMembers(pageEvent.pageSize, null, offset);
+    this.membersService.getMembers(pageEvent.pageSize, null, offset, this.memberType);
   }
 
   openMemberRemoveDialog(memberData: Member) {
@@ -97,6 +107,17 @@ export class MembersComponent implements AfterViewInit, OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.memberCreatedSub.unsubscribe();
+  }
+
+  makeReport() {
+    const report = this.reportsService.reportsSub.getValue().find(r => r.name == 'Members Report');
+    this.dialog.open(report.dialog).afterClosed().subscribe(f => report.func(f));
+  }
+
+  filterMembers(change: MatSelectChange) {
+    const size = this.paginator.pageSize;
+    const offset = this.paginator.pageIndex * size;
+    this.fetchMembers(size, null, offset, this.memberType);
   }
 }
 

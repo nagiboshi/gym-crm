@@ -30,6 +30,7 @@ export class MembershipCrudDialog implements OnInit {
     this.formGroup = fb.group({
       id: this.membershipGroup.id,
       name: [this.membershipGroup.name, Validators.required],
+      type: [this.membershipGroup.type, Validators.required],
       memberships: this.membershipsArray
     });
   }

@@ -1,0 +1,32 @@
+@import "../../../../../colors";
+
+.member-picture-container {
+  margin-right: 20px;
+  width: 50%;
+  min-width: 180px;
+  position: relative;
+  height: 90%;
+  .drop-area {
+    border: 1px dashed black;
+    padding: 20px;
+    box-sizing: border-box;
+    height: 100%;
+    transition: border,color 0.2s linear;
+    &.highlighted {
+      border: 1px dashed $primaryColor8;
+      transition: border,color 0.2s linear;
+      color: $primaryColor8;
+    }
+  }
+
+  .member-avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+  }
+
+  .avatar-file-target {
+    visibility: hidden;
+  }
+}

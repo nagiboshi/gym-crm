@@ -1,6 +1,4 @@
-.control-buttons {
-  margin-top: 10px;
-}
+
 
 table, mat-paginator {
   background: transparent;
@@ -24,6 +22,8 @@ table, mat-paginator {
     background-color: #ff000036;
 
   }
+
+
 }
 
 td .inventory-product {
@@ -31,3 +31,9 @@ td .inventory-product {
     text-decoration: underline;
   }
 }
+
+.sell-cell {
+  width: 32px;
+}
+
+

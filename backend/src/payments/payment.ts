@@ -2,13 +2,22 @@ import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typ
 import {MembershipPurchase} from '../membership-purchase/membership-purchase';
 import {StockPurchase} from '../sales/stock-purchase/stock-purchase';
 import {PaymentMethod} from '../payment-method/payment-method';
+import {ApplyValueTransformers} from 'typeorm/util/ApplyValueTransformers';
 
+export const PaymentFields = {
+  date: 'date',
+  paymentMethod: 'paymentMethod',
+  membershipPurchase: 'membershipPurchase',
+  membershipPurchaseId: 'membershipPurchaseId',
+  stockPurchase: 'stockPurchase',
+  stockPurchaseId: 'stockPurchaseId'
+}
 @Entity()
 export class Payment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column("decimal", {scale: 2})
+  @Column("decimal", {scale: 2, transformer: {to: (val) => val , from: (val) => parseFloat(val) }})
   amount: number;
 
   @Column()
@@ -31,7 +40,7 @@ export class Payment {
   @Column({nullable: true})
   stockPurchaseId;
 
-  @ManyToOne(type => StockPurchase, mp => mp.purchases, {eager: false, cascade: true, onUpdate: "CASCADE", onDelete: "CASCADE"})
+  @ManyToOne(type => StockPurchase, mp => mp.payments, {eager: false, cascade: true, onUpdate: "CASCADE", onDelete: "CASCADE"})
   @JoinColumn({name: 'stockPurchaseId', referencedColumnName: 'id'})
   stockPurchase: StockPurchase;
 }

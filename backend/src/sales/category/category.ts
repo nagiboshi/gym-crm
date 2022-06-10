@@ -1,5 +1,6 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Subcategory} from './subcategory';
+import {Branch} from '../../branch/branch';
 
 export const CategoryFields = {
   id: 'id',
@@ -17,10 +18,17 @@ export class Category {
   @Column()
   name: string;
 
-  @OneToMany( type => Subcategory, subcategory => subcategory.category,{nullable: true, cascade: ["insert", "update", "remove"]})
+  @OneToMany( type => Subcategory, subcategory => subcategory.category,{nullable: true, cascade: ["insert", "update", "remove"], orphanedRowAction: "delete"})
   subcategories?: Subcategory[];
 
   @Column({nullable: true, default: 'stock'})
   type: string;
+
+  @ManyToOne(type => Branch, obj => obj.categories)
+  @JoinColumn({name:"branchId"})
+  branch: Branch;
+
+  @Column()
+  branchId: number;
 
 }

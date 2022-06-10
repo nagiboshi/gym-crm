@@ -10,14 +10,11 @@ import {InventoryItem} from './inventory-item';
 import {StockPurchaseService} from '../../product/product-purchase-form/stock-purchase.service';
 import {StockPurchase} from '@models/stock-purchase';
 import {first} from 'lodash';
-import {StockPurchaseFormComponent} from '../../product/product-purchase-form/stock-purchase-form.component';
 import {ProductService} from '../../product/product.service';
 import {ViewItemComponent} from '../../product/view-product/view-item.component';
-import {SupplierViewComponent} from '../../suppliers/supplier-view/supplier-view.component';
-import {Product} from '@models/product';
-import {StockValuationReportComponent} from '../../../reports/stock-valuation-report/stock-valuation-report.component';
 import {ReportsService} from '../../../reports/reports.service';
 import {HelpersService} from '@shared/helpers.service';
+import {StockPurchaseFormDialogComponent} from '../../product/stock-purchase-form-dialog/stock-purchase-form-dialog.component';
 @Component({
   selector: 'inventory-list',
   templateUrl: './inventory-list.component.html',
@@ -26,7 +23,7 @@ import {HelpersService} from '@shared/helpers.service';
 export class InventoryListComponent implements OnInit {
   apiPath = '/api/inventory';
   limit = 10;
-  defaultProperties = ['color', 'size']
+  defaultProperties = ['color', 'size'];
   columns = ['name', ...this.defaultProperties, 'qty', 'basePrice', 'total', 'sell'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: MatTableDataSource<InventoryItem>;
@@ -64,7 +61,7 @@ export class InventoryListComponent implements OnInit {
       const tableData = this.dataSource.data;
       const prodIndex = tableData.findIndex( inventoryItem => inventoryItem.id == productPurchase.itemId);
       if( prodIndex != -1 ) {
-        const foundProduct = first(tableData.splice(prodIndex, 1));
+        const foundProduct: InventoryItem = first(tableData.splice(prodIndex, 1));
         foundProduct.qty-=productPurchase.qty;
         tableData.splice(prodIndex, 0, foundProduct);
       }
@@ -72,6 +69,12 @@ export class InventoryListComponent implements OnInit {
   }
 
 
+
+
+  makeSalesReport() {
+    const report = {...this.reportsService.reportsSub.getValue().find( r => r.name == 'Sales Report')};
+    this.dialog.open(report.dialog, {data: {type: 'stock'}}).afterClosed().subscribe( f => report.func(f));
+  }
 
   makeReport() {
       this.reportsService.generateValuationReport()
@@ -81,11 +84,12 @@ export class InventoryListComponent implements OnInit {
   }
 
   openStockValuationReport() {
-    this.dialog.open(StockValuationReportComponent);
+    const report = {...this.reportsService.reportsSub.getValue().find( r => r.name == 'Attendance Report')};
+    report.func();
   }
 
   async sell(row: InventoryItem) {
-    this.dialog.open(StockPurchaseFormComponent, {data: {stock: row, member: null}}).afterClosed().subscribe((stockPurchase) => {
+    this.dialog.open(StockPurchaseFormDialogComponent, {data: {stock: row, member: null}}).afterClosed().subscribe((stockPurchase) => {
       if( stockPurchase ) {
         this.stockPurchaseService.save(stockPurchase);
       }
@@ -96,6 +100,5 @@ export class InventoryListComponent implements OnInit {
       // const product = await this.productService.getFullEntity(row.id);
       this.dialog.open(ViewItemComponent, {data: row});
   }
-
 
 }

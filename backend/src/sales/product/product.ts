@@ -23,7 +23,7 @@ export class Product {
   @Column('simple-array', {nullable: true})
   images: string[];
 
-  @OneToMany( type => InventoryItem, item => item.product)
+  @OneToMany( type => InventoryItem, item => item.product, {orphanedRowAction: "delete"})
   inventoryItems?: InventoryItem[];
 
   @OneToMany( type => PurchaseVoucherItem, item => item.product)

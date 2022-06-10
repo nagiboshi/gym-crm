@@ -3,7 +3,7 @@
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>
         <div fxLayoutAlign="start center" fxLayout>
-          <div class="table-header-title"> Classes</div>
+          <div class="table-header-title">Classes</div>
           <mat-form-field>
             <mat-select value="-1" placeholder="Class type" (valueChange)="filterOutClassesByType($event)">
               <mat-option value="-1">All</mat-option>
@@ -48,7 +48,7 @@
 
     <!-- Row shown when there is no matching data. -->
     <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell" colspan="3">No classes created yet</td>
+      <td class="mat-cell" colspan="4">No classes created yet</td>
     </tr>
   </table>
   <div fxLayoutAlign="space-between center">

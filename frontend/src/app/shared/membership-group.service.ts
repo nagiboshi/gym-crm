@@ -24,8 +24,8 @@ export class MembershipGroupService {
     })).subscribe();
   }
 
-  fetchMembershipGroups(): Observable<MembershipGroup[]> {
-   return this.httpClient.get<MembershipGroup[]>('/api/membershipGroup').pipe(tap(membershipGroups => this.membershipGroupsSubj.next(membershipGroups)) );
+  fetchMembershipGroups(type?: string): Observable<MembershipGroup[]> {
+   return this.httpClient.get<MembershipGroup[]>('/api/membershipGroup?type=shared').pipe(tap(membershipGroups => this.membershipGroupsSubj.next(membershipGroups)) );
   }
 
   saveMembershipGroup(membershipGroup: MembershipGroup): Promise<MembershipGroup> {
@@ -53,8 +53,8 @@ export class MembershipGroupService {
     return this.membershipGroups$;
   }
 
-  getMembershipGroups(): MembershipGroup[] {
-    return this.membershipGroupsSubj.getValue();
+  getMembershipGroups(type: string): MembershipGroup[] {
+    return this.membershipGroupsSubj.getValue().filter(m => type == 'local' ? m.type == type: true);
   }
 
 }

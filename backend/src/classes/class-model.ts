@@ -1,5 +1,4 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
-import {ClassCategory} from '../class-category/class-category';
 import {Branch} from '../branch/branch';
 import {Category} from '../sales/category/category';
 
@@ -26,7 +25,7 @@ export class ClassModel {
   @Column({nullable: true})
   categoryId: number;
 
-  @ManyToOne( type => Branch)
+  @ManyToOne( type => Branch, obj => obj.classes)
   @JoinColumn({referencedColumnName: "id", name: "branchId"})
   branch: Branch;
 

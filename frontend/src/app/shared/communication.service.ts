@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ServicePurchaseModel} from '@models/membership-purchase';
+import {MembershipPurchaseModel} from '@models/membership-purchase';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'lodash';
@@ -42,8 +42,7 @@ export interface DaySchedule extends ClassSchedule {
 @Injectable({providedIn: 'root'})
 export class CommunicationService {
   schedulesSubj = new BehaviorSubject<ClassSchedule[]>([]);
-  newPurchase = new Subject<ServicePurchaseModel>();
-  branchesSubj = new BehaviorSubject<Branch[]>([]);
+  newPurchase = new Subject<MembershipPurchaseModel>();
 
   userRoles: Map<number, UserRole>;
 
@@ -62,11 +61,7 @@ export class CommunicationService {
     return this.httpClient.get('/api/branch/userBranches').toPromise().then((res) => console.log(res));
   }
 
-  fetchBranches() {
-    return this.httpClient.get<Branch[]>('/api/branch').pipe(tap(branches => {
-      this.branchesSubj.next(branches);
-    }));
-  }
+
 
   getUserRoles(): Map<number, UserRole> {
     return this.userRoles;
@@ -154,15 +149,9 @@ export class CommunicationService {
     return this.httpClient.post<ScheduleMember[]>('/api/schedule-member/bulk', {bulk: scheduleMembers});
   }
 
-  emitNewPurchase(purchase: ServicePurchaseModel) {
+  emitNewPurchase(purchase: MembershipPurchaseModel) {
     this.newPurchase.next(purchase);
   }
-
-
-  getBranches(): Branch[] {
-    return this.branchesSubj.getValue();
-  }
-
 
 
   getDayMappings() {

@@ -1,18 +1,23 @@
-import {Controller, Get, Post, Req, Res} from '@nestjs/common';
+import {Controller, Get, Post, Req, Res, UseGuards} from '@nestjs/common';
 import {InventoryService} from '../sales/inventory/inventory.service';
 import * as ExcelJS from 'exceljs';
 import {Row, Worksheet} from 'exceljs';
 import {InventoryItem} from '../sales/inventory/inventory-item';
-import {Between, FindManyOptions, In} from 'typeorm';
+import {Between, FindManyOptions, In, Not, IsNull} from 'typeorm';
 import {ScheduleMemberService} from '../schedule-member/schedule-member.service';
 import * as moment from 'moment';
+import {Moment} from 'moment';
 import {ScheduleMember, ScheduleMemberFields} from '../schedule-member/schedule-member';
 import {ClassScheduleFields} from '../class-schedule/class-schedule.model';
 import {ClassModelFields} from '../classes/class-model';
 import {Member, MemberFields} from '../member/member';
-import {Moment} from 'moment';
 import {MembershipPurchase, MembershipPurchaseFields} from '../membership-purchase/membership-purchase';
 import {MemberService} from '../member/member.service';
+import {SalesReport} from './sales-report';
+import {PaymentService} from '../payments/payment.service';
+import {HelpersService} from '../shared/helpers.service';
+import {JwtAuthGuard} from '../auth/jwt-auth.guard';
+import {TaxService} from '../tax/tax.service';
 
 interface AttendanceFilter {
   attendanceClassIds: Array<number>;
@@ -23,21 +28,33 @@ interface AttendanceFilter {
   memberIds: Array<number>;
 }
 
-interface DateFilter {
+export interface MemberReportFilter {
+  fromDate: Date;
+  toDate: Date;
+  activeMembersOnly: boolean;
+}
+
+interface SalesReportFilter {
+  type: 'stock' | 'service';
   fromDate: Date;
   toDate: Date;
 }
 
 @Controller('reports')
+@UseGuards(JwtAuthGuard)
 export class ReportsController {
 
-  constructor(public inventoryService: InventoryService, private memberService: MemberService, private scheduleMemberService: ScheduleMemberService) {
+  constructor(public inventoryService: InventoryService,
+              private paymentService: PaymentService,
+              private taxService: TaxService,
+              private helpersService: HelpersService,
+              private memberService: MemberService, private scheduleMemberService: ScheduleMemberService) {
   }
 
   private getMembershipExpirationMoment(membership: MembershipPurchase): Moment {
     let membershipExpirationDate: Moment;
-    if( membership ) {
-       membershipExpirationDate = moment(membership.startDate);
+    if (membership) {
+      membershipExpirationDate = moment(membership.startDate);
       const expirationType = membership.membership.expirationType;
 
       if (expirationType == 'day') {
@@ -53,17 +70,24 @@ export class ReportsController {
 
   @Post('/membersReport')
   async activeMemberReport(@Req() req, @Res() res) {
-    const filter: DateFilter = req.body;
-    filter.fromDate = new Date(filter.fromDate);
-    filter.toDate = new Date(filter.toDate);
+    const filter: MemberReportFilter = req.body;
+
 
     const RELATION_ACTIVE_MEMBERSHIP = MemberFields.activeMembership;
     const RELATION_MEMBERSHIP = `${MemberFields.activeMembership}.${MembershipPurchaseFields.membership}`;
     const RELATION_MEMBERSHIP_PAYMENTS = `${MemberFields.activeMembership}.${MembershipPurchaseFields.payments}`;
     const RELATION_SOCIAL_ACCOUNTS = MemberFields.socialAccounts;
-    const queryFilter: FindManyOptions = {relations: [RELATION_ACTIVE_MEMBERSHIP, RELATION_MEMBERSHIP, RELATION_SOCIAL_ACCOUNTS, RELATION_MEMBERSHIP_PAYMENTS], where: {
-      }}
-    queryFilter.where[MemberFields.created] = Between(filter.fromDate, filter.toDate)
+    const queryFilter: FindManyOptions = {
+      relations: [RELATION_ACTIVE_MEMBERSHIP, RELATION_MEMBERSHIP, RELATION_SOCIAL_ACCOUNTS, RELATION_MEMBERSHIP_PAYMENTS], where: {}
+    };
+    if( filter.fromDate) {
+      filter.fromDate = new Date(filter.fromDate);
+      filter.toDate = new Date(filter.toDate);
+      queryFilter.where[MemberFields.created] = Between(filter.fromDate, filter.toDate);
+    }
+    if( filter.activeMembersOnly ) {
+      queryFilter.where[MemberFields.activeMembershipId] = Not(IsNull())
+    }
     const members: Member[] = await this.memberService.find(queryFilter);
 
     // Membership Reports ( Active member report ) , email address, day of birth, instagram account, . date of sales, emergency contact person, phone number , membership , start date , end date.
@@ -95,12 +119,12 @@ export class ReportsController {
     for (let idx = 0; idx < members.length; idx++) {
       let socialAccounts = '';
 
-      if( members[idx].socialAccounts && members[idx].socialAccounts.length > 0 ) {
-        socialAccounts = members[idx].socialAccounts.map( socialAccount => socialAccount.address).reduce( (previousValue, currentValue ) => {
-          if( !previousValue ) {
-            previousValue = "";
+      if (members[idx].socialAccounts && members[idx].socialAccounts.length > 0) {
+        socialAccounts = members[idx].socialAccounts.map(socialAccount => socialAccount.address).reduce((previousValue, currentValue) => {
+          if (!previousValue) {
+            previousValue = '';
           }
-          return previousValue + ", " + currentValue;
+          return previousValue + ', ' + currentValue;
         });
       }
 
@@ -112,9 +136,9 @@ export class ReportsController {
           'socialAccounts': socialAccounts,
           'emergencyContact': members[idx].emergencyPhone,
           'membership': members[idx].activeMembership?.membership.name,
-          'saleDate': members[idx].activeMembership ? moment(members[idx].activeMembership?.payments[0].date).format('L'):'n\\a',
-          'startDate': members[idx].activeMembership ? moment(members[idx].activeMembership?.startDate).format('L'):'n\\a',
-          'expiryDate': members[idx].activeMembership ? this.getMembershipExpirationMoment(members[idx].activeMembership).format('L'):'n\\a'
+          'saleDate': members[idx].activeMembership ? moment(members[idx].activeMembership?.payments[0]?.date).format('L') : 'n\\a',
+          'startDate': members[idx].activeMembership ? moment(members[idx].activeMembership?.startDate).format('L') : 'n\\a',
+          'expiryDate': members[idx].activeMembership ? this.getMembershipExpirationMoment(members[idx].activeMembership).format('L') : 'n\\a'
         }
       );
     }
@@ -127,6 +151,16 @@ export class ReportsController {
   @Post('/salesReport')
   async salesReport(@Req() req, @Res() res) {
 
+    console.log();
+
+    const filter: SalesReportFilter = req.body;
+    filter.fromDate = new Date(filter.fromDate);
+    filter.toDate = new Date(filter.toDate);
+    const salesReport = new SalesReport(this.paymentService, this.helpersService, this.taxService, filter);
+    const buffer = await salesReport.write();
+    res.header('Content-Disposition', 'attachment; filename="sales-report.xlsx"');
+    res.type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    return res.send(buffer);
   }
 
   @Post('/attendanceReport')
@@ -156,8 +190,10 @@ export class ReportsController {
     const RELATION_CLASS_CATEGORY = `${ScheduleMemberFields.schedule}.${ClassScheduleFields.scheduleClass}.${ClassModelFields.category}`;
     const RELATION_ACTIVE_MEMBERSHIP = `${ScheduleMemberFields.member}.${MemberFields.activeMembership}`;
     const RELATION_MEMBERSHIP_INFO = `${ScheduleMemberFields.member}.${MemberFields.activeMembership}.${MembershipPurchaseFields.membership}`;
-    const queryFilter: FindManyOptions = {relations: [RELATION_MEMBER, RELATION_SCHEDULE, RELATION_SCHEDULE_CLASS, RELATION_CLASS_CATEGORY,RELATION_ACTIVE_MEMBERSHIP, RELATION_MEMBERSHIP_INFO ],
-      where: {}};
+    const queryFilter: FindManyOptions = {
+      relations: [RELATION_MEMBER, RELATION_SCHEDULE, RELATION_SCHEDULE_CLASS, RELATION_CLASS_CATEGORY, RELATION_ACTIVE_MEMBERSHIP, RELATION_MEMBERSHIP_INFO],
+      where: {}
+    };
     if (filter.fromDate && filter.toDate) {
       queryFilter.where[ScheduleMemberFields.scheduleDate] = Between(filter.fromDate, filter.toDate);
     }
@@ -180,9 +216,10 @@ export class ReportsController {
       {header: 'Time', width: 10, key: 'time'},
       {header: 'Client ID', width: 10, key: 'clientId'},
       {header: 'Client', width: 20, key: 'client'},
+      {header: 'Phone', width: 20, key: 'phone'},
       // TODO:: Think about to change class to any other option
       {header: 'Class type', width: 10, key: 'classType'},
-      {header: 'Class', width: 20 , key: 'clazz'},
+      {header: 'Class', width: 20, key: 'clazz'},
       {header: 'Membership', key: 'membership'},
       {header: 'Expiry Date', key: 'expiry'},
       {header: 'Location', key: 'location'}
@@ -203,16 +240,17 @@ export class ReportsController {
       const membershipExpirationDate = this.getMembershipExpirationMoment(activeMembership);
 
       worksheet.addRow({
-        'date': scheduleDateMoment.format('L'),
-        'day': scheduleDateMoment.format('dddd'),
-        'time': scheduleDateMoment.format('LT'),
-        'clientId': scheduleMembers[idx].memberId,
-        'client': `${scheduleMembers[idx].member.firstName} ${scheduleMembers[idx].member.lastName}`,
-        'classType': scheduleMembers[idx].schedule.scheduleClass.category.name,
-        'clazz': scheduleMembers[idx].schedule.scheduleClass.name,
-        'membership': activeMembership?.membership.name ?? '',
-        'expiry': membershipExpirationDate ? membershipExpirationDate.format('L'): ''
-      }
+          'date': scheduleDateMoment.format('L'),
+          'day': scheduleDateMoment.format('dddd'),
+          'time': scheduleDateMoment.format('LT'),
+          'clientId': scheduleMembers[idx].memberId,
+          'client': `${scheduleMembers[idx].member.firstName} ${scheduleMembers[idx].member.lastName}`,
+          'phone': `${scheduleMembers[idx].member.phoneNumber}`,
+          'classType': scheduleMembers[idx].schedule.scheduleClass.category.name,
+          'clazz': scheduleMembers[idx].schedule.scheduleClass.name,
+          'membership': activeMembership?.membership.name ?? '',
+          'expiry': membershipExpirationDate ? membershipExpirationDate.format('L') : ''
+        }
       );
     }
 
@@ -222,7 +260,7 @@ export class ReportsController {
     return res.send(buffer);
   }
 
-  @Get('/stockValuation')
+  @Post('/stockValuation')
   async stockValuation(@Res() res) {
     const wb = new ExcelJS.Workbook();
     const worksheet: Worksheet = wb.addWorksheet('Stock Valuation');
@@ -242,8 +280,8 @@ export class ReportsController {
         'id': inventory[idx].id,
         'name': inventory[idx].product.name,
         'qty': inventory[idx].qty,
-        'color': inventory[idx].details[1].value,
-        'size': inventory[idx].details[0].value,
+        'color': inventory[idx].details[1]?.value,
+        'size': inventory[idx].details[0]?.value,
         'price': inventory[idx].price,
         'total': 'Total'
       });

@@ -22,7 +22,7 @@ export class PurchaseVoucherSubmit {
   from: Date;
 
   @Type(() => Date)
-  @Transform(({value}) => new Date(value))
+  @Transform(({value}) => { value == null ? null: new Date(value)})
   to?: Date;
 
   @Type(() => PurchaseVoucherSubmitItem)

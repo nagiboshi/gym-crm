@@ -1,9 +1,13 @@
-import {Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Product} from '../product/product';
 import {PropertyValue} from '../properties/property-value/property-value';
-import {PurchaseVoucher} from '../purchase-vouchers/purchase-voucher';
 import {PurchaseVoucherItem} from '../purchase-vouchers/purchase-voucher-item';
+import {Branch} from '../../branch/branch';
 
+export const InventoryItemFields = {
+  product: 'product',
+  details: 'details'
+}
 @Entity()
 export class InventoryItem {
   @PrimaryGeneratedColumn()
@@ -18,17 +22,25 @@ export class InventoryItem {
   @Column()
   price: number;
 
-  @ManyToMany( type => PropertyValue, details => details.inventoryItems, {eager: true})
+  @ManyToMany( type => PropertyValue, details => details.inventoryItems, {eager: true, orphanedRowAction: "delete"})
   @JoinTable()
   details: PropertyValue[];
 
-  constructor(purchaseVoucherItem?: PurchaseVoucherItem) {
+  @ManyToOne( type => Branch, branch => branch.inventoryItems  )
+  @JoinColumn({name: "branchId"})
+  branch: Branch;
+
+  @Column()
+  branchId: number;
+
+  constructor(purchaseVoucherItem?: PurchaseVoucherItem, branchId?: number) {
     if( purchaseVoucherItem) {
         this.id = 0;
         this.product = purchaseVoucherItem.product;
         this.qty = purchaseVoucherItem.qty;
         this.price = purchaseVoucherItem.price;
         this.details = purchaseVoucherItem.details;
+        this.branchId = branchId;
     }
   }
 }

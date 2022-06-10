@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit, Output} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {MembershipPurchaseHistoryItem} from '@models/membership-purchase';
+import {ExtendedMembershipPurchaseModel} from '@models/membership-purchase';
 import {Member} from '@models/member';
 
 @Component({
@@ -11,7 +11,7 @@ import {Member} from '@models/member';
 export class SharePurchaseDialogComponent implements OnInit {
   sharedMembers: Member[] = [];
 
-  constructor( @Inject(MAT_DIALOG_DATA) public membershipPurchaseItem: MembershipPurchaseHistoryItem) { }
+  constructor( @Inject(MAT_DIALOG_DATA) public membershipPurchaseItem: ExtendedMembershipPurchaseModel) { }
 
   ngOnInit(): void {
     this.membershipPurchaseItem.members.forEach(member => this.sharedMembers.push(member));

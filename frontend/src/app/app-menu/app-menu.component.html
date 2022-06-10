@@ -1,0 +1,34 @@
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree-node routerLinkActive="active-menu-item" *matTreeNodeDef="let node"
+                 matTreeNodePadding>
+    <button mat-icon-button disabled>
+      <mat-icon *ngIf="node.matIcon">{{node.matIcon}}</mat-icon>
+      <mat-icon [svgIcon]="node.customMatIcon" *ngIf="node.customMatIcon"></mat-icon>
+    </button>
+    <a class="route-link" *ngIf="node.path" [routerLink]="node.path">{{node.name}}</a>
+    <div *ngIf="!node.path">{{node.name}}</div>
+  </mat-tree-node>
+  <mat-tree-node routerLinkActive="active-menu-item-expandable"  *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
+    <button mat-icon-button>
+      <mat-icon *ngIf="node.matIcon">{{node.matIcon}}</mat-icon>
+      <mat-icon [svgIcon]="node.customMatIcon" *ngIf="node.customMatIcon"></mat-icon>
+    </button>
+    <ng-container
+      [ngTemplateOutletContext]="{node:node}"
+      [ngTemplateOutlet]="(!node.path || node.path.length==0) ? menuWithoutLink: menuWithLink">
+    </ng-container>
+    <button mat-icon-button matTreeNodeToggle
+            [attr.aria-label]="'Toggle ' + node.name">
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+      </mat-icon>
+    </button>
+  </mat-tree-node>
+</mat-tree>
+<ng-template #menuWithLink let-node="node">
+  <a class="route-link" *ngIf="node.path" [routerLink]="node.path">{{node.name}}</a>
+</ng-template>
+<ng-template #menuWithoutLink let-node="node">
+  {{node.name}}
+</ng-template>
+

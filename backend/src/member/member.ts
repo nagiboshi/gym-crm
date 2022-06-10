@@ -2,12 +2,15 @@ import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany,
 import {IsEmail, IsMobilePhone, IsNotEmpty, MinLength} from 'class-validator';
 import {MembershipPurchase} from '../membership-purchase/membership-purchase';
 import {SocialNetworkAccount} from '../social-network-account/social-network-account';
+import {Branch} from '../branch/branch';
 
 export const MemberFields = {
   membershipPurchases: 'membershipPurchases',
   activeMembership: 'activeMembership',
+  activeMembershipId: 'activeMembershipId',
   socialAccounts: 'socialAccounts',
-  created: 'created'
+  created: 'created',
+  branchId: 'branchId'
 }
 
 @Entity()
@@ -67,5 +70,19 @@ export class Member {
   membershipPurchases: MembershipPurchase[];
 
   @ManyToOne(type => MembershipPurchase, {nullable: true})
+  @JoinColumn({name: 'activeMembershipId', referencedColumnName: 'id'})
   activeMembership: MembershipPurchase;
+
+  @Column({nullable: true})
+  activeMembershipId: number;
+
+  @Column({nullable: true})
+  branchId: number;
+
+  @Column({default: 'shared'})
+  type: 'local'|'shared';
+
+  @ManyToOne(type=> Branch, b => b.members, {onDelete: "CASCADE", onUpdate: "CASCADE", cascade: true, nullable: true})
+  @JoinColumn({name:"branchId"})
+  branch: Branch;
 }

@@ -1,5 +1,6 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {MembershipGroup} from './membership-group';
+import {Branch} from '../branch/branch';
 
 
 @Entity({
@@ -30,5 +31,6 @@ export class Membership {
   @ManyToOne(type => MembershipGroup, group => group.memberships, {onDelete: "CASCADE"})
   @JoinColumn()
   group: MembershipGroup;
+
 
 }

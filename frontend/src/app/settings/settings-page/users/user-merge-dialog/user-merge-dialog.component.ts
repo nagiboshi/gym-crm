@@ -1,9 +1,12 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CommunicationService, UserRole} from '@shared/communication.service';
 import {User} from '@models/user';
+import {Observable} from 'rxjs';
+import {Branch} from '@models/branch';
+import {BranchService} from '../../branch.service';
 
 
 @Component({
@@ -20,12 +23,18 @@ export class UserMergeDialogComponent implements OnInit {
   @ViewChild('userAvatarPreview')
   avatarElRef: ElementRef;
   avatarDisplay: string = 'none';
-  avatarSrc: string = "";
+  avatarSrc: string = '';
   roles: Map<number, UserRole>;
-  constructor(@Inject(MAT_DIALOG_DATA) public data: User, private fb: FormBuilder, private domSanitizer: DomSanitizer, public communicationService: CommunicationService) {
+  branches$:Observable<Branch[]>;
+  constructor(@Inject(MAT_DIALOG_DATA) public data: User,
+              private fb: FormBuilder,
+              private domSanitizer: DomSanitizer,
+              public communicationService: CommunicationService,
+              private branchService: BranchService) {
   }
 
   ngOnInit(): void {
+    this.branches$ = this.branchService.branchesSubj.asObservable();
     this.roles = this.communicationService.getUserRoles();
     this.userForm = this.fb.group({
         id: [0],
@@ -39,23 +48,22 @@ export class UserMergeDialogComponent implements OnInit {
         phoneNumber: [this.data.phoneNumber, null],
         branches: [this.data.branches, [Validators.required]]
       }
-
     );
   }
 
-  handleAvatar(e: Event ) {
-    const imgs = (<any>e.target).files;
+  handleAvatar(e: Event) {
+    const imgs = (<any> e.target).files;
     this.handleAvatarChange(imgs);
   }
 
   handleAvatarChange(imgs) {
-    if( imgs ) {
+    if (imgs) {
       const [img] = imgs;
       this.userForm.patchValue({image: img});
       this.avatarSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(img)) as string;
       this.avatarDisplay = 'block';
     } else {
-      this.avatarSrc  = "";
+      this.avatarSrc = '';
       this.avatarDisplay = 'none';
     }
   }
@@ -63,7 +71,7 @@ export class UserMergeDialogComponent implements OnInit {
   handleAvatarDrop(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if( e.dataTransfer?.files ) {
+    if (e.dataTransfer?.files) {
       this.handleAvatarChange(e.dataTransfer.files);
     }
   }

@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {PropertyValue} from './property-value/property-value';
 import {Supplier} from '../supplier/supplier';
 import {Product} from '../product/product';
@@ -18,7 +18,11 @@ export class Property {
   values: PropertyValue[];
 
   @ManyToOne(type => Supplier, { onDelete: "CASCADE", onUpdate: "CASCADE",  cascade: true, nullable: true})
+  @JoinColumn({name: 'supplierId'})
   supplier: Supplier;
+
+  @Column({nullable: true})
+  supplierId: number;
 
   @ManyToOne( type => Product, { onDelete: "CASCADE", onUpdate: "CASCADE",  cascade: true, nullable: true})
   product: Product;

@@ -11,7 +11,7 @@ import {UserService} from '../user/user.service';
 @Module({
   imports: [UserModule, PassportModule,JwtModule.register({
     secret: jwtConstants.secret,
-    signOptions: { expiresIn: '24h' },
+    signOptions: { expiresIn: '7d' },
   }),],
   exports: [AuthService],
   providers: [AuthService, LocalStrategy,JwtStrategy]

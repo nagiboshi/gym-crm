@@ -9,6 +9,8 @@ import {remove} from 'lodash';
 import {Observable, Subject} from 'rxjs';
 import {AttendanceFilter, ReportsService} from '../reports.service';
 import {HelpersService} from '@shared/helpers.service';
+import {MatDialogRef} from '@angular/material/dialog';
+import {ReportDialog} from '../report-dialog';
 
 
 
@@ -17,13 +19,15 @@ import {HelpersService} from '@shared/helpers.service';
   templateUrl: './attendance-report.component.html',
   styleUrls: ['./attendance-report.component.scss']
 })
-export class AttendanceReportComponent implements OnInit {
+export class AttendanceReportComponent extends ReportDialog implements OnInit {
   form: FormGroup;
   maxSelectionDate: Moment;
   classes: ClassModel[];
   clearTimeRange: Subject<void>;
   clearTimeRange$: Observable<void>;
-  constructor(private fb: FormBuilder, private helpers: HelpersService, private reportService: ReportsService, private classesService: ClassesService) { }
+  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<AttendanceReportComponent>, private helpers: HelpersService, private reportService: ReportsService, private classesService: ClassesService) {
+    super();
+  }
 
   generateAttendanceReport() {
     const attendanceClassIds = this.form.value.attendedClassIds;
@@ -34,9 +38,7 @@ export class AttendanceReportComponent implements OnInit {
     const members: Member[] = this.form.value.members;
     const memberIds = members.map( m => m.id);
     const attendanceFilter: AttendanceFilter = {attendanceClassIds, memberIds, fromDate, toDate, startTime, endTime};
-    this.reportService.generateAttendanceReport(attendanceFilter).subscribe((blob) => {
-      this.helpers.download(blob, 'attendance-report.xls');
-    });
+    this.dialogRef.close(attendanceFilter);
   }
 
   ngOnInit(): void {

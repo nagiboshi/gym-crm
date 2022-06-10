@@ -1,0 +1,21 @@
+<form [formGroup]="formGroup">
+  <div fxLayout="column" mat-dialog-content>
+    <mat-form-field>
+      <mat-label>Enter a date range</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input formControlName="fromDate" matStartDate placeholder="Start date">
+        <input formControlName="toDate" matEndDate placeholder="End date">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+      <mat-hint (click)="clearDate()" class="clear-date-button">Clear date</mat-hint>
+    </mat-form-field>
+    <div class="active-members-only-wrapper">
+      <mat-checkbox formControlName="activeMembersOnly">Show active members only</mat-checkbox>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button (click)="makeReport()" mat-raised-button color="primary">Create</button>
+    <button mat-dialog-close mat-button>Close</button>
+  </div>
+</form>

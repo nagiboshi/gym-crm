@@ -13,6 +13,14 @@
     <div class="member-fields">
       <div>
         <mat-form-field>
+          <mat-select placeholder="Account type" formControlName="type">
+            <mat-option value="local">Local</mat-option>
+            <mat-option value="shared">Shared</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field>
           <mat-label>First name</mat-label>
           <input type="text" matInput formControlName="firstName">
         </mat-form-field>
@@ -26,8 +34,23 @@
       </div>
       <div>
         <mat-form-field>
+          <mat-label>Date of Birth</mat-label>
+          <input (click)="picker.open()" formControlName="dob" matInput [matDatepicker]="picker">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-hint *ngIf="memberForm.errors?.dob.required">This field is required</mat-hint>
+      </div>
+      <div>
+        <mat-form-field>
           <mat-label>Phone number</mat-label>
           <input type="text" matInput formControlName="phoneNumber">
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field>
+          <mat-label>Emergency Contact</mat-label>
+          <input type="text" matInput formControlName="emergencyPhone">
         </mat-form-field>
       </div>
       <div>
@@ -49,7 +72,7 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button mat-dialog-close>Close</button>
   <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
   <button mat-raised-button color="primary" [mat-dialog-close]="memberForm.value">Create</button>
 </mat-dialog-actions>

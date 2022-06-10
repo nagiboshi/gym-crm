@@ -33,7 +33,7 @@
                       class="nearly-expired-membership"
                       *ngIf="!signInMember.activeMembership || signInMember.activeMembership?.isNearlyExpire">!</span>
           <a
-            routerLink="/members/{{signInMember.member.id}}">{{signInMember.member.firstName + ' ' + signInMember.member.lastName}}</a>
+            routerLink="/members/profile/{{signInMember.member.id}}" mat-dialog-close>{{signInMember.member.firstName + ' ' + signInMember.member.lastName}}</a>
         </td>
       </ng-container>
 
@@ -68,9 +68,10 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+    <mat-paginator [hidePageSize]="true" [pageSizeOptions]="[7]" showFirstLastButtons></mat-paginator>
     <div class="control-buttons">
       <button color="primary" [mat-dialog-close]="dataSource.data" mat-raised-button>Save</button>
-      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-button mat-dialog-close>Close</button>
     </div>
   </div>
 </div>

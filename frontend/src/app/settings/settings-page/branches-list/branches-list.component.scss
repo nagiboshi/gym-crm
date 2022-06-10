@@ -1,0 +1,25 @@
+@import "../../../shared/crud-table/crud-table.component";
+
+.branches-list-container {
+  table {
+    background: transparent;
+  }
+
+  mat-paginator {
+    background: transparent;
+  }
+}
+
+.branch-item {
+  &:hover {
+    background-color: rgba(0, 117, 169, 0.6);
+    cursor: pointer;
+
+    td {
+      color: white;
+    }
+
+  }
+
+}
+

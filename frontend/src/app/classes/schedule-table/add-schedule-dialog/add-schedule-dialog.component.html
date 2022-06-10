@@ -39,7 +39,7 @@
   </mat-form-field>
 </div>
 <div class="schedule-row">
-  <button mat-dialog-close mat-button>Cancel</button>
+  <button mat-dialog-close mat-button>Close</button>
   <button [disabled]="!isValid()"
           [matDialogClose]="{scheduleFrom: scheduleFromDate?.toDate().getTime(), scheduleUntil: scheduleUntilDate?.toDate().getTime(), capacity: capacity , days: selectedDays.getValue(), selectedClass: selectedClass, startTime: startTime, endTime: endTime}"
           color="primary" mat-button>Save

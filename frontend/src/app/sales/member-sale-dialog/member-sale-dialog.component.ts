@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Member} from '@models/member';
-import {MembershipPurchaseHistoryItem, ServicePurchaseModel} from '@models/membership-purchase';
+import {ExtendedMembershipPurchaseModel, MembershipPurchaseModel} from '@models/membership-purchase';
 import {SalesService} from '../sales.service';
 import * as _moment from 'moment';
 import {StockPurchase} from '@models/stock-purchase';
@@ -26,7 +26,7 @@ export class MemberSaleDialogComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  async addSale(purchase: ServicePurchaseModel | StockPurchase, type: string) {
+  async addSale(purchase: MembershipPurchaseModel | StockPurchase, type: string) {
 
     if( type == 'stock') {
       if( purchase ) {
@@ -39,9 +39,9 @@ export class MemberSaleDialogComponent implements OnInit {
 
     if ( type == 'service') {
       if (purchase) {
-        const servicePurchase = purchase as ServicePurchaseModel;
+        const servicePurchase = purchase as MembershipPurchaseModel;
         const savedMembershipPurchase = await this.salesService.savePurchase(servicePurchase).toPromise();
-        const newPurchaseHistoryItem: MembershipPurchaseHistoryItem = this.helpers.extendMembership(savedMembershipPurchase);
+        const newPurchaseHistoryItem: ExtendedMembershipPurchaseModel = this.helpers.extendMembership(savedMembershipPurchase);
         this.dialog.close(newPurchaseHistoryItem);
       }
     }

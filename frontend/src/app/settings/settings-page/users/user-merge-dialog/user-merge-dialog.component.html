@@ -58,7 +58,7 @@
           <mat-select [multiple]="true" placeholder="Please select user branch" formControlName="branchId">
             <mat-option>All</mat-option>
             <mat-option [value]="branch.id"
-                        *ngFor="let branch of this.communicationService.getBranches()">{{branch.name}}</mat-option>
+                        *ngFor="let branch of branches$ | async">{{branch.name}}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -74,7 +74,7 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button mat-dialog-close>Close</button>
   <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
   <button mat-raised-button color="primary" [mat-dialog-close]="userForm.value">Create</button>
 </mat-dialog-actions>

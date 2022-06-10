@@ -10,7 +10,7 @@
       <form [formGroup]="stockFormGroup">
         <ng-template matStepLabel>Select stock</ng-template>
         <div fxLayoutAlign="start center">
-          <find-inventory-item [selectedItem]="data.stock" [joinFields]="joinFields" (stockSelected)="stockSelected($event)"></find-inventory-item>
+          <find-inventory-item [selectedItem]="stock" [joinFields]="joinFields" (stockSelected)="stockSelected($event)"></find-inventory-item>
         </div>
         <div class="next-button">
           <button [disabled]="!stockFormGroup.valid" mat-button matStepperNext>Next</button>
@@ -19,25 +19,24 @@
     </mat-step>
     <mat-step [stepControl]="priceFormGroup">
       <form [formGroup]="priceFormGroup">
-        <ng-template matStepLabel>Input Price</ng-template>
-        <div fxLayoutGap="30px" fxLayout="row">
-          <mat-form-field floatLabel="always">
-            <mat-label>Price</mat-label>
-
-<!--            product?.price-->
-
-            <input [min]="0" class="align-right" placeholder="0" matInput formControlName="price">
-            <span matPrefix>AED</span>
-            <span matSuffix>.00</span>
-          </mat-form-field>
-          <mat-form-field floatLabel="always">
-            <mat-label>Discount</mat-label>
-            <input min="0" max="100" class="align-right" placeholder="0" matInput formControlName="discount">
-            <span matSuffix>%</span>
+        <ng-template matStepLabel>Sale Price</ng-template>
+        <mat-form-field>
+          <mat-label>Input a price</mat-label>
+          <input maxlength="8" type="number" formControlName="price" matInput>
+        </mat-form-field>
+        <div>
+          <mat-form-field>
+            <mat-label>Discount (value in %):</mat-label>
+            <input type="number" [max]="100" [min]="0" matInput formControlName="discount">
           </mat-form-field>
         </div>
+        <div class="color-green">Total price with
+          discount: {{ priceFormGroup.value.price|discount:priceFormGroup.value.discount}}</div>
+        <div class="color-green" *ngFor="let tax of taxes">
+          Tax {{tax.name}}: {{priceFormGroup.value.price|discount:priceFormGroup.value.discount|tax:tax}}
+        </div>
         <div>
-          <button [disabled]="!priceFormGroup.valid" mat-button matStepperNext>Next</button>
+          <button [disabled]="priceFormGroup.invalid" mat-button matStepperNext>Next</button>
         </div>
       </form>
     </mat-step>
@@ -46,12 +45,11 @@
         <ng-template matStepLabel>Select Quantity</ng-template>
 
 <!--        product.qty -->
-
-        <div class="quantity-form-group available-items">Available Items:  <span class="quantity-form-group qty">{{quantityFormGroup.value.qty}}</span> </div>
         <div fxLayoutGap="30px" fxLayout="row">
           <mat-form-field floatLabel="always">
             <mat-label>Quantity</mat-label>
-            <input type="number" [max]="quantityFormGroup.value.qty" class="align-right" min="1" placeholder="0" matInput formControlName="quantity">
+            <input type="number" [max]="stockQty" class="align-right" min="1" placeholder="0" matInput formControlName="quantity">
+            <mat-hint>Available:{{stockQty}} </mat-hint>
           </mat-form-field>
         </div>
         <div>
@@ -59,15 +57,24 @@
         </div>
       </form>
     </mat-step>
-    <mat-step [stepControl]="paymentMethodFormGroup">
-      <form [formGroup]="paymentMethodFormGroup">
-        <ng-template matStepLabel>Select Payment Method:</ng-template>
+    <mat-step [stepControl]="paymentFormGroup">
+      <form [formGroup]="paymentFormGroup">
+
+        <ng-template matStepLabel>Payment</ng-template>
+
+        <payments [totalToPay]="priceFormGroup.value.price|totalPrice:1:priceFormGroup.value.discount:taxes"
+                  [styleWidth]="170" (paymentsChanged)="patchPayments($event)" [payments]="payments"></payments>
+        <div>
+          <button [disabled]="paymentFormGroup.invalid" mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="noteFormGroup">
+      <form [formGroup]="noteFormGroup">
+        <ng-template matStepLabel>Note:</ng-template>
         <div fxLayoutGap="30px" fxLayout="row">
           <mat-form-field>
-            <mat-select formControlName="paymentMethod">
-              <mat-option [value]="paymentMethod"
-                          *ngFor="let paymentMethod of paymentMethods">{{paymentMethod.name}}</mat-option>
-            </mat-select>
+              <textarea matInput formControlName="note"></textarea>
           </mat-form-field>
         </div>
         <div>
@@ -75,7 +82,6 @@
         </div>
       </form>
     </mat-step>
-
     <mat-step>
       <ng-template matStepLabel>Summary</ng-template>
       <div *ngIf="stockFormGroup.valid && quantityFormGroup.valid && priceFormGroup.valid" class="summary">
@@ -109,6 +115,24 @@
           <div
             class="form-value">{{priceFormGroup.value.price | totalPrice: quantityFormGroup.value.quantity :priceFormGroup.value.discount :taxes | currency: 'AED'}}</div>
         </div>
+
+        <mat-divider></mat-divider>
+        <ng-container *ngIf="payments.length > 0">
+          <div class="form-row">
+            <div class="form-label">Payments</div>
+          </div>
+
+          <div fxLayout="column" *ngFor="let payment of payments" class="form-row">
+            <!--            {{paymentFormGroup.value.payments | json}}-->
+            <div fxLayout="row">
+              <div class="form-label">Method:</div>
+              <div class="form-value">{{payment | paymentName: payment.paymentMethodId}}</div>
+              <div class="form-label">&nbsp; Amount:</div>
+              <div class="form-value">{{payment.amount | currency: 'AED'}}</div>
+            </div>
+          </div>
+
+        </ng-container>
       </div>
       <div>
         <button (click)="submitPurchase()" mat-button>Submit</button>

@@ -1,4 +1,4 @@
-import {Controller, UseGuards} from '@nestjs/common';
+import {Controller, Req, UseGuards} from '@nestjs/common';
 import {Crud, CrudRequest, Override, ParsedBody, ParsedRequest} from '@nestjsx/crud';
 import {MembershipPurchase} from './membership-purchase';
 import {MembershipPurchaseService} from './membership-purchase.service';
@@ -6,6 +6,7 @@ import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import {MemberService} from '../member/member.service';
 import {cloneDeep} from 'lodash';
 import {PaymentService} from '../payments/payment.service';
+import {JWTPayload} from '../auth/jwt.strategy';
 
 @Crud(
   {
@@ -19,6 +20,8 @@ import {PaymentService} from '../payments/payment.service';
         'members.activeMembership': {eager: false},
         freeze: {eager: false},
         payments: {eager: false},
+        buyer: {eager: false},
+        saleLocation: {eager: false},
       }
     }
   }
@@ -34,11 +37,13 @@ export class MembershipPurchaseController {
   async createOne(
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: MembershipPurchase,
+    @Req() request: Request & {user: JWTPayload}
   ) {
+
 
     let payments = dto.payments;
     dto.payments = [];
-
+    dto.saleLocationId = request.user.selectedBranch.id;
     const membershipPurchase = await this.service.createOne(req, dto);
 
     payments.forEach( p =>  { p.membershipPurchaseId = membershipPurchase.id;});

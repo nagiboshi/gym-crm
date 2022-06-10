@@ -1,0 +1,29 @@
+<div mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <div>
+      <mat-form-field appearance="fill">
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input formControlName="fromDate" matStartDate placeholder="Start date">
+          <input formControlName="toDate" matEndDate placeholder="End date">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field [style.width.%]="100" appearance="fill">
+        <mat-label>Report Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="">All</mat-option>
+          <mat-option value="stock">Marchendise</mat-option>
+          <mat-option value="service">Membership</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button [mat-dialog-close]="formGroup.value" mat-raised-button color="primary">Create</button>
+  <button mat-dialog-close mat-raised-button color="primary">Close</button>
+</div>

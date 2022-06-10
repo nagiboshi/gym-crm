@@ -16,7 +16,6 @@ export class TaxPipe implements PipeTransform {
 
   transform(value: any, ...govTaxes: any[]): number {
     const [taxes] = govTaxes;
-
     if( Array.isArray(taxes)) {
       govTaxes = taxes;
     }

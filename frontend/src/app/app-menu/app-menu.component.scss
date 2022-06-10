@@ -1,0 +1,26 @@
+.mat-tree {
+  background: transparent;
+  .mat-tree-node {
+    padding-left: 15px;
+    color: #FFF;
+    &.active-menu-item {
+      background-color: #1a72a5;
+    }
+
+    &.active-menu-item-expandable {
+      background-color: #0000000d;
+    }
+
+    .route-link {
+      padding: 0;
+      text-align: left;
+      font-weight: normal;
+      text-decoration: none;
+      color: #FFF;
+    }
+
+    mat-icon {
+      color: #FFF;
+    }
+  }
+}

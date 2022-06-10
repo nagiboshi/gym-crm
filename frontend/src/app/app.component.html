@@ -4,83 +4,20 @@
 
 <!--  </ng-container>-->
 <mat-drawer-container fxFill>
-  <mat-drawer [style.width.px]="250" mode="side" position="start" opened>
+  <mat-drawer *ngIf="userService.token$ | async" [style.width.px]="250" mode="side" position="start" opened>
 
     <div class="left-sidebar">
       <div fxLayoutAlign="start center" class="company-name">
         {{company.name}}
       </div>
       <mat-divider></mat-divider>
-      <mat-list>
-<!--        <mat-list-item>-->
-<!--          <a fxLayoutAlign="start center" class="main-route-link first" mat-button routerLink="/dashboard">-->
-<!--            <mat-icon class="main-route-icon">dashboard</mat-icon>-->
-<!--            Dashboard</a>-->
-<!--        </mat-list-item>-->
-        <mat-list-item>
-          <a fxLayoutAlign="start center" class="main-route-link" mat-button routerLink="/members">
-            <mat-icon class="main-route-icon">group</mat-icon>
-            Members</a>
-        </mat-list-item>
-        <mat-list-item>
-          <button (click)="classesSubmenu.classList.toggle('opened')" fxLayoutAlign="start center" class="main-route-link" mat-button routerLink="/classes">
-            <mat-icon class="main-route-icon">assignment_turned_in</mat-icon>
-            Schedules
-            <mat-icon *ngIf="!classesSubmenu.classList.contains('opened')">expand_more</mat-icon>
-            <mat-icon *ngIf="classesSubmenu.classList.contains('opened')">expand_less</mat-icon>
-          </button>
-        </mat-list-item>
-
-        <div id="classes-submenu" #classesSubmenu>
-          <mat-list>
-            <mat-list-item>
-              <a class="submenu-sublink" mat-button routerLink="/classes/list">Classes</a>
-            </mat-list-item >
-            <mat-list-item>
-              <a class="submenu-sublink" mat-button routerLink="/classes/categories">Class Types</a>
-            </mat-list-item>
-
-          </mat-list>
-        </div>
-
-        <mat-list-item>
-          <button (click)="salesSubmenu.classList.toggle('opened')" fxLayoutAlign="start center" mat-button
-                  class="main-route-link">
-              <mat-icon svgIcon="sales-icon" class="main-route-icon"></mat-icon>
-              Sales
-              <mat-icon *ngIf="!salesSubmenu.classList.contains('opened')">expand_more</mat-icon>
-              <mat-icon *ngIf="salesSubmenu.classList.contains('opened')">expand_less</mat-icon>
-          </button>
-
-        </mat-list-item>
-        <div id="sales-submenu" #salesSubmenu>
-          <mat-list>
-            <mat-list-item>
-              <a class="submenu-sublink" mat-button routerLink="/sales/inventory">Inventory</a>
-            </mat-list-item>
-            <mat-list-item>
-              <a class="submenu-sublink" mat-button routerLink="/sales/purchase-voucher">Purchase Voucher</a>
-            </mat-list-item>
-            <mat-list-item>
-              <a class="submenu-sublink" mat-button routerLink="/sales/memberships">Memberships</a>
-            </mat-list-item>
-            <mat-list-item>
-              <a class="submenu-sublink" mat-button routerLink="/sales/suppliers">Suppliers</a>
-            </mat-list-item>
-            <mat-list-item>
-              <a class="submenu-sublink" mat-button routerLink="/sales/categories">Categories</a>
-            </mat-list-item>
-          </mat-list>
-        </div>
-        <!--      <p>I'm visible because I am open</p>-->
-      </mat-list>
+      <app-menu></app-menu>
     </div>
   </mat-drawer>
   <mat-drawer-content>
     <div class="main-content-container">
       <header *ngIf="userService.token$ | async" fxLayoutAlign="space-between center">
         <div class="header-wrapper" fxLayout="row">
-          <div *ngIf="activeRoute" class="active-route">{{activeRoute.label}}</div>
           <div class="header-items" fxLayoutAlign="end">
             <app-find-member labelColor="#A1A1A1" placeholder="Find member..."
                              (memberSelected)="onMemberFound($event)"></app-find-member>

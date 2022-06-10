@@ -28,6 +28,7 @@ import {SelectionStrategyEventEmitter} from './schedule-calendar/selection-strat
 import {ScheduleMember} from '@models/schedule-member';
 import {ClassesService} from '../classes.service';
 import {AttendanceReportComponent} from '../../reports/attendance-report/attendance-report.component';
+import {ReportsService} from '../../reports/reports.service';
 
 const moment = _moment;
 
@@ -63,6 +64,7 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
   constructor(private communicationService: CommunicationService,
               private classesService: ClassesService,
               private cd: ChangeDetectorRef,
+              private reportService: ReportsService,
               private dialog: MatDialog,
               private selectionStrategyEventEmitter: SelectionStrategyEventEmitter<Moment>) {
   }
@@ -192,7 +194,6 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
         const signedMembers = daySchedule.signedMembers$.getValue();
 
         let membersIdsToSign = [];
-
         if( signedMembers.length == 0 ) {
           membersIdsToSign = membersToSignIn.map( memberToSign => memberToSign.member.id );
         } else {
@@ -208,26 +209,11 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
           .signIn(daySchedule.id, membersIdsToSign, signInDate.toDate())
           .toPromise().then((newSignedMembers: ScheduleMember[]) => {
           daySchedule.signedMembers$.next([...newSignedMembers, ...daySchedule.signedMembers$.getValue()]);
-          this.cd.markForCheck();
         });
       }
 
     });
   }
-
-  // groupSchedulesByDay(day: string, schedules: ClassSchedule[]): DaySchedule[] {
-  //   return schedules.filter(s => s.day == parseInt(day, 10)).sort(this.sortSchedulesFunction).map<DaySchedule>((s) => {
-  //     return {
-  //       scheduleId: s.id,
-  //       dayOfWeek: s.day,
-  //       timeStart: s.timeStart,
-  //       timeEnd: s.timeEnd,
-  //       capacity: s.capacity,
-  //       signedMembers$: new BehaviorSubject(s.signedMembers || []),
-  //       primalClass: this.classes.find(c => c.id == s.classId),
-  //     };
-  //   });
-  // }
 
   addSchedule(day?: string) {
     this.dialog.open(AddScheduleDialogComponent).afterClosed().subscribe((schedule: PrimalClassSchedule) => {
@@ -262,6 +248,7 @@ export class ScheduleTableComponent implements OnInit, OnDestroy {
   }
 
   attendanceReport() {
-      this.dialog.open(AttendanceReportComponent);
+    const report = this.reportService.reportsSub.getValue().find(r => r.name == 'Attendance Report');
+    this.dialog.open(AttendanceReportComponent).afterClosed().subscribe(filter => report.func(filter));
   }
 }

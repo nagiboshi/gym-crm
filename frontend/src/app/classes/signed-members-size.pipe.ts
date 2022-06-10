@@ -10,9 +10,8 @@ const moment =  _moment;
 export class SignedMembersSizePipe implements PipeTransform {
   constructor() {
   }
-  transform(scheduleMembers$: BehaviorSubject<ScheduleMember[]>, ...args: any[]): unknown {
+  transform(scheduleMembers: ScheduleMember[], ...args: any[]): unknown {
     const [scheduleWeekDay] = args;
-    const scheduleMembers = scheduleMembers$.getValue();
     return scheduleMembers.filter( sMember => {
       const scheduleMoment = moment(sMember.scheduleDate);
       return scheduleMoment.startOf('day').isSame(scheduleWeekDay.date);

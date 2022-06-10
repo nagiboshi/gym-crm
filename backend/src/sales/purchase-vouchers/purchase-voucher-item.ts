@@ -14,7 +14,7 @@ export class PurchaseVoucherItem {
   @Column()
   qty: number;
 
-  @ManyToOne(type => PurchaseVoucher, purchaseVoucher => purchaseVoucher.items, {persistence: true,cascade: true, onDelete: "CASCADE", onUpdate: "CASCADE"})
+  @ManyToOne(type => PurchaseVoucher, purchaseVoucher => purchaseVoucher.items, {persistence: true,cascade: true, onDelete: "CASCADE", onUpdate: "CASCADE", orphanedRowAction: "delete"})
   purchaseVoucher: PurchaseVoucher;
 
   @Column()

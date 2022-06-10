@@ -11,6 +11,7 @@ h2 {
 .member-profile-save button {
   width: 56px;
   height: 56px;
+  margin-left: 10px;
 }
 
 .member-profile-container {
@@ -30,6 +31,9 @@ h2 {
     }
   }
 
+  .status-gray {
+    box-shadow: -2px 1px 25px 7px #25291cbf;
+  }
 
   .status-red{
     box-shadow: -2px 1px 25px 7px rgba(252, 0, 0, 0.75);
@@ -64,5 +68,10 @@ h2 {
   app-purchase-history {
     width: 100%;
   }
+}
+
+#sell-button {
+  position: fixed;
+  bottom: 20px;
 }
 

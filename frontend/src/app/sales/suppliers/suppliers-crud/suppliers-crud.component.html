@@ -21,7 +21,7 @@
               </mat-form-field>
             </div>
 
-            <button mat-raised-button color="warn" (click)="removeProperty(i)" type="button">
+            <button mat-raised-button (click)="removeProperty(i)" type="button">
               <mat-icon>delete</mat-icon>
             </button>
 
@@ -35,7 +35,7 @@
   <div fxLayoutAlign="space-between" mat-dialog-actions>
     <div fxLayoutGap="10" class="button-container" fxLayout="row">
 
-      <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
+      <button mat-button mat-dialog-close>Close</button>
       <button mat-raised-button color="primary" (click)="saveSupplier()">Save</button>
       <button mat-flat-button type="button" (click)="addProperty()"
               fxLayoutAlign="start center">Add new property

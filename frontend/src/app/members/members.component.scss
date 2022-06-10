@@ -29,6 +29,28 @@
       }
     }
 
+    .mat-column-phoneNumber {
+      width: 100px;
+    }
+
+    .mat-column-email {
+      width: 250px;
+      max-width: 250px;
+    }
+
+    .mat-column-avatar {
+      max-width: 80px;
+      width: 80px;
+      mat-form-field {
+        max-width: 60px;
+      }
+      .account-type-selection {
+        max-width: 60px;
+      }
+    }
+
+
+
     .avatar {
       object-fit: cover;
     }
@@ -47,5 +69,9 @@
   .add-person-container {
     bottom: 20px;
     width: 100%;
+  }
+
+  #report-button {
+    margin-right: 20px;
   }
 }

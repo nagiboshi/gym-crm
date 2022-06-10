@@ -9,6 +9,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   flex: 2;
 }
 
+.control-buttons {
+  margin-top: 10px;
+}
+
 .page-wrapper{
   margin: 0 auto;
   display:flex;
@@ -108,7 +112,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .default-link {
-  color: $primaryColor6;
+  color: $primaryColor8;
+  cursor: pointer;
+  text-decoration: underline;
+  &.disabled {
+    color: #bbb7b7;
+  }
 }
 
 .mat-form-field.mat-focused.mat-primary .mat-select-arrow {

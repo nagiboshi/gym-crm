@@ -4,4 +4,5 @@ export interface MembershipGroup {
   id: number;
   name: string;
   memberships: Membership[];
+  type: string;
 }
