@@ -1,0 +1,21 @@
+.workflow-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  font-size: 11px;
+  color: #FFF;
+  font-weight: bold;
+  height: 50px;
+   &.control {
+     background-color: #5292d8;
+   }
+
+  &.trigger {
+    background-color: #ff0000;
+  }
+
+  &.output{
+    background-color: #5bd35b;
+  }
+}

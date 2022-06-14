@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 import {AuthGuard} from './helpers/auth.guard';
+import {FormOutletComponent} from './forms/form-outlet/form-outlet.component';
 
 
 const routes: Routes = [
@@ -14,6 +15,9 @@ const routes: Routes = [
     path: 'members', loadChildren: () => import('./members/members.module').then(m => m.MembersModule), canActivate: [AuthGuard]
   },
   {
+    path: 'form', component: FormOutletComponent
+  },
+  {
     path: '', loadChildren: () => import('./members/members.module').then(m => m.MembersModule), canActivate: [AuthGuard]
   },
   {
@@ -21,6 +25,9 @@ const routes: Routes = [
   },
   {
     path: 'classes', loadChildren: () => import('./classes/classes.module').then(m => m.ClassesModule), canActivate: [AuthGuard]
+  },
+  {
+    path: 'workflow', loadChildren: () => import('./workflow/workflow.module').then(m => m.WorkflowModule), canActivate: [AuthGuard]
   },
   {
     path: 'settings', loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule), canActivate: [AuthGuard]

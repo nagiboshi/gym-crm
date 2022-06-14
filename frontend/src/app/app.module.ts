@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {ErrorHandler, NgModule} from '@angular/core';
+import {ApplicationRef, ComponentFactoryResolver, DoBootstrap, ErrorHandler, Inject, NgModule, Type} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {SharedModule} from '@shared/shared.module';
@@ -8,13 +8,23 @@ import {CommunicationService} from '@shared/communication.service';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {ErrorInterceptor} from './helpers/errors.interceptor';
 import {GlobalErrorHandlerService} from '@shared/global-error-handler.service';
-import { AppMenuComponent } from './app-menu/app-menu.component';
+import {AppMenuComponent} from './app-menu/app-menu.component';
+import {MainComponent} from './main/main.component';
+import {FormOutletComponent} from './forms/form-outlet/form-outlet.component';
+import { FormListComponent } from './forms/form-list/form-list.component';
+import { FormBuilderComponent } from './forms/form-builder/form-builder.component';
+import { DynamicFormComponent } from './forms/dynamic-form/dynamic-form.component';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        AppMenuComponent
-    ],
+  declarations: [
+    AppComponent,
+    AppMenuComponent,
+    MainComponent,
+    FormOutletComponent,
+    FormListComponent,
+    FormBuilderComponent,
+    DynamicFormComponent
+  ],
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
@@ -28,5 +38,6 @@ import { AppMenuComponent } from './app-menu/app-menu.component';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
+export class AppModule  {
+
 }

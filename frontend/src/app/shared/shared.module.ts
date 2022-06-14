@@ -65,6 +65,7 @@ import {SubcategoryCrudComponent} from '@shared/category/categories-crud/subcate
 import { PaymentNamePipe } from './payment-name.pipe';
 import { SocialAccountsComponent } from './social-accounts/social-accounts.component';
 import {MatGridListModule} from '@angular/material/grid-list';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 @NgModule({
   declarations: [TimeRangeSelectorComponent, PurchaseHistoryComponent, FindSupplierComponent,
     AddMemberDialogComponent, FindProductComponent, YearMonthSelectorComponent,
@@ -101,6 +102,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    DragDropModule,
     MatTreeModule,
     MatDialogModule,
     MatSnackBarModule,
@@ -125,6 +127,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
     FlexLayoutModule,
     MatTabsModule,
     MatGridListModule,
+    DragDropModule,
     MatButtonModule,
     MatMenuModule,
     MatSidenavModule,

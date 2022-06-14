@@ -21,7 +21,6 @@ import { MembershipPurchaseDialogComponent } from './membership/membership-purch
 import {StockPurchaseFormComponent} from './product/product-purchase-form/stock-purchase-form.component';
 import {ViewItemComponent} from './product/view-product/view-item.component';
 import {StockPurchaseFormDialogComponent} from './product/stock-purchase-form-dialog/stock-purchase-form-dialog.component';
-import {ProductService} from './product/product.service';
 import { ComaSeparatedMembershipPipe } from './membership/membership-list/coma-separated-membership.pipe';
 
 @NgModule({

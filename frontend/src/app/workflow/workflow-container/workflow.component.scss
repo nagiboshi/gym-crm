@@ -1,0 +1,17 @@
+.workflow-items {
+  width: 100%;
+  .workflow-items-container {
+    margin-right: 20px;
+    workflow-element {
+      margin-right: 10px;
+    }
+  }
+}
+
+#workflow{
+  position: relative;
+  workflow-element {
+    position: absolute;
+  }
+}
+

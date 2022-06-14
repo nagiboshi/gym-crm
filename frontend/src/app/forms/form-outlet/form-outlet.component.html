@@ -1,0 +1,17 @@
+<form fxLayout="column" fxLayoutAlign="start" [formGroup]="form" (ngSubmit)="runFlow()">
+  <div class="row">
+    <label>Phone Number</label>
+    <input formControlName="phoneNumber" type="text" id="phoneNumber">
+  </div>
+  <div class="row">
+    <label>Subject</label>
+    <input formControlName="subject" type="text">
+  </div>
+  <div class="row">
+    <label>Message</label>
+    <textarea formControlName="message" type="text"></textarea>
+  </div>
+  <div class="row">
+    <button type="submit">Send</button>
+  </div>
+</form>

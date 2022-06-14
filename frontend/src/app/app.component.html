@@ -1,54 +1,54 @@
-<!--  <ng-container *ngIf="selectedBranchId; else mainContent">-->
-<mat-progress-spinner id="cache-loading-spinner" [mode]="'indeterminate'" [strokeWidth]="1"
-                      *ngIf="cacheLoadingStatus"></mat-progress-spinner>
+<ng-container *ngIf="isForm; else main">
+  <form-outlet></form-outlet>
+</ng-container>
+<ng-template #main>
+  <mat-drawer-container fxFill>
+    <mat-drawer *ngIf="userService.token$ | async" [style.width.px]="250" mode="side" position="start" opened>
 
-<!--  </ng-container>-->
-<mat-drawer-container fxFill>
-  <mat-drawer *ngIf="userService.token$ | async" [style.width.px]="250" mode="side" position="start" opened>
-
-    <div class="left-sidebar">
-      <div fxLayoutAlign="start center" class="company-name">
-        {{company.name}}
+      <div class="left-sidebar">
+        <div fxLayoutAlign="start center" class="company-name">
+          {{company.name}}
+        </div>
+        <mat-divider></mat-divider>
+        <app-menu></app-menu>
       </div>
-      <mat-divider></mat-divider>
-      <app-menu></app-menu>
-    </div>
-  </mat-drawer>
-  <mat-drawer-content>
-    <div class="main-content-container">
-      <header *ngIf="userService.token$ | async" fxLayoutAlign="space-between center">
-        <div class="header-wrapper" fxLayout="row">
-          <div class="header-items" fxLayoutAlign="end">
-            <app-find-member labelColor="#A1A1A1" placeholder="Find member..."
-                             (memberSelected)="onMemberFound($event)"></app-find-member>
-<!--            <find-product labelColor="#A1A1A1" placeholder="Find product..."-->
-<!--                          (productSelected)="onProductFound($event)"></find-product>-->
-            <find-inventory-item [clearAfterSelection]="true" labelColor="#A1A1A1" placeholder="Find stock..."
-            (stockSelected)="onStockSelected($event)"></find-inventory-item>
-            <div fxLayoutAlign="space-between center">
+    </mat-drawer>
+    <mat-drawer-content>
+      <div class="main-content-container">
+        <header *ngIf="userService.token$ | async" fxLayoutAlign="space-between center">
+          <div class="header-wrapper" fxLayout="row">
+            <div class="header-items" fxLayoutAlign="end">
+              <app-find-member labelColor="#A1A1A1" placeholder="Find member..."
+                               (memberSelected)="onMemberFound($event)"></app-find-member>
+              <!--            <find-product labelColor="#A1A1A1" placeholder="Find product..."-->
+              <!--                          (productSelected)="onProductFound($event)"></find-product>-->
+              <find-inventory-item [clearAfterSelection]="true" labelColor="#A1A1A1" placeholder="Find stock..."
+                                   (stockSelected)="onStockSelected($event)"></find-inventory-item>
+              <div fxLayoutAlign="space-between center">
 
 
-              <a fxLayoutAlign="center center" fxLayout="row" routerLinkActive="active" mat-button
-                 [routerLink]="'/settings'">
-                <mat-icon>tune_up</mat-icon>
-              </a>
+                <a fxLayoutAlign="center center" fxLayout="row" routerLinkActive="active" mat-button
+                   [routerLink]="'/settings'">
+                  <mat-icon>tune_up</mat-icon>
+                </a>
 
-              <button class="user-avatar-button" mat-button [matMenuTriggerFor]="menu" >
+                <button class="user-avatar-button" mat-button [matMenuTriggerFor]="menu">
                   <img class="user-avatar" width="30" height="30" [src]="userAvatar | localImageLink">
-              </button>
-              <mat-menu #menu="matMenu">
-                <button (click)="logout()" mat-menu-item>Logout</button>
-              </mat-menu>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button (click)="logout()" mat-menu-item>Logout</button>
+                </mat-menu>
+              </div>
             </div>
           </div>
+        </header>
+        <mat-divider></mat-divider>
+        <div class="main-container">
+          <router-outlet></router-outlet>
         </div>
-      </header>
-      <mat-divider></mat-divider>
-      <div class="main-container">
-        <router-outlet></router-outlet>
       </div>
-    </div>
 
-  </mat-drawer-content>
-</mat-drawer-container>
+    </mat-drawer-content>
+  </mat-drawer-container>
 
+</ng-template>

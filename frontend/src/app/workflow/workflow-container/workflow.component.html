@@ -1,0 +1,20 @@
+<div fxFill fxLayout="column">
+  <div fxLayout="row" class="workflow-items">
+    <div fxLayout="row" class="workflow-items-container">
+      <workflow-element  (clicked)="addElement($event)" [workflowElement]="controlElement" *ngFor="let controlElement of menuControlElements"></workflow-element>
+    </div>
+    <div fxLayout="row" class="workflow-items-container">
+      <workflow-element  (clicked)="addElement($event)" [workflowElement]="controlElement" *ngFor="let controlElement of menuInputElements"></workflow-element>
+    </div>
+    <div fxLayout="row" class="workflow-items-container">
+      <div fxLayout="row" class="workflow-items-container">
+        <workflow-element  (clicked)="addElement($event)" [workflowElement]="controlElement" *ngFor="let controlElement of menuOutputElements"></workflow-element>
+      </div>
+    </div>
+  </div>
+  <div fxFill #workflowContainer id="workflow">
+    <ng-container *ngFor="let workflowElement of workflow">
+        <workflow-element [style.y.px]="workflowElement.y" [style.x.px]="workflowElement.x" [renderer]="workflowDrawer" [workflowElement]="workflowElement"></workflow-element>
+    </ng-container>
+  </div>
+</div>

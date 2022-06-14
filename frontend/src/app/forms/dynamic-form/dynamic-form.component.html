@@ -1,0 +1,10 @@
+<div class=".dynamic-form">
+  <ng-container  *ngFor="let formElement of formElements">
+      <ng-container [ngSwitch]="formElement.type">
+        <input *ngSwitchCase="'input'" [ngStyle]="formElement.styles" />
+        <textarea *ngSwitchCase="'textarea'" [ngStyle]="formElement.styles"></textarea>
+        <label *ngSwitchCase="'label'" [ngStyle]="formElement.styles"></label>
+        <button type="submit" *ngSwitchCase="'submit'" [ngStyle]="formElement.styles"></button>
+      </ng-container>
+  </ng-container>
+</div>

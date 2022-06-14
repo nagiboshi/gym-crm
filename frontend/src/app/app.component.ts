@@ -23,12 +23,10 @@ import {StockPurchase} from '@models/stock-purchase';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
-  cacheLoadingStatus: boolean = false;
   userAvatar: string;
   company = {name: 'Primal Gym', logo: '/assets/primal-logo.svg'};
   title = 'primal-accounting';
-
+  isForm: boolean;
   constructor(private router: Router,
               public userService: UserService,
               private http: HttpClient,
@@ -41,17 +39,20 @@ export class AppComponent {
               private membershipGroupService: MembershipGroupService) {
 
 
-    userService.token$.subscribe((t) => {
+    this.isForm = location.pathname == '/form';
+    if (!this.isForm) {
+      userService.token$.subscribe((t) => {
 
-      if (t) {
-        this.userAvatar = jwtDecode<UserToken>(t.access_token).photoLink;
-        taxService.fetchTaxes().subscribe();
-        membershipGroupService.fetchMembershipGroups().subscribe();
-        paymentMethodService.fetchPaymentMethods().subscribe();
-        categoryService.fetchCategories().subscribe();
-        classService.fetchClasses().subscribe();
-      }
-    });
+        if (t) {
+          this.userAvatar = jwtDecode<UserToken>(t.access_token).photoLink;
+          taxService.fetchTaxes().subscribe();
+          membershipGroupService.fetchMembershipGroups().subscribe();
+          paymentMethodService.fetchPaymentMethods().subscribe();
+          categoryService.fetchCategories().subscribe();
+          classService.fetchClasses().subscribe();
+        }
+      });
+    }
   }
 
   onMemberFound(member: Member) {

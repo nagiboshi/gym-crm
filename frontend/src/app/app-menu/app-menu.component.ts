@@ -84,7 +84,10 @@ export class AppMenuComponent implements OnInit {
           {children: [], label: 'Suppliers', active: false, path: '/sales/suppliers'},
           {children: [], label: 'Product Categories', active: false, path: '/sales/categories'}]
       },
-      {label: 'Workflow Automation', active: false, path: '/workflow', children: []},
+      {label: 'Automation', active: false, path: '/workflow', children: [
+          {children: [], label: 'Workflows', active: false, path: '/workflow'},
+          {children: [], label: 'Forms', active: false, path: '/workflow/forms'}
+        ]},
       {label: 'Reports', matIcon: 'assessment', active: false, path: '/reports', children: []}
     ];
   }
