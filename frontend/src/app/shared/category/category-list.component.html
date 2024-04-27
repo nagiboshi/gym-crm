@@ -10,8 +10,8 @@
     <ng-container matColumnDef="subcategories">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Subcategories</th>
       <td mat-cell *matCellDef="let row; let productCategoryIndex=index">
-        <mat-chip-list fxLayout="row" #chipList aria-label="Field Value">
-          <mat-chip
+        <mat-chip-listbox fxLayout="row" #chipList aria-label="Field Value">
+          <mat-chip-option
             *ngFor="let subcategory of row.subcategories; let subcategoryIndex=index"
             [selectable]="true"
             [removable]="true"
@@ -19,8 +19,8 @@
             {{subcategory.name}}
             <mat-icon matChipTrailingIcon class="edit-subcategory" (click)="editSubcategory(productCategoryIndex, subcategoryIndex, subcategory)">edit</mat-icon>
             <mat-icon matChipRemove>cancel</mat-icon>
-          </mat-chip>
-        </mat-chip-list>
+          </mat-chip-option>
+        </mat-chip-listbox>
       </td>
     </ng-container>
 

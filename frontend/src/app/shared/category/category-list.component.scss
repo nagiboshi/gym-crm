@@ -13,6 +13,7 @@
   table {
     background-color: transparent;
   }
+  /* TODO(mdc-migration): The following rule targets internal classes of paginator that may no longer apply for the MDC version. */
   mat-paginator {
     background-color: transparent;
   }

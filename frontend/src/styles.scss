@@ -64,15 +64,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: rgba(0,0,0,.7);
 }
 
-.mat-fab.mat-primary {
+.mat-mdc-fab.mat-primary {
   background-color: $primaryColor8;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
 .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background, .mat-checkbox-checked.mat-accent .mat-checkbox-background {
   background-color: $primaryColor8;
 }
 
-.mat-button.mat-primary {
+.mat-mdc-button.mat-primary {
   color:  $primaryColor6;
 }
 
@@ -80,11 +81,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background: $primaryColor1;
 }
 
-.mat-raised-button.mat-primary  {
+.mat-mdc-raised-button.mat-primary  {
   background-color: $primaryColor6;
 }
 
-.mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+.mat-mdc-tab-group.mat-primary .mat-ink-bar, .mat-mdc-tab-nav-bar.mat-primary .mat-ink-bar {
   background-color: $primaryColor8;
 }
 
@@ -99,15 +100,17 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 
-.mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
+.mat-mdc-button.mat-primary, .mat-mdc-icon-button.mat-primary, .mat-mdc-outlined-button.mat-primary {
   color:   $primaryColor8;
 }
 
-.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+/* TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version. */
+.mat-primary .mat-mdc-option.mat-selected:not(.mat-option-disabled) {
   color:   $primaryColor6;
 }
 
-.mat-form-field.mat-focused .mat-form-field-label {
+/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+.mat-mdc-form-field.mat-focused .mat-form-field-label {
   color:  $primaryColor8;
 }
 
@@ -120,13 +123,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
 }
 
-.mat-form-field.mat-focused.mat-primary .mat-select-arrow {
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
+.mat-mdc-form-field.mat-focused.mat-primary .mat-select-arrow {
   color: $primaryColor8;
 }
 
-.mat-fab.mat-accent, .mat-mini-fab.mat-accent {
+.mat-mdc-fab.mat-accent, .mat-mdc-mini-fab.mat-accent {
   background-color: $primaryColor8;
 }
-.mat-form-field.mat-focused .mat-form-field-ripple {
+/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+.mat-mdc-form-field.mat-focused .mat-form-field-ripple {
   background-color: $primaryColor8;
 }

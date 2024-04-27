@@ -8,22 +8,22 @@
     <div fxLayoutAlign="start center" fxLayout="row" class="property-value">
         <mat-form-field>
           <mat-label>Property value</mat-label>
-          <mat-chip-list *ngIf="useMultipleValue; else " formArrayName="values" #chipList aria-label="Property Value">
-            <mat-chip
+          <mat-chip-grid *ngIf="useMultipleValue; else " formArrayName="values" #chipList aria-label="Property Value">
+            <mat-chip-row
               *ngFor="let propertyValue of propertyValues.controls; let propertyValueIndex=index"
               [selectable]="true"
               [removable]="true"
               (removed)="removePropertyValue(propertyValueIndex)">
               {{propertyValue.value.value}}
               <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
+              </mat-chip-row>
             <input placeholder="New property value..."
                    #propertyValueElRef
                    [matChipInputFor]="chipList"
                    [matChipInputSeparatorKeyCodes]="[32, 13]"
                    (matChipInputTokenEnd)="addPropertyValue( $event, propertyValueElRef)"
                    (focusout)="addPropertyValue(null, propertyValueElRef)">
-          </mat-chip-list>
+          </mat-chip-grid>
         </mat-form-field>
         <mat-icon class="remove-button" (click)="removeProperty()">delete</mat-icon>
 
